@@ -297,7 +297,7 @@ namespace WavesCS.Main
             writer.Write(Base58.Decode(matcherKey));
             PutAsset(stream, amountAssetId);
             PutAsset(stream, priceAssetId);
-            writer.Write((byte)orderType.Ordinal); //TODO(tonya): make Type of Order - enum, research about json field of Type class
+            writer.Write((byte)orderType.Ordinal); 
             Utils.WriteToNetwork(writer, price);
             Utils.WriteToNetwork(writer, amount);
             Utils.WriteToNetwork(writer, timestamp);

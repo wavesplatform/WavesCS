@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Security.Cryptography;
 using HashLib;
 using System.IO;
 
@@ -20,7 +17,7 @@ namespace WavesCS.Main
         {
             this.scheme = scheme;
             this.publicKey = publicKey;
-            this.address = Base58.Encode(_Address(publicKey, scheme));
+            this.address = Base58.Encode(GenerateAddress(publicKey, scheme));
         }
 
         public PublicKeyAccount(String publicKey, char scheme) : this(Base58.Decode(publicKey), scheme)
@@ -59,7 +56,7 @@ namespace WavesCS.Main
             return Hash(blake2b, 0, blake2b.Length, KECCAK256);
         }
 
-        private static byte[] _Address(byte[] publicKey, char scheme) //TODO(tonya): rename to address, and address rename to smth else
+        private static byte[] GenerateAddress(byte[] publicKey, char scheme) 
         {
             MemoryStream stream = new MemoryStream(26);
             byte[] hash = SecureHash(publicKey, 0, publicKey.Length);

@@ -27,7 +27,7 @@ namespace WavesCS.Main
             get{ return privateKey.ToArray(); }
         }
 
-        private static byte[] GeneratePrivateKey(string seed, int nonce) //TODO(tonya): rename to address, and address rename to smth else
+        private static byte[] GeneratePrivateKey(string seed, int nonce) 
         {
             MemoryStream stream = new MemoryStream(Encoding.Default.GetBytes(seed).Length + 4);
             BinaryWriter writer = new BinaryWriter(stream);
