@@ -75,7 +75,7 @@
   <ItemGroup>
     <Compile Include="Main\Account.cs" />
     <Compile Include="Main\Base58.cs" />
-    <Compile Include="Main\KeyValuePairJsonConverter.cs" />
+    <Compile Include="Main\Utils.cs" />
     <Compile Include="Main\Node.cs" />
     <Compile Include="Main\Order.cs" />
     <Compile Include="Main\OrderBook.cs" />

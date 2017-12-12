@@ -26,7 +26,7 @@ namespace WavesCS.Main
 
         public byte[] PublicKey
         {
-            get{ return publicKey.ToArray(); }
+            get { return publicKey.ToArray(); }
             set { publicKey = value; }
         }
 

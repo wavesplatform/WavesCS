@@ -15,6 +15,13 @@ namespace WavesCS.Main
         private readonly Uri host;
         private readonly WebClient client = new WebClient();
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        private const string HEIGHT_STRING = "height";
+        private const string BALANCE_STRING = "balance";
+        private const string BASE_PATH_BLOCKS = "blocks/";
+        private const string BASE_PATH_ASSETS = "assets/";
+        private const string BASE_PATH_ADDRESS = "addresses/";
+        private const string MATCHER_PATH = "/matcher";
+        private const string ORDER_STATUS_STRING = "status";
 
         public Node()
         {
@@ -24,7 +31,6 @@ namespace WavesCS.Main
             }
             catch (UriFormatException e)
             {
-                // should not happen
                 throw new SystemException(e.Message);
             }
         }
@@ -34,41 +40,35 @@ namespace WavesCS.Main
             host = new Uri(uri);
         }
 
-        public T Get<T>(string url)
+        public T Get<T>(string url, string key)
         {
             Console.WriteLine(host + url);
             Uri resorce = new Uri(host, url);
             var json = (new WebClient()).DownloadString(host + url);
             dynamic result = serializer.DeserializeObject(json);
-            return result;
+            return result[key];
         }
 
         public int GetHeight()
         {
-            return Get<dynamic>("blocks/height")["height"];
+            return Get<int>(String.Format("{0}{1}", BASE_PATH_BLOCKS, HEIGHT_STRING), HEIGHT_STRING);
         }
 
-        public long GetBalance(String address) 
+        public long GetBalance(String address)
         {
-            return Get<dynamic>("addresses/balance/" + address)["balance"];
+            return Get<long>(String.Format("{0}{1}/{2}", BASE_PATH_ADDRESS, BALANCE_STRING, address), BALANCE_STRING);
         }
 
         public long GetBalance(String address, int confirmations)
         {
-            return Get<dynamic>("addresses/balance/" + address + "/" + confirmations)["balance"];
+            return Get<long>(String.Format("{0}{1}/{2}/{3}", BASE_PATH_ADDRESS, BALANCE_STRING, address, confirmations), BALANCE_STRING);
         }
 
         public long GetBalance(String address, String assetId)
         {
-            return Get<dynamic>("assets/balance/" + address + "/" + assetId)["balance"]; 
+            return Get<long>(String.Format("{0}{1}/{2}/{3}",BASE_PATH_ASSETS, BALANCE_STRING, address, assetId), BALANCE_STRING); 
         }
 
-        /**
-        * Sends a signed transaction and returns its ID.
-        * @param transaction signed transaction (as created by static methods in Transaction class)
-        * @return Transaction ID
-        * @throws IOException
-        */
         public String Send(Transaction transaction)
         {
             return Request(transaction, "id");
@@ -127,27 +127,19 @@ namespace WavesCS.Main
         // Matcher transactions
 
 
-
         public String GetMatcherKey()
         {
-            String json = Request<String>("/matcher");           
+            String json = Request<String>(MATCHER_PATH);           
             return json;
         }
 
         public String CreateOrder(PrivateKeyAccount account, String matcherKey, String amountAssetId, String priceAssetId,
                                   Order.Type orderType, long price, long amount, long expiration, long matcherFee)
         {
-            try
-            {
-                Transaction transaction = Transaction.MakeOrderTransaction(account, matcherKey, orderType,
-                        amountAssetId, priceAssetId, price, amount, expiration, matcherFee);
-                dynamic message = Request<Dictionary<String, Object>>(transaction);
-                return (String)message["message"]["id"];
-            }
-            catch (IOException)
-            {
-                throw;
-            }
+            Transaction transaction = Transaction.MakeOrderTransaction(account, matcherKey, orderType,
+                    amountAssetId, priceAssetId, price, amount, expiration, matcherFee);
+            dynamic message = Request<Dictionary<String, Object>>(transaction);
+            return (String)message["message"]["id"]; 
         }
 
         public void CancelOrder(PrivateKeyAccount account,
@@ -161,47 +153,32 @@ namespace WavesCS.Main
         {
             asset1 = Transaction.NormalizeAsset(asset1);
             asset2 = Transaction.NormalizeAsset(asset2);
-            String path = "matcher/orderbook/" + asset1 + '/' + asset2;
-            dynamic dictionary = Request<Dictionary<String, Object>>(path);
-            ArrayList bids = dictionary["bids"];
-            ArrayList asks = dictionary["asks"];
-            return new OrderBook(
-                ProcessOrders(bids.Cast<Dictionary<string, object>>().ToList()), 
-                ProcessOrders(asks.Cast<Dictionary<string, object>>().ToList()));
-
+            String path = String.Format("{0}{1}/{2}", OrderBook.BASE_PATH, asset1, asset2);
+            OrderBook.JsonOrderBook orderBookJson = Request<OrderBook.JsonOrderBook>(path);
+            return new OrderBook(orderBookJson);
         }
 
         public String GetOrderStatus(String orderId, String asset1, String asset2)
         {
             asset1 = Transaction.NormalizeAsset(asset1);
             asset2 = Transaction.NormalizeAsset(asset2);
-            String path = "matcher/orderbook/" + asset1 + '/' + asset2 + '/' + orderId;
-            dynamic result = Get<Dictionary<String, object>>(path);
-            return result["status"];
+            String path = String.Format("{0}{1}/{2}/{3}", OrderBook.BASE_PATH, asset1, asset2, orderId);
+            dynamic result = Get<String>(path, ORDER_STATUS_STRING);
+            return result;
         }
 
         public String GetOrders(PrivateKeyAccount account)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             MemoryStream stream = new MemoryStream(40);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(account.PublicKey);
-            writer.Write(timestamp);
+            Utils.WriteToNetwork(writer, timestamp);
             String signature = Transaction.Sign(account, stream);
-
-            WebClient c;
-            
-
-            String path = "matcher/orderbook/" + Base58.Encode(account.PublicKey);
+            String path = OrderBook.BASE_PATH + Base58.Encode(account.PublicKey);
             String json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
-            return json;///finish this once API is pushed
-        }
-
-        private List<Order> ProcessOrders(List<Dictionary<string, object>> orders) //List<Order> ProcessOrders<T>(List<T> orders)
-        {
-            return orders.Select(x => new Order(Convert.ToInt64(x["price"]), Convert.ToInt64(x["amount"]))).ToList();
-        }      
+            return json;
+        } 
 
         private String  Request(Transaction transaction, String key)
         {
@@ -210,10 +187,8 @@ namespace WavesCS.Main
             {                
                 string jsonTransaction = transaction.GetJson();
                 Uri currentUri = new Uri(host + transaction.Endpoint);
-                WebClient currentClient = new WebClient();
-                client.Headers.Add("Content-Type", "application/json");
-                client.Headers.Add("Accept", "application/json");
-                string json = client.UploadString(currentUri, jsonTransaction);
+                WebClient currentClient = GetClientWithHeaders();
+                string json = currentClient.UploadString(currentUri, jsonTransaction);
                 dynamic usr = serializer.DeserializeObject(json);
                 result = usr[key];
                 return result;
@@ -240,10 +215,8 @@ namespace WavesCS.Main
             {
                 string jsonTransaction = transaction.GetJson();
                 Uri currentUri = new Uri(host + transaction.Endpoint);
-                WebClient currentClient = new WebClient();
-                client.Headers.Add("Content-Type", "application/json");
-                client.Headers.Add("Accept", "application/json");
-                var json = client.UploadString(currentUri, jsonTransaction);
+                WebClient currentClient = GetClientWithHeaders();
+                var json = currentClient.UploadString(currentUri, jsonTransaction);
                 result = serializer.Deserialize<Dictionary<string, object>>(json);
                 return result;
             }
@@ -258,17 +231,22 @@ namespace WavesCS.Main
         private T Request<T>(String path, params String[] headers)
         {
             Uri currentUri = new Uri(host + path);
-            WebClient currentClient = new WebClient();
-            currentClient.Headers.Add("Content-Type", "application/json");
-            currentClient.Headers.Add("Accept", "application/json");
-
+            WebClient currentClient = GetClientWithHeaders();
             for (int i = 0; i < headers.Length; i += 2)
             {
-                client.Headers.Add(headers[i], headers[i + 1]);
+                currentClient.Headers.Add(headers[i], headers[i + 1]);
             }
             var json = currentClient.DownloadString(currentUri);
             T result = serializer.Deserialize<T>(json);
             return result;
+        }
+
+        private WebClient GetClientWithHeaders()
+        {
+            WebClient client = new WebClient();
+            client.Headers.Add("Content-Type", "application/json");
+            client.Headers.Add("Accept", "application/json");
+            return client;
         }
     }
 }

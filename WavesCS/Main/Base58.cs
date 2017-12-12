@@ -12,12 +12,10 @@ namespace WavesCS.Main
 
         static Base58()
         {
-            int j = 0;
             Array.Clear(INDEXES, 0, INDEXES.Length);                        
             for (int i = 0; i < ALPHABET.Length; i++)
             {
-                INDEXES[ALPHABET[i]] = i;
-                j++;
+                INDEXES[ALPHABET[i]] = i;                
             }
         }
 
@@ -27,15 +25,11 @@ namespace WavesCS.Main
             {
                 return "";
             }
-            int zerosCount = 0;
-            while (zerosCount < input.Length && input[zerosCount] == 0)
-            {
-                ++zerosCount;
-            }
+            int leadingZerosCount = input.ToList().TakeWhile(oneByte => oneByte < input.Length && input[oneByte] == 0).Count();          
             input = input.ToArray();
             char[] encoded = new char[input.Length * 2];
             int outputStart = encoded.Length;
-            for (int inputStart = zerosCount; inputStart < input.Length;)
+            for (int inputStart = leadingZerosCount; inputStart < input.Length;)
             {
                 encoded[--outputStart] = ALPHABET[DivMod(input, inputStart, 256, 58)];
                 if (input[inputStart] == 0)
@@ -49,7 +43,7 @@ namespace WavesCS.Main
                 ++outputStart;
             }
 
-            while (--zerosCount >= 0)
+            while (--leadingZerosCount >= 0)
             {
                 encoded[--outputStart] = ENCODED_ZERO;
             }
@@ -71,13 +65,7 @@ namespace WavesCS.Main
 
         public static BigInteger DecodeToBigInteger(String input)
         {
-            try{
-                return new BigInteger(Decode(input));
-            }
-            catch(ArgumentException)
-            {
-                throw;
-            }
+            return new BigInteger(Decode(input));
         }
 
         public static byte[] Decode(string input)
@@ -90,24 +78,19 @@ namespace WavesCS.Main
             byte[] input58 = new byte[input.Length];
             for (int i = 0; i < input.Length; ++i)
             {
-                char c = input[i];
-                int digit = c < 128 ? INDEXES[c] : -1;
+                char symbol = input[i];
+                int digit = symbol < 128 ? INDEXES[symbol] : -1;
                 if (digit < 0)
                 {
-                    throw new ArgumentException("Illegal character " + c + " at position " + i);
+                    throw new ArgumentException("Illegal character " + symbol + " at position " + i);
                 }
                 input58[i] = (byte)digit;
             }
-            // Count leading zeros.
-            int zeros = 0;
-            while (zeros < input58.Length && input58[zeros] == 0)
-            {
-                ++zeros;
-            }
+            int leadingZerosCount = input58.ToList().TakeWhile(oneByte => oneByte < input58.Length && input58[oneByte] == 0).Count();
             // Convert base-58 digits to base-256 digits.
             byte[] decoded = new byte[input.Length];
             int outputStart = decoded.Length;
-            for (int inputStart = zeros; inputStart < input58.Length;)
+            for (int inputStart = leadingZerosCount; inputStart < input58.Length;)
             {
                 decoded[--outputStart] = DivMod(input58, inputStart, 58, 256);
                 if (input58[inputStart] == 0)
@@ -121,9 +104,9 @@ namespace WavesCS.Main
                 ++outputStart;
             }
             // Return decoded data (including original number of leading zeros).
-            byte[] result = new byte[decoded.Length - outputStart + zeros];
+            byte[] result = new byte[decoded.Length - outputStart + leadingZerosCount];
             
-            Array.Copy(decoded, outputStart - zeros, result, 0, decoded.Length - outputStart + zeros);
+            Array.Copy(decoded, outputStart - leadingZerosCount, result, 0, decoded.Length - outputStart + leadingZerosCount);
             return result;
         }
     }

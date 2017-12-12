@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WavesCS
+﻿namespace WavesCS
 {
     public class Account
     {

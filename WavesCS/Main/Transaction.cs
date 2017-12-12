@@ -96,8 +96,7 @@ namespace WavesCS.Main
         public static Transaction MakeIssueTransaction(PrivateKeyAccount account,
                 String name, String description, long quantity, int decimals, bool reissuable, long fee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             int desclen = description == null ? 0 : description.Length;
             MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE + name.Length + desclen);
             BinaryWriter writer = new BinaryWriter(stream);
@@ -132,8 +131,7 @@ namespace WavesCS.Main
 
         public static Transaction MakeReissueTransaction(PrivateKeyAccount account, String assetId, long quantity, bool reissuable, long fee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(REISSUE);
@@ -160,9 +158,8 @@ namespace WavesCS.Main
             byte[] attachmentBytes = Encoding.Default.GetBytes(attachment == null ? "" : attachment);
             int datalen = (assetId == null ? 0 : 32) +
                     (feeAssetId == null ? 0 : 32) +
-                    attachmentBytes.Length + MIN_BUFFER_SIZE;
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+                    attachmentBytes.Length + MIN_BUFFER_SIZE;           
+            long timestamp = Utils.CurrentTimestamp();
 
             MemoryStream stream = new MemoryStream(datalen);
             BinaryWriter writer = new BinaryWriter(stream);
@@ -192,8 +189,7 @@ namespace WavesCS.Main
 
         public static Transaction MakeBurnTransaction(PrivateKeyAccount account, String assetId, long amount, long fee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(BURN);
@@ -214,8 +210,7 @@ namespace WavesCS.Main
 
         public static Transaction MakeLeaseTransaction(PrivateKeyAccount account, String toAddress, long amount, long fee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(LEASE);
@@ -236,8 +231,7 @@ namespace WavesCS.Main
 
         public static Transaction MakeLeaseCancelTransaction(PrivateKeyAccount account, String TransactionId, long fee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(LEASE_CANCEL);
@@ -256,8 +250,7 @@ namespace WavesCS.Main
 
         public static Transaction MakeAliasTransaction(PrivateKeyAccount account, String alias, char scheme, long fee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             int aliaslen = alias.Length;
             MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE + aliaslen);
             BinaryWriter writer = new BinaryWriter(stream);            
@@ -282,8 +275,7 @@ namespace WavesCS.Main
         public static Transaction MakeOrderTransaction(PrivateKeyAccount sender, String matcherKey, Order.Type orderType,
            String amountAssetId, String priceAssetId, long price, long amount, long expiration, long matcherFee)
         {
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
             int datalen = MIN_BUFFER_SIZE +
                     (amountAssetId == null ? 0 : 32) +
                     (priceAssetId == null ? 0 : 32);
