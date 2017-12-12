@@ -1,5 +1,6 @@
 ﻿using System;
 using WavesCS.Main;
+using System.Web.Script.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
 
@@ -10,6 +11,7 @@ namespace WavesCSTests
     {
         private static readonly long AMOUNT = 1_00000000L;
         private static readonly long FEE = 100_000;
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
 
         private TestContext testContextInstance;
 
@@ -41,10 +43,10 @@ namespace WavesCSTests
             Dump("xfer", Transaction.MakeTransferTransaction(account, recipient, AMOUNT, null, FEE, null, "Shut up & take my money"));
         }
 
-        private void Dump(String header, Transaction Transaction)
+        private void Dump(String header, Transaction transaction)
         {
             TestContext.WriteLine("*** " + header + " ***");
-            TestContext.WriteLine("Transaction data: " + Transaction.GetJson());
+            TestContext.WriteLine("Transaction data: " + serializer.Serialize(transaction.Data));
             TestContext.WriteLine("");
         }
     }

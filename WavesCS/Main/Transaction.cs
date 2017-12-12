@@ -48,23 +48,7 @@ namespace WavesCS.Main
         public Dictionary<String, Object> Data
         {
             get { return data; }
-        }
-
-        public String GetJson()
-        {
-            try
-            {
-                var serializer = new JavaScriptSerializer();
-                serializer.RegisterConverters(new JavaScriptConverter[] { new KeyValuePairJsonConverter() });
-                var serializedResult = serializer.Serialize(data);
-                return serializedResult;
-            }
-            catch (SystemException)
-            {
-                // not expected to ever happen
-                return null;
-            }
-        }
+        }        
 
         public static String Sign(PrivateKeyAccount account, MemoryStream stream)
         {
@@ -300,7 +284,7 @@ namespace WavesCS.Main
             return new Transaction("matcher/orderbook",
                     "senderPublicKey", Base58.Encode(sender.PublicKey),
                     "matcherPublicKey", matcherKey,
-                    "assetPair", AssetPair(amountAssetId, priceAssetId),
+                    "assetPair", new AssetPair(amountAssetId, priceAssetId).GetDictionary(),
                     "orderType", orderType.json,
                     "price", price,
                     "amount", amount,
@@ -310,15 +294,40 @@ namespace WavesCS.Main
                     "signature", signature);
         }
 
-        private static Dictionary<String, String> AssetPair(String amountAssetId, String priceAssetId)
+        public class AssetPair
         {
-            Dictionary<String, String> assetPair = new Dictionary<String, String>
+            public AssetPair()
             {
-                ["amountAsset"] = amountAssetId,
-                ["priceAsset"] = priceAssetId
-            };
-            return assetPair;
+
+            }
+
+            public AssetPair(string amountAsset, string priceAsset)
+            {
+                AmountAsset = amountAsset;
+                PriceAsset = priceAsset;
+            }
+            public string AmountAsset { get; set; }
+            public string PriceAsset { get; set; }
+            public Dictionary<string, string> GetDictionary()
+            {
+                Dictionary<String, String> assetPair = new Dictionary<String, String>
+                {
+                    ["amountAsset"] = AmountAsset,
+                    ["priceAsset"] = PriceAsset
+                };
+                return assetPair;
+            }
         }
+
+        //private static Dictionary<String, String> AssetPair(String amountAssetId, String priceAssetId)
+        //{
+        //    Dictionary<String, String> assetPair = new Dictionary<String, String>
+        //    {
+        //        ["amountAsset"] = amountAssetId,
+        //        ["priceAsset"] = priceAssetId
+        //    };
+        //    return assetPair;
+        //}
 
         public static Transaction MakeOrderCancelTransaction(PrivateKeyAccount sender,
                 String amountAssetId, String priceAssetId, String orderId, long fee)
@@ -333,6 +342,36 @@ namespace WavesCS.Main
             return new Transaction(String.Format("matcher/orderbook/{0}/{1}/cancel", amountAssetId, priceAssetId),
                     "sender", Base58.Encode(sender.PublicKey), "orderId", orderId,
                     "signature", signature);
+        }
+
+        public class JsonTransaction
+        {         
+            public int Type { get; set; }
+            public string Id { get; set; }
+            public string Sender { get; set; }
+            public string SenderPublicKey { get; set; }
+            public int Fee { get; set; }
+            public long Timestamp { get; set; }
+            public string Signature { get; set; }
+            public string Recipient { get; set; }
+            public object AssetId { get; set; }
+            public int Amount { get; set; }
+            public object FeeAsset { get; set; }
+            public string Attachment { get; set; }
+            public AssetPair AssetPair { get; set; }
+        }
+
+        public class JsonTransactionError
+        {
+            public int Error { get; set; }
+            public string Message { get; set; }
+            public JsonTransaction Tx { get; set; }
+        }
+
+        public class JsonTransactionWithStatus
+        {
+            public string Status { get; set; }
+            public JsonTransaction Message { get; set; }
         }
     }
 }

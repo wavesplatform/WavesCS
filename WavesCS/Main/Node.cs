@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Net;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
-using System.Linq;
 
 namespace WavesCS.Main
 {
@@ -67,11 +65,6 @@ namespace WavesCS.Main
         public long GetBalance(String address, String assetId)
         {
             return Get<long>(String.Format("{0}{1}/{2}/{3}",BASE_PATH_ASSETS, BALANCE_STRING, address, assetId), BALANCE_STRING); 
-        }
-
-        public String Send(Transaction transaction)
-        {
-            return Request(transaction, "id");
         }
 
         public String Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
@@ -137,16 +130,15 @@ namespace WavesCS.Main
                                   Order.Type orderType, long price, long amount, long expiration, long matcherFee)
         {
             Transaction transaction = Transaction.MakeOrderTransaction(account, matcherKey, orderType,
-                    amountAssetId, priceAssetId, price, amount, expiration, matcherFee);
-            dynamic message = Request<Dictionary<String, Object>>(transaction);
-            return (String)message["message"]["id"]; 
+                    amountAssetId, priceAssetId, price, amount, expiration, matcherFee);            
+            return Request(transaction, false); 
         }
 
         public void CancelOrder(PrivateKeyAccount account,
                 String amountAssetId, String priceAssetId, String orderId, long fee)
         {
             Transaction transaction = Transaction.MakeOrderCancelTransaction(account, amountAssetId, priceAssetId, orderId, fee);
-            Request<String>(transaction);
+            Request(transaction, true);
         }
 
         public OrderBook GetOrderBook(String asset1, String asset2)
@@ -180,51 +172,50 @@ namespace WavesCS.Main
             return json;
         } 
 
-        private String  Request(Transaction transaction, String key)
+        private String  Send(Transaction transaction)
         {
             String result = "";
             try
             {                
-                string jsonTransaction = transaction.GetJson();
                 Uri currentUri = new Uri(host + transaction.Endpoint);
                 WebClient currentClient = GetClientWithHeaders();
-                string json = currentClient.UploadString(currentUri, jsonTransaction);
-                dynamic usr = serializer.DeserializeObject(json);
-                result = usr[key];
-                return result;
+                string json = currentClient.UploadString(currentUri, serializer.Serialize(transaction.Data));
+                Transaction.JsonTransaction jsonTransaction = serializer.Deserialize<Transaction.JsonTransaction>(json);
+                return jsonTransaction.Id;
             }
             catch (WebException e)
             {
                 if (e.Status == WebExceptionStatus.ProtocolError)
                 {
-                    Console.WriteLine("Status Code : {0}", ((HttpWebResponse)e.Response).StatusCode);
-                    Console.WriteLine("Status Description : {0}", ((HttpWebResponse)e.Response).StatusDescription);
                     var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                    dynamic usr = serializer.DeserializeObject(resp);
-                    result = usr["tx"][key];
-                    return result;
+                    Transaction.JsonTransactionError error = serializer.Deserialize<Transaction.JsonTransactionError>(resp);
+                    throw new IOException(error.Message.ToString()); 
                 }
             }
             return result;
         }
 
-        private Dictionary<String, Object>  Request<T>(Transaction transaction)
-        {
-            Dictionary<String, Object> result = new Dictionary<string, object>();
+        private string  Request(Transaction transaction, bool isCancel)
+        {            
             try
             {
-                string jsonTransaction = transaction.GetJson();
+                string jsonTransaction = serializer.Serialize(transaction.Data);
                 Uri currentUri = new Uri(host + transaction.Endpoint);
                 WebClient currentClient = GetClientWithHeaders();
                 var json = currentClient.UploadString(currentUri, jsonTransaction);
-                result = serializer.Deserialize<Dictionary<string, object>>(json);
-                return result;
+                Transaction.JsonTransactionWithStatus result = serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
+                if (!isCancel)
+                {
+                    Transaction.JsonTransaction message = result.Message;
+                    return message.Id;
+                }
+                return "";
             }
             catch (WebException e)
             {
                 var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                var result2 = (Dictionary<string, object>)serializer.DeserializeObject(resp);
-                throw new IOException(result2["message"].ToString());                              
+                Transaction.JsonTransactionError error = serializer.Deserialize<Transaction.JsonTransactionError>(resp);
+                throw new IOException(error.Message.ToString());
             }
         }
 
