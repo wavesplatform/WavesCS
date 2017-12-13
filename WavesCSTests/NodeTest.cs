@@ -44,8 +44,7 @@ namespace WavesCSTests
         {
             Node matcher = new Node("https://testnode2.wavesnodes.com");
             String matcherKey = "4oP8SPd7LiUo8xsokSTiyZjwg4rojdyXqWEq7NTwWsSU";
-            long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
+            long timestamp = Utils.CurrentTimestamp();
 
             OrderBook orders = matcher.GetOrderBook(null, WBTC);
             Assert.IsNotNull(orders);            
