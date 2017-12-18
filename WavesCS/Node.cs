@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Net;
-using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
     public class Node
     {
-        public static readonly String DEFAULT_NODE = "https://testnode1.wavesnodes.com";
+        public static readonly String defaultNode = "https://testnode1.wavesnodes.com";
 
-        private readonly Uri host;
-        private readonly WebClient client = new WebClient();
+        private readonly Uri Host;
+        private readonly WebClient Client = new WebClient();
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
-        private const string HEIGHT_STRING = "height";
-        private const string BALANCE_STRING = "balance";
-        private const string BASE_PATH_BLOCKS = "blocks/";
-        private const string BASE_PATH_ASSETS = "assets/";
-        private const string BASE_PATH_ADDRESS = "addresses/";
-        private const string MATCHER_PATH = "/matcher";
-        private const string ORDER_STATUS_STRING = "status";
+        private const string HeightString = "height";
+        private const string BalanceString = "balance";
+        private const string BasePathBlocks = "blocks/";
+        private const string BasePathAssets = "assets/";
+        private const string BasePathAddress = "addresses/";
+        private const string MatcherPath = "/matcher";
+        private const string OrderStatusString = "status";
 
         public Node()
         {
             try
             {
-                this.host = new Uri(DEFAULT_NODE);
+                this.Host = new Uri(defaultNode);
             }
             catch (UriFormatException e)
             {
@@ -35,36 +34,36 @@ namespace WavesCS.Main
 
         public Node(String uri)
         {
-            host = new Uri(uri);
+            Host = new Uri(uri);
         }
 
         public T Get<T>(string url, string key)
         {
-            Console.WriteLine(host + url);
-            Uri resorce = new Uri(host, url);
-            var json = (new WebClient()).DownloadString(host + url);
+            Console.WriteLine(Host + url);
+            Uri resorce = new Uri(Host, url);
+            var json = (new WebClient()).DownloadString(Host + url);
             dynamic result = serializer.DeserializeObject(json);
             return result[key];
         }
 
         public int GetHeight()
         {
-            return Get<int>(String.Format("{0}{1}", BASE_PATH_BLOCKS, HEIGHT_STRING), HEIGHT_STRING);
+            return Get<int>(String.Format("{0}{1}", BasePathBlocks, HeightString), HeightString);
         }
 
         public long GetBalance(String address)
         {
-            return Get<long>(String.Format("{0}{1}/{2}", BASE_PATH_ADDRESS, BALANCE_STRING, address), BALANCE_STRING);
+            return Get<long>(String.Format("{0}{1}/{2}", BasePathAddress, BalanceString, address), BalanceString);
         }
 
         public long GetBalance(String address, int confirmations)
         {
-            return Get<long>(String.Format("{0}{1}/{2}/{3}", BASE_PATH_ADDRESS, BALANCE_STRING, address, confirmations), BALANCE_STRING);
+            return Get<long>(String.Format("{0}{1}/{2}/{3}", BasePathAddress, BalanceString, address, confirmations), BalanceString);
         }
 
         public long GetBalance(String address, String assetId)
         {
-            return Get<long>(String.Format("{0}{1}/{2}/{3}",BASE_PATH_ASSETS, BALANCE_STRING, address, assetId), BALANCE_STRING); 
+            return Get<long>(String.Format("{0}{1}/{2}/{3}",BasePathAssets, BalanceString, address, assetId), BalanceString); 
         }
 
         public String Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
@@ -122,7 +121,7 @@ namespace WavesCS.Main
 
         public String GetMatcherKey()
         {
-            String json = Request<String>(MATCHER_PATH);           
+            String json = Request<String>(MatcherPath);           
             return json;
         }
 
@@ -145,7 +144,7 @@ namespace WavesCS.Main
         {
             asset1 = Transaction.NormalizeAsset(asset1);
             asset2 = Transaction.NormalizeAsset(asset2);
-            String path = String.Format("{0}{1}/{2}", OrderBook.BASE_PATH, asset1, asset2);
+            String path = String.Format("{0}{1}/{2}", OrderBook.BasePath, asset1, asset2);
             OrderBook.JsonOrderBook orderBookJson = Request<OrderBook.JsonOrderBook>(path);
             return new OrderBook(orderBookJson);
         }
@@ -154,8 +153,8 @@ namespace WavesCS.Main
         {
             asset1 = Transaction.NormalizeAsset(asset1);
             asset2 = Transaction.NormalizeAsset(asset2);
-            String path = String.Format("{0}{1}/{2}/{3}", OrderBook.BASE_PATH, asset1, asset2, orderId);
-            dynamic result = Get<String>(path, ORDER_STATUS_STRING);
+            String path = String.Format("{0}{1}/{2}/{3}", OrderBook.BasePath, asset1, asset2, orderId);
+            dynamic result = Get<String>(path, OrderStatusString);
             return result;
         }
 
@@ -167,7 +166,7 @@ namespace WavesCS.Main
             writer.Write(account.PublicKey);
             Utils.WriteToNetwork(writer, timestamp);
             String signature = Transaction.Sign(account, stream);
-            String path = OrderBook.BASE_PATH + Base58.Encode(account.PublicKey);
+            String path = OrderBook.BasePath + Base58.Encode(account.PublicKey);
             String json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
             return json;
         } 
@@ -177,7 +176,7 @@ namespace WavesCS.Main
             String result = "";
             try
             {                
-                Uri currentUri = new Uri(host + transaction.Endpoint);
+                Uri currentUri = new Uri(Host + transaction.Endpoint);
                 WebClient currentClient = GetClientWithHeaders();
                 string json = currentClient.UploadString(currentUri, serializer.Serialize(transaction.Data));
                 Transaction.JsonTransaction jsonTransaction = serializer.Deserialize<Transaction.JsonTransaction>(json);
@@ -200,7 +199,7 @@ namespace WavesCS.Main
             try
             {
                 string jsonTransaction = serializer.Serialize(transaction.Data);
-                Uri currentUri = new Uri(host + transaction.Endpoint);
+                Uri currentUri = new Uri(Host + transaction.Endpoint);
                 WebClient currentClient = GetClientWithHeaders();
                 var json = currentClient.UploadString(currentUri, jsonTransaction);
                 Transaction.JsonTransactionWithStatus result = serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
@@ -221,7 +220,7 @@ namespace WavesCS.Main
 
         private T Request<T>(String path, params String[] headers)
         {
-            Uri currentUri = new Uri(host + path);
+            Uri currentUri = new Uri(Host + path);
             WebClient currentClient = GetClientWithHeaders();
             for (int i = 0; i < headers.Length; i += 2)
             {

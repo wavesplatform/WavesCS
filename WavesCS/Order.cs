@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
     public class Order
     {

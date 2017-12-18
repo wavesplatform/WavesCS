@@ -4,21 +4,20 @@ using System.Linq;
 using org.whispersystems.curve25519;
 using System.IO;
 using System.Text;
-using System.Web.Script.Serialization;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
     public class Transaction
     {
-        private static readonly byte ISSUE = 3;
-        private static readonly byte TRANSFER = 4;
-        private static readonly byte REISSUE = 5;
-        private static readonly byte BURN = 6;
-        private static readonly byte LEASE = 8;
-        private static readonly byte LEASE_CANCEL = 9;
-        private static readonly byte ALIAS = 10;
+        private static readonly byte Issue = 3;
+        private static readonly byte Transfer = 4;
+        private static readonly byte Reissue = 5;
+        private static readonly byte Burn = 6;
+        private static readonly byte Lease = 8;
+        private static readonly byte LeaseCancel = 9;
+        private static readonly byte Alias = 10;
 
-        private static readonly int MIN_BUFFER_SIZE = 120;
+        private static readonly int MinBufferSize = 120;
         private static readonly Curve25519 cipher = Curve25519.getInstance(Curve25519.BEST);
 
         private readonly string endpoint;
@@ -82,9 +81,9 @@ namespace WavesCS.Main
         {
             long timestamp = Utils.CurrentTimestamp();
             int desclen = description == null ? 0 : description.Length;
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE + name.Length + desclen);
+            MemoryStream stream = new MemoryStream(MinBufferSize + name.Length + desclen);
             BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(ISSUE);
+            writer.Write(Issue);
             writer.Write(account.PublicKey);
             Utils.WriteToNetwork(writer, (short)name.Length);
             writer.Write(Encoding.ASCII.GetBytes(name));
@@ -116,9 +115,9 @@ namespace WavesCS.Main
         public static Transaction MakeReissueTransaction(PrivateKeyAccount account, String assetId, long quantity, bool reissuable, long fee)
         {
             long timestamp = Utils.CurrentTimestamp();
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
+            MemoryStream stream = new MemoryStream(MinBufferSize);
             BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(REISSUE);
+            writer.Write(Reissue);
             writer.Write(account.PublicKey);
             writer.Write(Base58.Decode(assetId));
             Utils.WriteToNetwork(writer, quantity);
@@ -139,15 +138,15 @@ namespace WavesCS.Main
         public static Transaction MakeTransferTransaction(PrivateKeyAccount account, String toAddress,
            long amount, String assetId, long fee, String feeAssetId, String attachment)
         {
-            byte[] attachmentBytes = Encoding.Default.GetBytes(attachment == null ? "" : attachment);
+            byte[] attachmentBytes = Encoding.UTF8.GetBytes(attachment == null ? "" : attachment);
             int datalen = (assetId == null ? 0 : 32) +
                     (feeAssetId == null ? 0 : 32) +
-                    attachmentBytes.Length + MIN_BUFFER_SIZE;           
+                    attachmentBytes.Length + MinBufferSize;           
             long timestamp = Utils.CurrentTimestamp();
 
             MemoryStream stream = new MemoryStream(datalen);
             BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(TRANSFER);
+            writer.Write(Transfer);
             writer.Write(account.PublicKey);
             PutAsset(stream, assetId);
             PutAsset(stream, feeAssetId);
@@ -174,9 +173,9 @@ namespace WavesCS.Main
         public static Transaction MakeBurnTransaction(PrivateKeyAccount account, String assetId, long amount, long fee)
         {
             long timestamp = Utils.CurrentTimestamp();
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
+            MemoryStream stream = new MemoryStream(MinBufferSize);
             BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(BURN);
+            writer.Write(Burn);
             writer.Write(account.PublicKey);
             writer.Write(Base58.Decode(assetId));
             Utils.WriteToNetwork(writer, amount);
@@ -195,9 +194,9 @@ namespace WavesCS.Main
         public static Transaction MakeLeaseTransaction(PrivateKeyAccount account, String toAddress, long amount, long fee)
         {
             long timestamp = Utils.CurrentTimestamp();
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
+            MemoryStream stream = new MemoryStream(MinBufferSize);
             BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(LEASE);
+            writer.Write(Lease);
             writer.Write(account.PublicKey);
             writer.Write(Base58.Decode(toAddress));
             Utils.WriteToNetwork(writer, amount);
@@ -216,9 +215,9 @@ namespace WavesCS.Main
         public static Transaction MakeLeaseCancelTransaction(PrivateKeyAccount account, String TransactionId, long fee)
         {
             long timestamp = Utils.CurrentTimestamp();
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
+            MemoryStream stream = new MemoryStream(MinBufferSize);
             BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(LEASE_CANCEL);
+            writer.Write(LeaseCancel);
             writer.Write(account.PublicKey);
             Utils.WriteToNetwork(writer, fee);
             Utils.WriteToNetwork(writer, timestamp);
@@ -236,9 +235,9 @@ namespace WavesCS.Main
         {
             long timestamp = Utils.CurrentTimestamp();
             int aliaslen = alias.Length;
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE + aliaslen);
+            MemoryStream stream = new MemoryStream(MinBufferSize + aliaslen);
             BinaryWriter writer = new BinaryWriter(stream);            
-            writer.Write(ALIAS);
+            writer.Write(Transaction.Alias);
             writer.Write(account.PublicKey);
             Utils.WriteToNetwork(writer, (short)(alias.Length + 4));
             writer.Write(0x02);
@@ -260,10 +259,10 @@ namespace WavesCS.Main
            String amountAssetId, String priceAssetId, long price, long amount, long expiration, long matcherFee)
         {
             long timestamp = Utils.CurrentTimestamp();
-            int datalen = MIN_BUFFER_SIZE +
+            int datalen = MinBufferSize +
                     (amountAssetId == null ? 0 : 32) +
                     (priceAssetId == null ? 0 : 32);
-            if (datalen == MIN_BUFFER_SIZE)
+            if (datalen == MinBufferSize)
             {
                 throw new ArgumentException("Both spendAsset and receiveAsset are WAVES");
             }
@@ -332,7 +331,7 @@ namespace WavesCS.Main
         public static Transaction MakeOrderCancelTransaction(PrivateKeyAccount sender,
                 String amountAssetId, String priceAssetId, String orderId, long fee)
         {
-            MemoryStream stream = new MemoryStream(MIN_BUFFER_SIZE);
+            MemoryStream stream = new MemoryStream(MinBufferSize);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(sender.PublicKey);
             writer.Write(Base58.Decode(orderId));
@@ -350,12 +349,12 @@ namespace WavesCS.Main
             public string Id { get; set; }
             public string Sender { get; set; }
             public string SenderPublicKey { get; set; }
-            public int Fee { get; set; }
+            public long Fee { get; set; }
             public long Timestamp { get; set; }
             public string Signature { get; set; }
             public string Recipient { get; set; }
             public object AssetId { get; set; }
-            public int Amount { get; set; }
+            public long Amount { get; set; }
             public object FeeAsset { get; set; }
             public string Attachment { get; set; }
             public AssetPair AssetPair { get; set; }

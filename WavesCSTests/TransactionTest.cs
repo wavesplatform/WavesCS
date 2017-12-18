@@ -1,8 +1,7 @@
 ﻿using System;
-using WavesCS.Main;
+using WavesCS;
 using System.Web.Script.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WavesCS;
 
 namespace WavesCSTests
 {
@@ -29,12 +28,12 @@ namespace WavesCSTests
         public void SmokeTest()
         {
             // doesn't validate transactions, just checks that all methods run to completion, no buffer overflows occur etc
-            PrivateKeyAccount account = new PrivateKeyAccount("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", Account.TESTNET);
+            PrivateKeyAccount account = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressScheme.TestNet);
             String recipient = "3N9gDFq8tKFhBDBTQxR3zqvtpXjw5wW3syA";
             String assetId = "AssetAssetAssetAssetAssetAssetAs";
             String TransactionId = "TransactionTransactionTransactio";
 
-            Dump("alias", Transaction.MakeAliasTransaction(account, "daphnie", Account.TESTNET, FEE));
+            Dump("alias", Transaction.MakeAliasTransaction(account, "daphnie", AddressScheme.TestNet, FEE));
             Dump("burn", Transaction.MakeBurnTransaction(account, assetId, AMOUNT, FEE));
             Dump("issue", Transaction.MakeIssueTransaction(account, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
             Dump("reissue", Transaction.MakeReissueTransaction(account, assetId, AMOUNT, false, FEE));

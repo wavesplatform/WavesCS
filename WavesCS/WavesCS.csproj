@@ -73,20 +73,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main\Account.cs" />
-    <Compile Include="Main\Base58.cs" />
-    <Compile Include="Main\Utils.cs" />
-    <Compile Include="Main\Node.cs" />
-    <Compile Include="Main\Order.cs" />
-    <Compile Include="Main\OrderBook.cs" />
-    <Compile Include="Main\PrivateKeyAccount.cs" />
+    <Compile Include="AddressScheme.cs" />
+    <Compile Include="Base58.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderBook.cs" />
+    <Compile Include="PrivateKeyAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Main\PublicKeyAccount.cs" />
-    <Compile Include="Main\Transaction.cs" />
+    <Compile Include="PublicKeyAccount.cs" />
+    <Compile Include="Transaction.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Main\SeedWords.json" />
+    <None Include="SeedWords.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Main\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

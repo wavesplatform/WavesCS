@@ -8,7 +8,7 @@ using System.Numerics;
 using System.Web.Script.Serialization;
 using System.Collections.Generic;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
     public class PrivateKeyAccount: PublicKeyAccount
     {
@@ -25,27 +25,37 @@ namespace WavesCS.Main
             this.privateKey = privateKey;
         }
 
-        public PrivateKeyAccount(string seed, int nonce, char scheme) : this(GeneratePrivateKey(seed, nonce), scheme) { }
+        public PrivateKeyAccount(byte[] seed, char scheme, int nonce) : this(GeneratePrivateKey(seed, nonce), scheme) { }
 
-        public PrivateKeyAccount(string privateKey, char scheme) : this(Base58.Decode(privateKey), scheme) { }
+        private PrivateKeyAccount(string privateKey, char scheme) : this(Base58.Decode(privateKey), scheme) { }
+
+        public static PrivateKeyAccount CreateFromSeed(string seed, char scheme, int nonce = 0)
+        {
+            return new PrivateKeyAccount(Encoding.UTF8.GetBytes(seed), scheme, nonce);
+        }
+
+        public static PrivateKeyAccount CreateFromSeed(byte[] seed, char scheme, int nonce = 0)
+        {
+            return new PrivateKeyAccount(seed, scheme, nonce);
+        }
+
+        public static PrivateKeyAccount CreateFromPrivateKey(string privateKey, char scheme)
+        {
+            return new PrivateKeyAccount(privateKey, scheme);
+        }
 
         public byte[] PrivateKey
         {
             get{ return privateKey.ToArray(); }
         }
 
-        private static byte[] GeneratePrivateKey(string seed, int nonce) 
-        {
-            MemoryStream stream = new MemoryStream(Encoding.Default.GetBytes(seed).Length + 4);
-            BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(nonce);
-            writer.Write(Encoding.Default.GetBytes(seed));
-            return GeneratePrivateKey(stream.ToArray(), nonce);
-        }
-
         private static byte[] GeneratePrivateKey(byte[] seed, int nonce)
         {
-            byte[] accountSeed = SecureHash(seed, 0, seed.Length);
+            MemoryStream stream = new MemoryStream(seed.Length + 4);
+            BinaryWriter writer = new BinaryWriter(stream);
+            writer.Write(nonce);
+            writer.Write(seed);            
+            byte[] accountSeed = SecureHash(stream.ToArray(), 0, stream.ToArray().Length);
             byte[] hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length);
             byte[] privateKey = new byte[32];
             privateKey = hashedSeed.ToArray();
@@ -54,6 +64,11 @@ namespace WavesCS.Main
             privateKey[31] |= 64;
 
             return privateKey;
+        }
+
+        public override string ToString()
+        {
+            return  String.Format("Address: {0}, Type: {1}", base.Address, typeof(PrivateKeyAccount));
         }
 
 

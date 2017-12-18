@@ -2,20 +2,20 @@
 using System.Linq;
 using System.Numerics;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
     public class Base58
     {
-        public static readonly char[] ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".ToCharArray();
-        private static readonly char ENCODED_ZERO = ALPHABET[0];
-        private static readonly int[] INDEXES = new int[128];
+        public static readonly char[] Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".ToCharArray();
+        private static readonly char EncodedZero = Alphabet[0];
+        private static readonly int[] Indexes = new int[128];
 
         static Base58()
         {
-            Array.Clear(INDEXES, 0, INDEXES.Length);                        
-            for (int i = 0; i < ALPHABET.Length; i++)
+            Array.Clear(Indexes, 0, Indexes.Length);                        
+            for (int i = 0; i < Alphabet.Length; i++)
             {
-                INDEXES[ALPHABET[i]] = i;                
+                Indexes[Alphabet[i]] = i;                
             }
         }
 
@@ -31,21 +31,21 @@ namespace WavesCS.Main
             int outputStart = encoded.Length;
             for (int inputStart = leadingZerosCount; inputStart < input.Length;)
             {
-                encoded[--outputStart] = ALPHABET[DivMod(input, inputStart, 256, 58)];
+                encoded[--outputStart] = Alphabet[DivMod(input, inputStart, 256, 58)];
                 if (input[inputStart] == 0)
                 {
                     ++inputStart;
                 }
             }
 
-            while (outputStart < encoded.Length && encoded[outputStart] == ENCODED_ZERO)
+            while (outputStart < encoded.Length && encoded[outputStart] == EncodedZero)
             {
                 ++outputStart;
             }
 
             while (--leadingZerosCount >= 0)
             {
-                encoded[--outputStart] = ENCODED_ZERO;
+                encoded[--outputStart] = EncodedZero;
             }
             return new String(encoded, outputStart, encoded.Length - outputStart);
         }
@@ -79,7 +79,7 @@ namespace WavesCS.Main
             for (int i = 0; i < input.Length; ++i)
             {
                 char symbol = input[i];
-                int digit = symbol < 128 ? INDEXES[symbol] : -1;
+                int digit = symbol < 128 ? Indexes[symbol] : -1;
                 if (digit < 0)
                 {
                     throw new ArgumentException("Illegal character " + symbol + " at position " + i);

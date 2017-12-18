@@ -3,15 +3,15 @@ using System.Linq;
 using HashLib;
 using System.IO;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
-    public class PublicKeyAccount: Account
+    public class PublicKeyAccount: AddressScheme
     {
         private char scheme;
         private byte[] publicKey;
         private string address;
         
-        private static readonly IHash KECCAK256 = HashFactory.Crypto.SHA3.CreateKeccak256();
+        private static readonly IHash Keccak256 = HashFactory.Crypto.SHA3.CreateKeccak256();
 
         public PublicKeyAccount(byte[] publicKey, char scheme)
         {
@@ -40,6 +40,11 @@ namespace WavesCS.Main
             get { return scheme; }
         }
 
+        public override string ToString()
+        {
+            return String.Format("Address: {0}, Type: {1}", address, typeof(PublicKeyAccount));
+        }
+
         protected static byte[] Hash(byte[] message, int offset, int lenght, IHash algorithm)
         {
             algorithm.Initialize();            
@@ -53,7 +58,7 @@ namespace WavesCS.Main
             Blake2Sharp.Blake2BConfig config = new Blake2Sharp.Blake2BConfig();
             config.OutputSizeInBits = 256;
             byte[] blake2b = Blake2Sharp.Blake2B.ComputeHash(message, offset, lenght, config);
-            return Hash(blake2b, 0, blake2b.Length, KECCAK256);
+            return Hash(blake2b, 0, blake2b.Length, Keccak256);
         }
 
         private static byte[] GenerateAddress(byte[] publicKey, char scheme) 

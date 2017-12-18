@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace WavesCS.Main
+namespace WavesCS
 {
     public class OrderBook
     {
         public List<Order> bids, asks;
 
-        public const string BASE_PATH = "matcher/orderbook/";
+        public const string BasePath = "matcher/orderbook/";
 
         public List<Order> Bids
         {
