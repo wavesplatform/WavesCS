@@ -17,6 +17,8 @@ namespace WavesCS.Main
 
         private readonly byte[] privateKey;
 
+        private static List<String> seedWords = null;
+
         private PrivateKeyAccount(byte[] privateKey, char scheme) :
             base(PublicKey(privateKey), scheme)
         {
@@ -38,7 +40,12 @@ namespace WavesCS.Main
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(nonce);
             writer.Write(Encoding.Default.GetBytes(seed));
-            byte[] accountSeed = SecureHash(stream.ToArray(), 0, stream.ToArray().Length);            
+            return GeneratePrivateKey(stream.ToArray(), nonce);
+        }
+
+        private static byte[] GeneratePrivateKey(byte[] seed, int nonce)
+        {
+            byte[] accountSeed = SecureHash(seed, 0, seed.Length);
             byte[] hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length);
             byte[] privateKey = new byte[32];
             privateKey = hashedSeed.ToArray();
@@ -48,6 +55,7 @@ namespace WavesCS.Main
 
             return privateKey;
         }
+
 
         new private static byte[] PublicKey(byte[] privateKey)
         {
@@ -68,17 +76,20 @@ namespace WavesCS.Main
             byte[] rhash = SHA256.ComputeHash(bytes, 0, 160);
             Array.Copy(rhash, 0, bytes, 160, 5);
             BigInteger rand = new BigInteger(bytes);
-            StreamReader reader = new StreamReader("SeedWords.json");            
-            string json = reader.ReadToEnd();
-            Dictionary<String, List<String>> items = serializer.Deserialize<Dictionary<String, List<String>>> (json);
-            List<String> seedWords = items["words"];            
+            if(seedWords == null)
+            {
+                StreamReader reader = new StreamReader("SeedWords.json");
+                string json = reader.ReadToEnd();
+                var items = serializer.Deserialize<Dictionary<String, List<String>>>(json);
+                seedWords = items["words"];
+            }                  
             List<BigInteger> result = new List<BigInteger>();
             for(int i = 0; i < 15; i++)
             {
                 result.Add(rand);
                 rand = rand >> 11;
             }
-            BigInteger mask = new BigInteger(new byte[] { unchecked((byte)-11), 7, 0, 0 }); // 11 lower bits
+            BigInteger mask = new BigInteger(new byte[] { unchecked((byte)-1), 7, 0, 0 }); // 11 lower bits
             return String.Join(" ", result.Select(bigint => seedWords[(int)(bigint & mask)]));         
         }
 

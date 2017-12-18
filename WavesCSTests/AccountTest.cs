@@ -41,12 +41,17 @@ namespace WavesCSTests
             CollectionAssert.AreEqual(Base58.Decode("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t"), account.PrivateKey);
             CollectionAssert.AreEqual(Base58.Decode("8LbAU5BSrGkpk5wbjLMNjrbc9VzN9KBBYv9X8wGpmAJT"), account.PublicKey);
             Assert.AreEqual("3MzZCGFyuxgC4ZmtKRS7vpJTs75ZXdkbp1K", account.Address);
+
+
         }
 
         [TestMethod]
         public void TestSeedGeneration()
         {
             String seed = PrivateKeyAccount.GenerateSeed();
+            Assert.AreEqual(15, seed.Split(' ').Length);
+
+            seed = PrivateKeyAccount.GenerateSeed();
             Assert.AreEqual(15, seed.Split(' ').Length);
         }
     }
