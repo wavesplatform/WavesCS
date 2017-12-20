@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace WavesCS
 {
-    public class PrivateKeyAccount: PublicKeyAccount
+    public class PrivateKeyAccount: AddressEncoding
     {
         private static readonly SHA256Managed SHA256 = new SHA256Managed();
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
@@ -18,10 +18,21 @@ namespace WavesCS
         private readonly byte[] privateKey;
 
         private static List<String> seedWords = null;
+        private char scheme;
+        private byte[] publicKey;
+        private string address;
 
-        private PrivateKeyAccount(byte[] privateKey, char scheme) :
-            base(PublicKey(privateKey), scheme)
+        public string Address
         {
+            get { return address; }
+            set { address = value; }
+        }
+
+        private PrivateKeyAccount(byte[] privateKey, char scheme)         
+        {
+            this.scheme = scheme;
+            publicKey = GetPublicKeyFromPrivateKey(privateKey);
+            address = GetAddressFromPublicKey(publicKey, scheme);
             this.privateKey = privateKey;
         }
 
@@ -55,8 +66,8 @@ namespace WavesCS
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(nonce);
             writer.Write(seed);            
-            byte[] accountSeed = SecureHash(stream.ToArray(), 0, stream.ToArray().Length);
-            byte[] hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length);
+            byte[] accountSeed = AddressEncoding.SecureHash(stream.ToArray(), 0, stream.ToArray().Length);
+            byte[] hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length); 
             byte[] privateKey = new byte[32];
             privateKey = hashedSeed.ToArray();
             privateKey[0] &= 248;
@@ -68,15 +79,21 @@ namespace WavesCS
 
         public override string ToString()
         {
-            return  String.Format("Address: {0}, Type: {1}", base.Address, typeof(PrivateKeyAccount));
+            return  String.Format("Address: {0}, Type: {1}", address, typeof(PrivateKeyAccount));
         }
 
 
-        new private static byte[] PublicKey(byte[] privateKey)
+        private static byte[] GetPublicKeyFromPrivateKey(byte[] privateKey)
         {
             byte[] publicKey = new byte[privateKey.Length];
             Curve_sigs.curve25519_keygen(publicKey, privateKey);
             return publicKey;
+        }
+
+        public byte[] PublicKey
+        {
+            get { return publicKey.ToArray(); }
+            set { publicKey = value; }
         }
 
         /**

@@ -73,7 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddressScheme.cs" />
+    <Compile Include="AddressEncoding.cs" />
     <Compile Include="Base58.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Node.cs" />
@@ -81,7 +81,6 @@
     <Compile Include="OrderBook.cs" />
     <Compile Include="PrivateKeyAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PublicKeyAccount.cs" />
     <Compile Include="Transaction.cs" />
   </ItemGroup>
   <ItemGroup>

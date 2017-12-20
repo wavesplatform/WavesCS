@@ -15,7 +15,7 @@ namespace WavesCSTests
             String privateKey = "CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t";
             String address = "3MzZCGFyuxgC4ZmtKRS7vpJTs75ZXdkbp1K";
 
-            PrivateKeyAccount account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressScheme.TestNet);
+            PrivateKeyAccount account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressEncoding.TestNet);
             CollectionAssert.AreEqual(Base58.Decode(privateKey), account.PrivateKey);
             CollectionAssert.AreEqual(Base58.Decode(publicKey), account.PublicKey);
             Assert.AreEqual(address, account.Address);
@@ -27,7 +27,7 @@ namespace WavesCSTests
             String publicKey = "8LbAU5BSrGkpk5wbjLMNjrbc9VzN9KBBYv9X8wGpmAJT";
             String privateKey = "CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t";
 
-            PrivateKeyAccount account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressScheme.TestNet);
+            PrivateKeyAccount account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressEncoding.TestNet);
             Assert.AreEqual(privateKey, Base58.Encode(Base58.Decode(privateKey)));
             Assert.AreEqual(publicKey, Base58.Encode(Base58.Decode(publicKey)));
         }        
@@ -36,10 +36,10 @@ namespace WavesCSTests
         public void TestAccountCreation()
         {
             String seed = "health lazy lens fix dwarf salad breeze myself silly december endless rent faculty report beyond";
-            PrivateKeyAccount account = PrivateKeyAccount.CreateFromSeed(seed, AddressScheme.TestNet);
+            PrivateKeyAccount account = PrivateKeyAccount.CreateFromSeed(seed, AddressEncoding.TestNet);
 
             byte[] seed2 = Encoding.UTF8.GetBytes(seed);
-            PrivateKeyAccount account2 = PrivateKeyAccount.CreateFromSeed(seed2, AddressScheme.TestNet);
+            PrivateKeyAccount account2 = PrivateKeyAccount.CreateFromSeed(seed2, AddressEncoding.TestNet);
 
             CollectionAssert.AreEqual(Base58.Decode("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t"), account.PrivateKey);
             CollectionAssert.AreEqual(Base58.Decode("8LbAU5BSrGkpk5wbjLMNjrbc9VzN9KBBYv9X8wGpmAJT"), account.PublicKey);
