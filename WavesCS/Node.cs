@@ -69,51 +69,51 @@ namespace WavesCS
         public String Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
         {
             Transaction transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, null, fee, null, message);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String TransferAsset(PrivateKeyAccount from, String toAddress,
                 long amount, String assetId, long fee, String feeAssetId, String message)
         {
             Transaction transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, assetId, fee, feeAssetId, message);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String Lease(PrivateKeyAccount from, String toAddress, long amount, long fee)
         {
             Transaction transaction = Transaction.MakeLeaseTransaction(from, toAddress, amount, fee);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String CancelLease(PrivateKeyAccount account, String transactionId, long fee)
         {
             Transaction transaction = Transaction.MakeLeaseCancelTransaction(account, transactionId, fee);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String IssueAsset(PrivateKeyAccount account,
                 String name, String description, long quantity, int decimals, bool reissuable, long fee)
         {
             Transaction transaction = Transaction.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String ReissueAsset(PrivateKeyAccount account, String assetId, long quantity, bool reissuable, long fee)
         {
             Transaction transaction = Transaction.MakeReissueTransaction(account, assetId, quantity, reissuable, fee);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String BurnAsset(PrivateKeyAccount account, String assetId, long amount, long fee)
         {
             Transaction transaction = Transaction.MakeBurnTransaction(account, assetId, amount, fee);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         public String Alias(PrivateKeyAccount account, String alias, char scheme, long fee)
         {
             Transaction transaction = Transaction.MakeAliasTransaction(account, alias, scheme, fee);
-            return Send(transaction);
+            return Post(transaction);
         }
 
         // Matcher transactions
@@ -171,7 +171,7 @@ namespace WavesCS
             return json;
         } 
 
-        private String  Send(Transaction transaction)
+        private String  Post(Transaction transaction)
         {
             String result = "";
             try
@@ -187,8 +187,7 @@ namespace WavesCS
                 if (e.Status == WebExceptionStatus.ProtocolError)
                 {
                     var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                    Transaction.JsonTransactionError error = serializer.Deserialize<Transaction.JsonTransactionError>(resp);
-                    throw new IOException(error.Message.ToString()); 
+                    throw new IOException(resp); 
                 }
             }
             return result;
