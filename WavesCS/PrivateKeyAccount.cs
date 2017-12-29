@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace WavesCS
 {
-    public class PrivateKeyAccount: AddressEncoding
+    public class PrivateKeyAccount
     {
         private static readonly SHA256Managed SHA256 = new SHA256Managed();
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
@@ -32,7 +32,7 @@ namespace WavesCS
         {
             this.scheme = scheme;
             publicKey = GetPublicKeyFromPrivateKey(privateKey);
-            address = GetAddressFromPublicKey(publicKey, scheme);
+            address = AddressEncoding.GetAddressFromPublicKey(publicKey, scheme);
             this.privateKey = privateKey;
         }
 

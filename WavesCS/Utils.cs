@@ -50,7 +50,7 @@ namespace WavesCS
             writer.Write(n);
         }
 
-        public static void WriteToNetwork(System.IO.BinaryWriter writer, short n)
+        public static void WriteBigEndian(System.IO.BinaryWriter writer, short n)
         {
             byte[] shortN = BitConverter.GetBytes(n);
             Array.Reverse(shortN);

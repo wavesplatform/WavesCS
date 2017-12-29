@@ -16,6 +16,7 @@ namespace WavesCS
         private static readonly byte Lease = 8;
         private static readonly byte LeaseCancel = 9;
         private static readonly byte Alias = 10;
+        public static readonly string TransactionsBroadcastPath = "transactions/broadcast";
 
         private static readonly int MinBufferSize = 120;
         private static readonly Curve25519 cipher = Curve25519.getInstance(Curve25519.BEST);
@@ -85,9 +86,9 @@ namespace WavesCS
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(Issue);
             writer.Write(account.PublicKey);
-            Utils.WriteToNetwork(writer, (short)name.Length);
+            Utils.WriteBigEndian(writer, (short)name.Length);
             writer.Write(Encoding.ASCII.GetBytes(name));
-            Utils.WriteToNetwork(writer, (short)desclen);
+            Utils.WriteBigEndian(writer, (short)desclen);
             if (desclen > 0)
             {
                 writer.Write(Encoding.ASCII.GetBytes(description));
@@ -100,16 +101,17 @@ namespace WavesCS
            
 
             String signature = Sign(account, stream);
-            return new Transaction("assets/broadcast/issue",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "name", name,
-                    "description", description,
-                    "quantity", quantity,
-                    "decimals", decimals,
-                    "reissuable", reissuable,
-                    "fee", fee,
-                    "timestamp", timestamp);
+            return new Transaction(TransactionsBroadcastPath,
+                "type", Issue,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "name", name,
+                "description", description,
+                "quantity", quantity,
+                "decimals", decimals,
+                "reissuable", reissuable,
+                "fee", fee,
+                "timestamp", timestamp);
         }
 
         public static Transaction MakeReissueTransaction(PrivateKeyAccount account, String assetId, long quantity, bool reissuable, long fee)
@@ -125,14 +127,15 @@ namespace WavesCS
             Utils.WriteToNetwork(writer, fee);
             Utils.WriteToNetwork(writer, timestamp);
             String signature = Sign(account, stream);
-            return new Transaction("assets/broadcast/reissue",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "assetId", assetId,
-                    "quantity", quantity,
-                    "reissuable", reissuable,
-                    "fee", fee,
-                    "timestamp", timestamp);
+            return new Transaction(TransactionsBroadcastPath,
+                "type", Reissue,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "assetId", assetId,
+                "quantity", quantity,
+                "reissuable", reissuable,
+                "fee", fee,
+                "timestamp", timestamp);
         }
 
         public static Transaction MakeTransferTransaction(PrivateKeyAccount account, String toAddress,
@@ -155,19 +158,20 @@ namespace WavesCS
             Utils.WriteToNetwork(writer, fee);
             writer.Write(Base58.Decode(toAddress));
             //writer.Write((short)attachmentBytes.Length);
-            Utils.WriteToNetwork(writer, (short)attachmentBytes.Length);
+            Utils.WriteBigEndian(writer, (short)attachmentBytes.Length);
             writer.Write(attachmentBytes);
             String signature = Sign(account, stream);
-            return new Transaction("assets/broadcast/transfer",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "recipient", toAddress,
-                    "amount", amount,
-                    "assetId", assetId,
-                    "fee", fee,
-                    "feeAssetId", feeAssetId,
-                    "timestamp", timestamp,
-                    "attachment", Base58.Encode(attachmentBytes));
+            return new Transaction(TransactionsBroadcastPath,
+                "type", Transfer,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "recipient", toAddress,
+                "amount", amount,
+                "assetId", assetId,
+                "fee", fee,
+                "feeAssetId", feeAssetId,
+                "timestamp", timestamp,
+                "attachment", Base58.Encode(attachmentBytes));
         }
 
         public static Transaction MakeBurnTransaction(PrivateKeyAccount account, String assetId, long amount, long fee)
@@ -182,13 +186,14 @@ namespace WavesCS
             Utils.WriteToNetwork(writer, fee);
             Utils.WriteToNetwork(writer, timestamp);
             String signature = Sign(account, stream);
-            return new Transaction("assets/broadcast/burn",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "assetId", assetId,
-                    "quantity", amount,
-                    "fee", fee,
-                    "timestamp", timestamp);
+            return new Transaction(TransactionsBroadcastPath,
+                "type", Burn,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "assetId", assetId,
+                "quantity", amount,
+                "fee", fee,
+                "timestamp", timestamp);
         }
 
         public static Transaction MakeLeaseTransaction(PrivateKeyAccount account, String toAddress, long amount, long fee)
@@ -203,13 +208,14 @@ namespace WavesCS
             Utils.WriteToNetwork(writer, fee);
             Utils.WriteToNetwork(writer, timestamp);
             String signature = Sign(account, stream);
-            return new Transaction("leasing/broadcast/lease",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "recipient", toAddress,
-                    "amount", amount,
-                    "fee", fee,
-                    "timestamp", timestamp);
+            return new Transaction(TransactionsBroadcastPath,
+                "type", Lease,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "recipient", toAddress,
+                "amount", amount,
+                "fee", fee,
+                "timestamp", timestamp);
         }
 
         public static Transaction MakeLeaseCancelTransaction(PrivateKeyAccount account, String TransactionId, long fee)
@@ -224,11 +230,12 @@ namespace WavesCS
             writer.Write(Base58.Decode(TransactionId));
             String signature = Sign(account, stream);
             return new Transaction("leasing/broadcast/cancel",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "TransactionId", TransactionId,
-                    "fee", fee,
-                    "timestamp", timestamp);
+                "type", LeaseCancel,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "TransactionId", TransactionId,
+                "fee", fee,
+                "timestamp", timestamp);
         }
 
         public static Transaction MakeAliasTransaction(PrivateKeyAccount account, String alias, char scheme, long fee)
@@ -239,20 +246,21 @@ namespace WavesCS
             BinaryWriter writer = new BinaryWriter(stream);            
             writer.Write(Transaction.Alias);
             writer.Write(account.PublicKey);
-            Utils.WriteToNetwork(writer, (short)(alias.Length + 4));
+            Utils.WriteBigEndian(writer, (short)(alias.Length + 4));
             writer.Write(0x02);
             writer.Write((byte)scheme);
-            Utils.WriteToNetwork(writer, (short)alias.Length);
+            Utils.WriteBigEndian(writer, (short)alias.Length);
             writer.Write(Encoding.ASCII.GetBytes(alias));
             Utils.WriteToNetwork(writer, fee);
             Utils.WriteToNetwork(writer, timestamp);            
             String signature = Sign(account, stream);
-            return new Transaction("alias/broadcast/create",
-                    "senderPublicKey", Base58.Encode(account.PublicKey),
-                    "signature", signature,
-                    "alias", alias,
-                    "fee", fee,
-                    "timestamp", timestamp);
+            return new Transaction(TransactionsBroadcastPath,
+                "type", Alias,
+                "senderPublicKey", Base58.Encode(account.PublicKey),
+                "signature", signature,
+                "alias", alias,
+                "fee", fee,
+                "timestamp", timestamp);
         }
 
         public static Transaction MakeOrderTransaction(PrivateKeyAccount sender, String matcherKey, Order.Type orderType,
