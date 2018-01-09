@@ -39,14 +39,14 @@ namespace WavesCS
 
         public class Ask
         {
-            public int Price { get; set; }
-            public int Amount { get; set; }
+            public long Price { get; set; }
+            public long Amount { get; set; }
         }
 
         public class Bid
         {
-            public int Price { get; set; }
-            public int Amount { get; set; }
+            public long Price { get; set; }
+            public long Amount { get; set; }
         }
 
         public class JsonOrderBook
