@@ -39,7 +39,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMatcher()
         {
-            Node matcher = new Node("https://testnode2.wavesnodes.com");
+            Node matcher = new Node();
             String matcherKey = "4oP8SPd7LiUo8xsokSTiyZjwg4rojdyXqWEq7NTwWsSU";
             long timestamp = Utils.CurrentTimestamp();
 
