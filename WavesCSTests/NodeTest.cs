@@ -39,8 +39,8 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMatcher()
         {
-            Node matcher = new Node();
-            String matcherKey = "4oP8SPd7LiUo8xsokSTiyZjwg4rojdyXqWEq7NTwWsSU";
+            Node matcher = new Node("https://testnet1.wavesnodes.com");
+            String matcherKey = "CRxqEuxhdZBEHX42MU4FfyJxuHmbDBTaHMhM3Uki7pLw";
             long timestamp = Utils.CurrentTimestamp();
 
             OrderBook orders = matcher.GetOrderBook(null, WBTC);
