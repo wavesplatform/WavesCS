@@ -8,8 +8,8 @@ namespace WavesCSTests
     [TestClass]
     public class TransactionTest
     {
-        private static readonly long AMOUNT = 1_00000000L;
-        private static readonly long FEE = 100_000;
+        private static readonly long AMOUNT = 100000000L;
+        private static readonly long FEE = 100000;
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
 
         private TestContext testContextInstance;

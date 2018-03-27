@@ -7,8 +7,8 @@ namespace WavesCSTests
     [TestClass]
     public class NodeTest
     {
-        private static readonly long AMOUNT = 1_00000000L;
-        private static readonly long FEE = 100_000;
+        private static readonly long AMOUNT = 100000000L;
+        private static readonly long FEE = 100000;
         private static readonly String WBTC = "Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe";
 
         private static readonly PrivateKeyAccount alice = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
@@ -47,12 +47,12 @@ namespace WavesCSTests
             Assert.IsNotNull(orders);            
 
             String orderId = matcher.CreateOrder(alice, matcherKey, "", WBTC,
-               new Order("sell").type, 1, 1_00000000, timestamp + 3_600_000, 500_000);
+               new Order("sell").type, 1, 100000000, timestamp + 3600000, 500000);
             Assert.IsNotNull(orderId);
 
             String status = matcher.GetOrderStatus(orderId, "", WBTC);
             Assert.AreEqual("Accepted", status);
-            matcher.CancelOrder(alice, "", WBTC, orderId, 400_000);
+            matcher.CancelOrder(alice, "", WBTC, orderId, 400000);
         }
     }
 }
