@@ -8,41 +8,34 @@ namespace WavesCS
 {
     class KeyValuePairJsonConverter : JavaScriptConverter
     {
-            public override object Deserialize(IDictionary<string, object> deserializedJSObjectDictionary, Type targetType, JavaScriptSerializer javaScriptSerializer)
+            public override object Deserialize(IDictionary<string, object> deserializedJsObjectDictionary, Type targetType, JavaScriptSerializer javaScriptSerializer)
             {
-                Object targetTypeInstance = Activator.CreateInstance(targetType);
+                var targetTypeInstance = Activator.CreateInstance(targetType);
 
-                FieldInfo[] targetTypeFields = targetType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                var targetTypeFields = targetType.GetFields(BindingFlags.Public | BindingFlags.Instance);
 
-                foreach (FieldInfo fieldInfo in targetTypeFields)
-                    fieldInfo.SetValue(targetTypeInstance, deserializedJSObjectDictionary[fieldInfo.Name]);
+                foreach (var fieldInfo in targetTypeFields)
+                    fieldInfo.SetValue(targetTypeInstance, deserializedJsObjectDictionary[fieldInfo.Name]);
 
                 return targetTypeInstance;
             }
 
             public override IDictionary<string, object> Serialize(Object objectToSerialize, JavaScriptSerializer javaScriptSerializer)
             {
-                IDictionary<string, object> serializedObjectDictionary = new Dictionary<string, object>();
+                var serializedObjectDictionary = new Dictionary<string, object>();
 
-                FieldInfo[] objectToSerializeTypeFields = objectToSerialize.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
+                var objectToSerializeTypeFields = objectToSerialize.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
 
-                foreach (FieldInfo fieldInfo in objectToSerializeTypeFields)
+                foreach (var fieldInfo in objectToSerializeTypeFields)
                     serializedObjectDictionary.Add(fieldInfo.Name, fieldInfo.GetValue(objectToSerialize));
 
                 return serializedObjectDictionary;
             }
 
-            public override IEnumerable<Type> SupportedTypes
-            {
-                get
-                {
-                    return new ReadOnlyCollection<Type>(new Type[] { typeof(Transaction) });
-                }
-            }           
-
+            public override IEnumerable<Type> SupportedTypes => new ReadOnlyCollection<Type>(new[] { typeof(Transaction) });
     }
 
-    public class Utils
+    public static class Utils
     {
         public static void WriteToNetwork(System.IO.BinaryWriter writer, dynamic n)
         {
@@ -60,8 +53,7 @@ namespace WavesCS
         public static long CurrentTimestamp()
         {
             long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
-            return timestamp;
+            return (DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond * 1000;
         }
     }
 }
