@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
+using System.Linq;
 using System.Web.Script.Serialization;
 
 namespace WavesCS
 {
     public class Node
     {
-        public static readonly string DefaultNode = "https://testnode1.wavesnodes.com";
+        public static readonly String defaultNode = "https://testnode2.wavesnodes.com";
 
-        private readonly Uri _host;        
-        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        private readonly Uri Host;        
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+
         private const string MatcherPath = "/matcher";
         private const string OrderStatusString = "status";
 
@@ -18,7 +21,7 @@ namespace WavesCS
         {
             try
             {
-                _host = new Uri(DefaultNode);
+                Host = new Uri(defaultNode);
             }
             catch (UriFormatException e)
             {
@@ -28,15 +31,23 @@ namespace WavesCS
 
         public Node(string uri)
         {
-            _host = new Uri(uri);
+            Host = new Uri(uri);
         }
 
         public T Get<T>(string url, string key)
         {
-            Console.WriteLine(_host + url);            
-            var json = new WebClient().DownloadString(_host + url);
-            dynamic result = Serializer.DeserializeObject(json);
+            Console.WriteLine(Host + url);            
+            var json = new WebClient().DownloadString(Host + url);
+            dynamic result = serializer.DeserializeObject(json);
             return result[key];
+        }
+        
+        public T Get<T>(string url)
+        {
+            Console.WriteLine(Host + url);            
+            var json = new WebClient().DownloadString(Host + url);
+            dynamic result = serializer.DeserializeObject(json);
+            return result;
         }
 
         public int GetHeight()
@@ -58,55 +69,61 @@ namespace WavesCS
         {
             return Get<long>($"assets/balance/{address}/{assetId}", "balance"); 
         }
-
-        public string Transfer(PrivateKeyAccount from, string toAddress, long amount, long fee, string message)
-        {
+      
+        public string Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
+        { 
             var transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, null, fee, null, message);
-            return Post(transaction);
+            return Broadcast(transaction);
         }
 
         public string TransferAsset(PrivateKeyAccount from, string toAddress,
                 long amount, string assetId, long fee, string feeAssetId, string message)
         {
             var transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, assetId, fee, feeAssetId, message);
-            return Post(transaction);
+            return Broadcast(transaction);
         }
 
         public string Lease(PrivateKeyAccount from, string toAddress, long amount, long fee)
         {
             var transaction = Transaction.MakeLeaseTransaction(from, toAddress, amount, fee);
-            return Post(transaction);
+            return Broadcast(transaction);
         }
 
         public string CancelLease(PrivateKeyAccount account, string transactionId, long fee)
         {
             var transaction = Transaction.MakeLeaseCancelTransaction(account, transactionId, fee);
-            return Post(transaction);
+            return Broadcast(transaction);
         }
 
         public string IssueAsset(PrivateKeyAccount account,
                 string name, string description, long quantity, int decimals, bool reissuable, long fee)
         {
-            Transaction transaction = Transaction.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
+            return Broadcast(transaction);
         }
 
         public string ReissueAsset(PrivateKeyAccount account, string assetId, long quantity, bool reissuable, long fee)
         {
             var transaction = Transaction.MakeReissueTransaction(account, assetId, quantity, reissuable, fee);
-            return Post(transaction);
+            return Broadcast(transaction);
         }
 
         public string BurnAsset(PrivateKeyAccount account, string assetId, long amount, long fee)
         {
-            Transaction transaction = Transaction.MakeBurnTransaction(account, assetId, amount, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeBurnTransaction(account, assetId, amount, fee);
+            return Broadcast(transaction);
         }
 
         public string Alias(PrivateKeyAccount account, string alias, char scheme, long fee)
         {
             var transaction = Transaction.MakeAliasTransaction(account, alias, scheme, fee);
-            return Post(transaction);
+            return Broadcast(transaction);
+        }
+        
+        public String PutData(PrivateKeyAccount account, Dictionary<string, object> entries, long fee)
+        {
+            var transaction = Transaction.MakeDataTransaction(account, entries, fee);
+            return Broadcast(transaction);
         }
 
         // Matcher transactions
@@ -157,22 +174,25 @@ namespace WavesCS
             var stream = new MemoryStream(40);
             var writer = new BinaryWriter(stream);
             writer.Write(account.PublicKey);
-            Utils.WriteToNetwork(writer, timestamp);
-            string signature = Transaction.Sign(account, stream);
-            string path = "matcher/orderbook/" + Base58.Encode(account.PublicKey);
-            string json = Request<string>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
-            return json;
-        } 
 
-        private string  Post(Transaction transaction)
+            writer.WriteLong(timestamp);
+            string signature = Transaction.Sign(account, stream);
+            string path = "matcher/orderBook/" + Base58.Encode(account.PublicKey);
+            string json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
+
+            return json;
+        }
+
+        public string Broadcast(Transaction transaction)
         {
-            string result = "";
+            var result = "";
             try
             {                
-                Uri currentUri = new Uri(_host + transaction.Endpoint);
-                var client = GetClientWithHeaders();
-                string json = client.UploadString(currentUri, Serializer.Serialize(transaction.Data));
-                var jsonTransaction = Serializer.Deserialize<Transaction.JsonTransaction>(json);
+                var uri = new Uri(Host + transaction.Endpoint);
+                var currentClient = GetClientWithHeaders();
+                var json = currentClient.UploadString(uri, serializer.Serialize(transaction.Data));
+                var jsonTransaction = serializer.Deserialize<Transaction.JsonTransaction>(json);
+
                 return jsonTransaction.Id;
             }
             catch (WebException e)
@@ -190,11 +210,11 @@ namespace WavesCS
         {            
             try
             {
-                string jsonTransaction = Serializer.Serialize(transaction.Data);
-                Uri currentUri = new Uri(_host + transaction.Endpoint);
+                string jsonTransaction = serializer.Serialize(transaction.Data);
+                Uri currentUri = new Uri(Host + transaction.Endpoint);
                 var clint = GetClientWithHeaders();
                 var json = clint.UploadString(currentUri, jsonTransaction);
-                var result = Serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
+                var result = serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
                 if (!isCancel)
                 {
                     var message = result.Message;
@@ -205,21 +225,21 @@ namespace WavesCS
             catch (WebException e)
             {
                 var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                Transaction.JsonTransactionError error = Serializer.Deserialize<Transaction.JsonTransactionError>(resp);
+                Transaction.JsonTransactionError error = serializer.Deserialize<Transaction.JsonTransactionError>(resp);
                 throw new IOException(error.Message);
             }
         }
 
         private T Request<T>(string path, params string[] headers)
         {
-            var uri = new Uri(_host + path);
+            var uri = new Uri(Host + path);
             var client = GetClientWithHeaders();
             for (int i = 0; i < headers.Length; i += 2)
             {
                 client.Headers.Add(headers[i], headers[i + 1]);
             }
             var json = client.DownloadString(uri);
-            var result = Serializer.Deserialize<T>(json);
+            var result = serializer.Deserialize<T>(json);
             return result;
         }
 

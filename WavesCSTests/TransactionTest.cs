@@ -10,14 +10,11 @@ namespace WavesCSTests
     {
         private static readonly long AMOUNT = 100000000L;
         private static readonly long FEE = 100000;
-        private static readonly JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
 
-        public TransactionTest(TestContext testContext)
-        {
-            TestContext = testContext;
-        }
-
-        public TestContext TestContext { get; }
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        
+        public TestContext TestContext { get; set; }
+        
 
         [TestMethod]
         public void SmokeTest()
