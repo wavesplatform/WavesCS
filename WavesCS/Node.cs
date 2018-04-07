@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
+using System.Linq;
 using System.Web.Script.Serialization;
 
 namespace WavesCS
@@ -9,14 +11,8 @@ namespace WavesCS
     {
         public static readonly String defaultNode = "https://testnode1.wavesnodes.com";
 
-        private readonly Uri Host;
-        private readonly WebClient Client = new WebClient();
+        private readonly Uri Host;        
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
-        private const string HeightString = "height";
-        private const string BalanceString = "balance";
-        private const string BasePathBlocks = "blocks/";
-        private const string BasePathAssets = "assets/";
-        private const string BasePathAddress = "addresses/";
         private const string MatcherPath = "/matcher";
         private const string OrderStatusString = "status";
 
@@ -39,81 +35,94 @@ namespace WavesCS
 
         public T Get<T>(string url, string key)
         {
-            Console.WriteLine(Host + url);
-            Uri resorce = new Uri(Host, url);
-            var json = (new WebClient()).DownloadString(Host + url);
+            Console.WriteLine(Host + url);            
+            var json = new WebClient().DownloadString(Host + url);
             dynamic result = serializer.DeserializeObject(json);
             return result[key];
+        }
+        
+        public T Get<T>(string url)
+        {
+            Console.WriteLine(Host + url);            
+            var json = new WebClient().DownloadString(Host + url);
+            dynamic result = serializer.DeserializeObject(json);
+            return result;
         }
 
         public int GetHeight()
         {
-            return Get<int>(String.Format("{0}{1}", BasePathBlocks, HeightString), HeightString);
+            return Get<int>("blocks/height", "height");
         }
 
-        public long GetBalance(String address)
+        public long GetBalance(string address)
         {
-            return Get<long>(String.Format("{0}{1}/{2}", BasePathAddress, BalanceString, address), BalanceString);
+            return Get<long>($"addresses/balance/{address}", "balance");
         }
 
-        public long GetBalance(String address, int confirmations)
+        public long GetBalance(string address, int confirmations)
         {
-            return Get<long>(String.Format("{0}{1}/{2}/{3}", BasePathAddress, BalanceString, address, confirmations), BalanceString);
+            return Get<long>($"addresses/balance/{address}/{confirmations}", "balance");
         }
 
-        public long GetBalance(String address, String assetId)
+        public long GetBalance(string address, string assetId)
         {
-            return Get<long>(String.Format("{0}{1}/{2}/{3}",BasePathAssets, BalanceString, address, assetId), BalanceString); 
+            return Get<long>($"assets/balance/{address}/{assetId}", "balance"); 
         }
 
-        public String Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
+        public string Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
         {
-            Transaction transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, null, fee, null, message);
-            return Post(transaction);
+            var transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, null, fee, null, message);
+            return Broadcast(transaction);
         }
 
         public String TransferAsset(PrivateKeyAccount from, String toAddress,
                 long amount, String assetId, long fee, String feeAssetId, String message)
         {
-            Transaction transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, assetId, fee, feeAssetId, message);
-            return Post(transaction);
+            var transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, assetId, fee, feeAssetId, message);
+            return Broadcast(transaction);
         }
 
         public String Lease(PrivateKeyAccount from, String toAddress, long amount, long fee)
         {
-            Transaction transaction = Transaction.MakeLeaseTransaction(from, toAddress, amount, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeLeaseTransaction(from, toAddress, amount, fee);
+            return Broadcast(transaction);
         }
 
         public String CancelLease(PrivateKeyAccount account, String transactionId, long fee)
         {
-            Transaction transaction = Transaction.MakeLeaseCancelTransaction(account, transactionId, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeLeaseCancelTransaction(account, transactionId, fee);
+            return Broadcast(transaction);
         }
 
         public String IssueAsset(PrivateKeyAccount account,
                 String name, String description, long quantity, int decimals, bool reissuable, long fee)
         {
-            Transaction transaction = Transaction.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
+            return Broadcast(transaction);
         }
 
         public String ReissueAsset(PrivateKeyAccount account, String assetId, long quantity, bool reissuable, long fee)
         {
-            Transaction transaction = Transaction.MakeReissueTransaction(account, assetId, quantity, reissuable, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeReissueTransaction(account, assetId, quantity, reissuable, fee);
+            return Broadcast(transaction);
         }
 
         public String BurnAsset(PrivateKeyAccount account, String assetId, long amount, long fee)
         {
-            Transaction transaction = Transaction.MakeBurnTransaction(account, assetId, amount, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeBurnTransaction(account, assetId, amount, fee);
+            return Broadcast(transaction);
         }
 
         public String Alias(PrivateKeyAccount account, String alias, char scheme, long fee)
         {
-            Transaction transaction = Transaction.MakeAliasTransaction(account, alias, scheme, fee);
-            return Post(transaction);
+            var transaction = Transaction.MakeAliasTransaction(account, alias, scheme, fee);
+            return Broadcast(transaction);
+        }
+        
+        public String PutData(PrivateKeyAccount account, Dictionary<string, object> entries, long fee)
+        {
+            var transaction = Transaction.MakeDataTransaction(account, entries, fee);
+            return Broadcast(transaction);
         }
 
         // Matcher transactions
@@ -161,25 +170,25 @@ namespace WavesCS
         public String GetOrders(PrivateKeyAccount account)
         {
             long timestamp = Utils.CurrentTimestamp();
-            MemoryStream stream = new MemoryStream(40);
-            BinaryWriter writer = new BinaryWriter(stream);
+            var stream = new MemoryStream(40);
+            var writer = new BinaryWriter(stream);
             writer.Write(account.PublicKey);
-            Utils.WriteToNetwork(writer, timestamp);
-            String signature = Transaction.Sign(account, stream);
-            String path = OrderBook.BasePath + Base58.Encode(account.PublicKey);
-            String json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
+            writer.WriteLong(timestamp);
+            string signature = Transaction.Sign(account, stream);
+            string path = OrderBook.BasePath + Base58.Encode(account.PublicKey);
+            string json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
             return json;
-        } 
+        }
 
-        private String  Post(Transaction transaction)
+        public string Broadcast(Transaction transaction)
         {
-            String result = "";
+            var result = "";
             try
             {                
-                Uri currentUri = new Uri(Host + transaction.Endpoint);
-                WebClient currentClient = GetClientWithHeaders();
-                string json = currentClient.UploadString(currentUri, serializer.Serialize(transaction.Data));
-                Transaction.JsonTransaction jsonTransaction = serializer.Deserialize<Transaction.JsonTransaction>(json);
+                var uri = new Uri(Host + transaction.Endpoint);
+                var currentClient = GetClientWithHeaders();
+                var json = currentClient.UploadString(uri, serializer.Serialize(transaction.Data));
+                var jsonTransaction = serializer.Deserialize<Transaction.JsonTransaction>(json);
                 return jsonTransaction.Id;
             }
             catch (WebException e)

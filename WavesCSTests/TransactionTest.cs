@@ -8,21 +8,11 @@ namespace WavesCSTests
     [TestClass]
     public class TransactionTest
     {
-        private static readonly long AMOUNT = 1_00000000L;
-        private static readonly long FEE = 100_000;
+        private static readonly long AMOUNT = 100000000L;
+        private static readonly long FEE = 100000;
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///  Gets or sets the test context which provides
-        ///  information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
-        }
+        
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public void SmokeTest()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Web.Script.Serialization;
 
 namespace WavesCS
@@ -10,9 +11,9 @@ namespace WavesCS
     {
             public override object Deserialize(IDictionary<string, object> deserializedJSObjectDictionary, Type targetType, JavaScriptSerializer javaScriptSerializer)
             {
-                Object targetTypeInstance = Activator.CreateInstance(targetType);
+                object targetTypeInstance = Activator.CreateInstance(targetType);
 
-                FieldInfo[] targetTypeFields = targetType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                var targetTypeFields = targetType.GetFields(BindingFlags.Public | BindingFlags.Instance);
 
                 foreach (FieldInfo fieldInfo in targetTypeFields)
                     fieldInfo.SetValue(targetTypeInstance, deserializedJSObjectDictionary[fieldInfo.Name]);
@@ -24,7 +25,7 @@ namespace WavesCS
             {
                 IDictionary<string, object> serializedObjectDictionary = new Dictionary<string, object>();
 
-                FieldInfo[] objectToSerializeTypeFields = objectToSerialize.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
+                var objectToSerializeTypeFields = objectToSerialize.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
 
                 foreach (FieldInfo fieldInfo in objectToSerializeTypeFields)
                     serializedObjectDictionary.Add(fieldInfo.Name, fieldInfo.GetValue(objectToSerialize));
@@ -42,15 +43,17 @@ namespace WavesCS
 
     }
 
-    public class Utils
+    public static class Utils
     {
-        public static void WriteToNetwork(System.IO.BinaryWriter writer, dynamic n)
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        
+        public static void WriteLong(this BinaryWriter writer, long n)
         {
-            n = System.Net.IPAddress.HostToNetworkOrder((long)n);
+            n = System.Net.IPAddress.HostToNetworkOrder(n);
             writer.Write(n);
         }
 
-        public static void WriteBigEndian(System.IO.BinaryWriter writer, short n)
+        public static void WriteShort(this BinaryWriter writer, short n)
         {
             byte[] shortN = BitConverter.GetBytes(n);
             Array.Reverse(shortN);
@@ -62,6 +65,11 @@ namespace WavesCS
             long epochTicks = new DateTime(1970, 1, 1).Ticks;
             long timestamp = ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond) * 1000;
             return timestamp;
+        }
+
+        public static string ToJson(this Dictionary<string, object> data)
+        {
+            return serializer.Serialize(data);
         }
     }
 }

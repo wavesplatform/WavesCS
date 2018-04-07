@@ -13,6 +13,8 @@ namespace WavesCSTests
 
         private static readonly PrivateKeyAccount alice = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
         private static readonly PrivateKeyAccount bob = PrivateKeyAccount.CreateFromPrivateKey("25Um7fKYkySZnweUEVAn9RLtxN5xHRd7iqpqYSMNQEeT", AddressEncoding.TestNet);
+        
+        public TestContext TestContext { get; }
 
         [TestMethod]
         public void TestGetters()
@@ -34,7 +36,7 @@ namespace WavesCSTests
             // transfer back so that Alice's balance is not drained
             transactionId = node.Transfer(bob, alice.Address, AMOUNT, FEE, "Thanks, Alice");
             Assert.IsNotNull(transactionId);
-        }
+        }               
 
         [TestMethod]
         public void TestMatcher()
@@ -53,6 +55,6 @@ namespace WavesCSTests
             String status = matcher.GetOrderStatus(orderId, "", WBTC);
             Assert.AreEqual("Accepted", status);
             matcher.CancelOrder(alice, "", WBTC, orderId, 400_000);
-        }
+        }               
     }
 }
