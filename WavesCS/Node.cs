@@ -9,7 +9,7 @@ namespace WavesCS
 {
     public class Node
     {
-        public static readonly String defaultNode = "https://testnode1.wavesnodes.com";
+        public static readonly String defaultNode = "https://testnode2.wavesnodes.com";
 
         private readonly Uri Host;        
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
@@ -21,7 +21,7 @@ namespace WavesCS
         {
             try
             {
-                _host = new Uri(DefaultNode);
+                Host = new Uri(defaultNode);
             }
             catch (UriFormatException e)
             {
@@ -31,7 +31,7 @@ namespace WavesCS
 
         public Node(string uri)
         {
-            _host = new Uri(uri);
+            Host = new Uri(uri);
         }
 
         public T Get<T>(string url, string key)
@@ -177,7 +177,7 @@ namespace WavesCS
 
             writer.WriteLong(timestamp);
             string signature = Transaction.Sign(account, stream);
-            string path = OrderBook.BasePath + Base58.Encode(account.PublicKey);
+            string path = "matcher/orderBook/" + Base58.Encode(account.PublicKey);
             string json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
 
             return json;
@@ -210,11 +210,11 @@ namespace WavesCS
         {            
             try
             {
-                string jsonTransaction = Serializer.Serialize(transaction.Data);
-                Uri currentUri = new Uri(_host + transaction.Endpoint);
+                string jsonTransaction = serializer.Serialize(transaction.Data);
+                Uri currentUri = new Uri(Host + transaction.Endpoint);
                 var clint = GetClientWithHeaders();
                 var json = clint.UploadString(currentUri, jsonTransaction);
-                var result = Serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
+                var result = serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
                 if (!isCancel)
                 {
                     var message = result.Message;
@@ -225,21 +225,21 @@ namespace WavesCS
             catch (WebException e)
             {
                 var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                Transaction.JsonTransactionError error = Serializer.Deserialize<Transaction.JsonTransactionError>(resp);
+                Transaction.JsonTransactionError error = serializer.Deserialize<Transaction.JsonTransactionError>(resp);
                 throw new IOException(error.Message);
             }
         }
 
         private T Request<T>(string path, params string[] headers)
         {
-            var uri = new Uri(_host + path);
+            var uri = new Uri(Host + path);
             var client = GetClientWithHeaders();
             for (int i = 0; i < headers.Length; i += 2)
             {
                 client.Headers.Add(headers[i], headers[i + 1]);
             }
             var json = client.DownloadString(uri);
-            var result = Serializer.Deserialize<T>(json);
+            var result = serializer.Deserialize<T>(json);
             return result;
         }
 

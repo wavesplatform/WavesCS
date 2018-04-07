@@ -14,8 +14,7 @@ namespace WavesCSTests
         private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
         
         public TestContext TestContext { get; set; }
-
-        public TestContext TestContext { get; }
+        
 
         [TestMethod]
         public void SmokeTest()

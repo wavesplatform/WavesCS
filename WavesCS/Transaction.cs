@@ -329,7 +329,7 @@ namespace WavesCS
             });
         }
 
-        public static Transaction MakeOrderTransaction(PrivateKeyAccount sender, string matcherKey, Order.Type orderType,
+        public static Transaction MakeOrderTransaction(PrivateKeyAccount sender, string matcherKey, Order.OrderType orderType,
            string amountAssetId, string priceAssetId, long price, long amount, long expiration, long matcherFee)
         {
             long timestamp = Utils.CurrentTimestamp();
@@ -363,6 +363,10 @@ namespace WavesCS
 
         public class AssetPair
         {
+            public AssetPair()
+            {
+            }
+            
             public AssetPair(string amountAsset, string priceAsset)
             {
                 AmountAsset = amountAsset;
