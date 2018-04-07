@@ -7,12 +7,7 @@ namespace WavesCS
     {
         public List<Order> bids, asks;
 
-        public const string BasePath = "matcher/orderbook/";
-
-        public List<Order> Bids
-        {
-            get { return bids; }
-        }
+        public List<Order> Bids => bids;
 
         public List<Order> Asks
         {
@@ -27,8 +22,8 @@ namespace WavesCS
 
         public OrderBook(JsonOrderBook jsonOrderBook)
         {
-            this.bids = jsonOrderBook.Bids.Select(x => new Order(x.Price, x.Amount)).ToList();
-            this.asks = jsonOrderBook.Asks.Select(x => new Order(x.Price, x.Amount)).ToList();
+            bids = jsonOrderBook.Bids.Select(x => new Order(x.Price, x.Amount)).ToList();
+            asks = jsonOrderBook.Asks.Select(x => new Order(x.Price, x.Amount)).ToList();
         }
 
         public class Assets
@@ -39,14 +34,14 @@ namespace WavesCS
 
         public class Ask
         {
-            public int Price { get; set; }
-            public int Amount { get; set; }
+            public long Price { get; set; }
+            public long Amount { get; set; }
         }
 
         public class Bid
         {
-            public int Price { get; set; }
-            public int Amount { get; set; }
+            public long Price { get; set; }
+            public long Amount { get; set; }
         }
 
         public class JsonOrderBook
