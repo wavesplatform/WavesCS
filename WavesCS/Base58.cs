@@ -4,9 +4,9 @@ using System.Numerics;
 
 namespace WavesCS
 {
-    public class Base58
+    public static class Base58
     {
-        public static readonly char[] Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".ToCharArray();
+        private static readonly char[] Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".ToCharArray();
         private static readonly char EncodedZero = Alphabet[0];
         private static readonly int[] Indexes = new int[128];
 
@@ -50,20 +50,20 @@ namespace WavesCS
             return new String(encoded, outputStart, encoded.Length - outputStart);
         }
 
-        private static byte DivMod(byte[] number, int firstDigit, int base_of_representation, int divisor)
+        private static byte DivMod(byte[] number, int firstDigit, int baseOfRepresentation, int divisor)
         {
             int remainder = 0;
             for (int i = firstDigit; i < number.Length; i++)
             {
                 int digit = number[i] & 0xFF;
-                int temp = remainder * base_of_representation + digit;
+                int temp = remainder * baseOfRepresentation + digit;
                 number[i] = (byte)(temp / divisor);
                 remainder = temp % divisor;
             }
             return (byte)remainder;
         }
 
-        public static BigInteger DecodeToBigInteger(String input)
+        public static BigInteger DecodeToBigInteger(string input)
         {
             return new BigInteger(Decode(input));
         }

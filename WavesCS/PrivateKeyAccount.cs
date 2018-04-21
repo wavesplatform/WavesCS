@@ -13,27 +13,20 @@ namespace WavesCS
     public class PrivateKeyAccount
     {
         private static readonly SHA256Managed SHA256 = new SHA256Managed();
-        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        private static readonly JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
-        private readonly byte[] privateKey;
+        private readonly byte[] _privateKey;
 
-        private static List<String> seedWords = null;
-        private char scheme;
-        private byte[] publicKey;
-        private string address;
+        private static List<String> _seedWords;
+        private byte[] _publicKey;
 
-        public string Address
-        {
-            get { return address; }
-            set { address = value; }
-        }
+        public string Address { get; }
 
         private PrivateKeyAccount(byte[] privateKey, char scheme)         
         {
-            this.scheme = scheme;
-            publicKey = GetPublicKeyFromPrivateKey(privateKey);
-            address = AddressEncoding.GetAddressFromPublicKey(publicKey, scheme);
-            this.privateKey = privateKey;
+            _publicKey = GetPublicKeyFromPrivateKey(privateKey);
+            Address = AddressEncoding.GetAddressFromPublicKey(_publicKey, scheme);
+            _privateKey = privateKey;
         }
 
         public PrivateKeyAccount(byte[] seed, char scheme, int nonce) : this(GeneratePrivateKey(seed, nonce), scheme) { }
@@ -55,21 +48,17 @@ namespace WavesCS
             return new PrivateKeyAccount(privateKey, scheme);
         }
 
-        public byte[] PrivateKey
-        {
-            get{ return privateKey.ToArray(); }
-        }
+        public byte[] PrivateKey => _privateKey.ToArray();
 
         private static byte[] GeneratePrivateKey(byte[] seed, int nonce)
         {
-            MemoryStream stream = new MemoryStream(seed.Length + 4);
-            BinaryWriter writer = new BinaryWriter(stream);
+            var stream = new MemoryStream(seed.Length + 4);
+            var writer = new BinaryWriter(stream);
             writer.Write(nonce);
             writer.Write(seed);            
-            byte[] accountSeed = AddressEncoding.SecureHash(stream.ToArray(), 0, stream.ToArray().Length);
-            byte[] hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length); 
-            byte[] privateKey = new byte[32];
-            privateKey = hashedSeed.ToArray();
+            var accountSeed = AddressEncoding.SecureHash(stream.ToArray(), 0, stream.ToArray().Length);
+            var hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length);             
+            var privateKey = hashedSeed.ToArray();
             privateKey[0] &= 248;
             privateKey[31] &= 127;
             privateKey[31] |= 64;
@@ -79,21 +68,21 @@ namespace WavesCS
 
         public override string ToString()
         {
-            return  String.Format("Address: {0}, Type: {1}", address, typeof(PrivateKeyAccount));
+            return $"Address: {Address}, Type: {typeof(PrivateKeyAccount)}";
         }
 
 
         private static byte[] GetPublicKeyFromPrivateKey(byte[] privateKey)
         {
-            byte[] publicKey = new byte[privateKey.Length];
+            var publicKey = new byte[privateKey.Length];
             Curve_sigs.curve25519_keygen(publicKey, privateKey);
             return publicKey;
         }
 
         public byte[] PublicKey
         {
-            get { return publicKey.ToArray(); }
-            set { publicKey = value; }
+            get { return _publicKey.ToArray(); }
+            set { _publicKey = value; }
         }
 
         /**
@@ -102,27 +91,27 @@ namespace WavesCS
      */
         public static string GenerateSeed()
         {
-            byte[] bytes = new byte[160 + 5];
-            RandomNumberGenerator random = RandomNumberGenerator.Create();
-            random.GetBytes(bytes);
-            byte[] rhash = SHA256.ComputeHash(bytes, 0, 160);
+            var bytes = new byte[160 + 5];
+            var generator = RandomNumberGenerator.Create();
+            generator.GetBytes(bytes);
+            var rhash = SHA256.ComputeHash(bytes, 0, 160);
             Array.Copy(rhash, 0, bytes, 160, 5);
-            BigInteger rand = new BigInteger(bytes);
-            if(seedWords == null)
+            var rand = new BigInteger(bytes);
+            if(_seedWords == null)
             {
-                StreamReader reader = new StreamReader("SeedWords.json");
-                string json = reader.ReadToEnd();
-                var items = serializer.Deserialize<Dictionary<String, List<String>>>(json);
-                seedWords = items["words"];
+                var reader = new StreamReader("SeedWords.json");
+                var json = reader.ReadToEnd();
+                var items = serializer.Deserialize<Dictionary<string, List<string>>>(json);
+                _seedWords = items["words"];
             }                  
-            List<BigInteger> result = new List<BigInteger>();
+            var result = new List<BigInteger>();
             for(int i = 0; i < 15; i++)
             {
                 result.Add(rand);
                 rand = rand >> 11;
             }
-            BigInteger mask = new BigInteger(new byte[] { unchecked((byte)-1), 7, 0, 0 }); // 11 lower bits
-            return String.Join(" ", result.Select(bigint => seedWords[(int)(bigint & mask)]));         
+            var mask = new BigInteger(new byte[] { unchecked((byte)-1), 7, 0, 0 }); // 11 lower bits
+            return string.Join(" ", result.Select(bigint => _seedWords[(int)(bigint & mask)]));         
         }
 
         public static IEnumerable<T> Iterate<T>(T seed, Func<T, T> unaryOperator)

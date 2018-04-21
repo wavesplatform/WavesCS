@@ -1,44 +1,39 @@
-﻿using System;
-
-namespace WavesCS
+﻿namespace WavesCS
 {
     public class Order
     {
-        public class Type
+        public class OrderType
         {
-            public readonly string json;
+            public readonly string Json;
 
-            public Type(string json)
+            public OrderType(string json)
             {
-                this.json = json;
+                Json = json;
             }
 
-            public int Ordinal
-            {
-                get { return json == "buy" ? 0 : 1; }
-            }
+            public int Ordinal => Json == "buy" ? 0 : 1;
         }
-        public readonly long price;
-        public readonly long amount;
-        public readonly Type type;
+        public readonly long Price;
+        public readonly long Amount;
+        public readonly OrderType Type;
 
         public Order(long price, long amount)
         {
-            this.price = price;
-            this.amount = amount;
+            Price = price;
+            Amount = amount;
         }
 
         public Order(string type)
         {
             if(type == "sell" || type == "buy")
             {
-                this.type = new Type(type);
+                this.Type = new OrderType(type);
             }
         }
 
         public override string ToString()
         {
-            return String.Format("Order[price={0}, amount={1}]", price, amount);
+            return $"Order[price={Price}, amount={Amount}]";
         }
     }
 }

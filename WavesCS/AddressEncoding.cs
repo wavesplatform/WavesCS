@@ -1,5 +1,6 @@
 ﻿using HashLib;
 using System.IO;
+using Blake2Sharp;
 
 namespace WavesCS
 {
@@ -10,31 +11,29 @@ namespace WavesCS
 
         private static readonly IHash Keccak256 = HashFactory.Crypto.SHA3.CreateKeccak256();
 
-        public static byte[] Hash(byte[] message, int offset, int lenght, IHash algorithm)
+        private static byte[] Hash(byte[] message, int offset, int lenght, IHash algorithm)
         {
             algorithm.Initialize();
             algorithm.TransformBytes(message, offset, lenght);
-            HashResult result = algorithm.TransformFinal();
-            return result.GetBytes();
+            return algorithm.TransformFinal().GetBytes();
         }
 
         public static byte[] SecureHash(byte[] message, int offset, int lenght)
         {
-            Blake2Sharp.Blake2BConfig config = new Blake2Sharp.Blake2BConfig();
-            config.OutputSizeInBits = 256;
-            byte[] blake2b = Blake2Sharp.Blake2B.ComputeHash(message, offset, lenght, config);
-            return Hash(blake2b, 0, blake2b.Length, Keccak256);
+            var blakeConfig = new Blake2BConfig {OutputSizeInBits = 256};
+            var blake2B = Blake2B.ComputeHash(message, offset, lenght, blakeConfig);
+            return Hash(blake2B, 0, blake2B.Length, Keccak256);
         }
 
         public static string GetAddressFromPublicKey(byte[] publicKey, char scheme)
         {
-            MemoryStream stream = new MemoryStream(26);
-            byte[] hash = SecureHash(publicKey, 0, publicKey.Length);
-            BinaryWriter writer = new BinaryWriter(stream);
+            var stream = new MemoryStream(26);
+            var hash = SecureHash(publicKey, 0, publicKey.Length);
+            var writer = new BinaryWriter(stream);
             writer.Write((byte)1);
             writer.Write((byte)scheme);
             writer.Write(hash, 0, 20);
-            byte[] checksum = SecureHash(stream.ToArray(), 0, 22);
+            var checksum = SecureHash(stream.ToArray(), 0, 22);
             writer.Write(checksum, 0, 4);
             return Base58.Encode(stream.ToArray());
         }        
