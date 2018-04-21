@@ -62,12 +62,7 @@ namespace WavesCS
             }
             return (byte)remainder;
         }
-
-        public static BigInteger DecodeToBigInteger(string input)
-        {
-            return new BigInteger(Decode(input));
-        }
-
+        
         public static byte[] Decode(string input)
         {
             if (input.Length == 0)

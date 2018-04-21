@@ -7,25 +7,26 @@ using System.Text;
 
 namespace WavesCS
 {
+
+    public enum TransactionType : byte
+    {
+        Issue = 3,
+        Transfer = 4,
+        Reissue = 5,
+        Burn = 6,
+        Lease = 8,
+        LeaseCancel = 9,
+        Alias = 10,
+        DataTx = 12,    
+    }
+    
     public class Transaction
     {
-        private static readonly byte Issue = 3;
-        private static readonly byte Transfer = 4;
-        private static readonly byte Reissue = 5;
-        private static readonly byte Burn = 6;
-        private static readonly byte Lease = 8;
-        private static readonly byte LeaseCancel = 9;
-        private static readonly byte Alias = 10;
-        private static readonly byte DataTx = 12;
-        public static readonly string TransactionsBroadcastPath = "transactions/broadcast";
-
-
         private static readonly int MinBufferSize = 300;
         private static readonly Curve25519 Cipher = Curve25519.getInstance(Curve25519.BEST);
 
-        private Transaction(string endpoint, params object[] items)
+        private Transaction(params object[] items)
         {
-            Endpoint = endpoint;
             var map = new Dictionary<string, object>();
             for (int i = 0; i < items.Length; i += 2)
             {
@@ -39,13 +40,10 @@ namespace WavesCS
             Data = map.ToDictionary(kv => kv.Key, kv => kv.Value);
         }
         
-        private Transaction(string endpoint, Dictionary<string, object> data)
+        private Transaction(Dictionary<string, object> data)
         {
-            Endpoint = endpoint;
             Data = data;
-        }
-
-        public String Endpoint { get; }
+        }        
 
         public Dictionary<String, Object> Data { get; }
 
@@ -69,12 +67,7 @@ namespace WavesCS
                 var decoded = Base58.Decode(assetId);
                 stream.Write(decoded, 0, decoded.Length);
             }
-        }
-
-        public static string NormalizeAsset(string assetId)
-        {
-            return string.IsNullOrEmpty(assetId) ? "WAVES" : assetId;
-        }
+        }        
 
         public static Transaction MakeIssueTransaction(PrivateKeyAccount account,
                 string name, string description, long quantity, int decimals, bool reissuable, long fee)
@@ -83,9 +76,9 @@ namespace WavesCS
 
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
-            writer.Write(Issue);
+            writer.Write(TransactionType.Issue);
             writer.Write(account.PublicKey);
-            writer.WriteShort((short)name.Length);
+            writer.WriteShort(name.Length);
             writer.Write(Encoding.ASCII.GetBytes(name));
 
             int descriptionLegth = description?.Length ?? 0;
@@ -101,8 +94,8 @@ namespace WavesCS
             writer.WriteLong(timestamp);        
 
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath,
-                "type", Issue,
+            return new Transaction(
+                "type", TransactionType.Issue,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "name", name,
@@ -119,7 +112,7 @@ namespace WavesCS
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
-            writer.Write(Reissue);
+            writer.Write(TransactionType.Reissue);
             writer.Write(account.PublicKey);
             writer.Write(Base58.Decode(assetId));
             writer.WriteLong(quantity);
@@ -128,8 +121,8 @@ namespace WavesCS
             writer.WriteLong(timestamp);
 
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath,
-                "type", Reissue,
+            return new Transaction(
+                "type", TransactionType.Reissue,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "assetId", assetId,
@@ -148,7 +141,7 @@ namespace WavesCS
 
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
-            writer.Write(Transfer);
+            writer.Write(TransactionType.Transfer);
             writer.Write(account.PublicKey);
             PutAsset(stream, assetId);
             PutAsset(stream, feeAssetId);
@@ -160,8 +153,8 @@ namespace WavesCS
             writer.WriteShort((short)attachmentBytes.Length);
             writer.Write(attachmentBytes);
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath,
-                "type", Transfer,
+            return new Transaction(
+                "type", TransactionType.Transfer,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "recipient", toAddress,
@@ -178,7 +171,7 @@ namespace WavesCS
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
-            writer.Write(Burn);
+            writer.Write(TransactionType.Burn);
             writer.Write(account.PublicKey);
             writer.Write(Base58.Decode(assetId));
             writer.WriteLong(amount);
@@ -186,8 +179,8 @@ namespace WavesCS
             writer.WriteLong(timestamp);
 
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath,
-                "type", Burn,
+            return new Transaction(
+                "type", TransactionType.Burn,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "assetId", assetId,
@@ -201,7 +194,7 @@ namespace WavesCS
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
-            writer.Write(Lease);
+            writer.Write(TransactionType.Lease);
             writer.Write(account.PublicKey);
             writer.Write(Base58.Decode(toAddress));
 
@@ -210,8 +203,8 @@ namespace WavesCS
             writer.WriteLong(timestamp);
 
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath,
-                "type", Lease,
+            return new Transaction(
+                "type", TransactionType.Lease,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "recipient", toAddress,
@@ -225,14 +218,14 @@ namespace WavesCS
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
-            writer.Write(LeaseCancel);
+            writer.Write(TransactionType.LeaseCancel);
             writer.Write(account.PublicKey);
             writer.WriteLong(fee);
             writer.WriteLong(timestamp);
             writer.Write(Base58.Decode(TransactionId));
             string signature = Sign(account, stream);
-            return new Transaction("leasing/broadcast/cancel",
-                "type", LeaseCancel,
+            return new Transaction(
+                "type", TransactionType.LeaseCancel,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "TransactionId", TransactionId,
@@ -245,7 +238,7 @@ namespace WavesCS
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);            
-            writer.Write(Alias);
+            writer.Write(TransactionType.Alias);
             writer.Write(account.PublicKey);
             writer.WriteShort((short)(alias.Length + 4));
             writer.Write(0x02);
@@ -257,8 +250,8 @@ namespace WavesCS
             writer.WriteLong(timestamp);            
 
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath,
-                "type", Alias,
+            return new Transaction(
+                "type", TransactionType.Alias,
                 "senderPublicKey", Base58.Encode(account.PublicKey),
                 "signature", signature,
                 "alias", alias,
@@ -279,7 +272,7 @@ namespace WavesCS
             const byte BINARY = 2;
             const byte version = 1;
 
-            writer.Write(DataTx);
+            writer.Write(TransactionType.DataTx);
             writer.Write(version);
             writer.Write(account.PublicKey);
             writer.WriteShort((short) entries.Count);
@@ -312,9 +305,9 @@ namespace WavesCS
             writer.WriteLong(timestamp);
             writer.WriteLong(fee);
             string signature = Sign(account, stream);
-            return new Transaction(TransactionsBroadcastPath, new Dictionary<string, object>
+            return new Transaction(new Dictionary<string, object>
             {
-                {"type", DataTx},
+                {"type", TransactionType.DataTx},
                 {"version", version},
                 {"senderPublicKey", Base58.Encode(account.PublicKey)},
                 {"data", entries.Select(pair => new Dictionary<string, object>
@@ -329,7 +322,7 @@ namespace WavesCS
             });
         }
 
-        public static Transaction MakeOrderTransaction(PrivateKeyAccount sender, string matcherKey, Order.OrderType orderType,
+        public static Transaction MakeOrder(PrivateKeyAccount sender, string matcherKey, Order.OrderType orderType,
            string amountAssetId, string priceAssetId, long price, long amount, long expiration, long matcherFee)
         {
             long timestamp = Utils.CurrentTimestamp();
@@ -348,7 +341,7 @@ namespace WavesCS
             writer.WriteLong(matcherFee);
             string signature = Sign(sender, stream);
 
-            return new Transaction("matcher/orderbook",
+            return new Transaction(
                     "senderPublicKey", Base58.Encode(sender.PublicKey),
                     "matcherPublicKey", matcherKey,
                     "assetPair", new AssetPair(amountAssetId, priceAssetId).GetDictionary(),
@@ -386,16 +379,6 @@ namespace WavesCS
             }
         }
 
-        //private static Dictionary<String, String> AssetPair(String amountAssetId, String priceAssetId)
-        //{
-        //    Dictionary<String, String> assetPair = new Dictionary<String, String>
-        //    {
-        //        ["amountAsset"] = amountAssetId,
-        //        ["priceAsset"] = priceAssetId
-        //    };
-        //    return assetPair;
-        //}
-
         public static Transaction MakeOrderCancelTransaction(PrivateKeyAccount sender,
                 string amountAssetId, string priceAssetId, string orderId, long fee)
         {
@@ -403,10 +386,8 @@ namespace WavesCS
             var writer = new BinaryWriter(stream);
             writer.Write(sender.PublicKey);
             writer.Write(Base58.Decode(orderId));
-            string signature = Sign(sender, stream);
-            amountAssetId = NormalizeAsset(amountAssetId);
-            priceAssetId = NormalizeAsset(priceAssetId);
-            return new Transaction($"matcher/orderbook/{amountAssetId}/{priceAssetId}/cancel",
+            string signature = Sign(sender, stream);            
+            return new Transaction(
                     "sender", Base58.Encode(sender.PublicKey), "orderId", orderId,
                     "signature", signature);
         }

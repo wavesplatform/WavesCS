@@ -13,24 +13,27 @@ namespace WavesCS
     public class PrivateKeyAccount
     {
         private static readonly SHA256Managed SHA256 = new SHA256Managed();
-        private static readonly JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
+        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
+                
         private readonly byte[] _privateKey;
+        private readonly byte[] _publicKey;
 
-        private static List<String> _seedWords;
-        private byte[] _publicKey;
+        public byte[] PrivateKey => _privateKey.ToArray();
+        public byte[] PublicKey => _publicKey.ToArray();
+
+        private static List<string> _seedWords;
 
         public string Address { get; }
 
         private PrivateKeyAccount(byte[] privateKey, char scheme)         
         {
             _publicKey = GetPublicKeyFromPrivateKey(privateKey);
-            Address = AddressEncoding.GetAddressFromPublicKey(_publicKey, scheme);
+            Address = AddressEncoding.GetAddressFromPublicKey(PublicKey, scheme);
             _privateKey = privateKey;
         }
 
-        public PrivateKeyAccount(byte[] seed, char scheme, int nonce) : this(GeneratePrivateKey(seed, nonce), scheme) { }
-
+        private PrivateKeyAccount(byte[] seed, char scheme, int nonce) : this(GeneratePrivateKey(seed, nonce), scheme) { }
         private PrivateKeyAccount(string privateKey, char scheme) : this(Base58.Decode(privateKey), scheme) { }
 
         public static PrivateKeyAccount CreateFromSeed(string seed, char scheme, int nonce = 0)
@@ -46,9 +49,7 @@ namespace WavesCS
         public static PrivateKeyAccount CreateFromPrivateKey(string privateKey, char scheme)
         {
             return new PrivateKeyAccount(privateKey, scheme);
-        }
-
-        public byte[] PrivateKey => _privateKey.ToArray();
+        }        
 
         private static byte[] GeneratePrivateKey(byte[] seed, int nonce)
         {
@@ -71,24 +72,13 @@ namespace WavesCS
             return $"Address: {Address}, Type: {typeof(PrivateKeyAccount)}";
         }
 
-
         private static byte[] GetPublicKeyFromPrivateKey(byte[] privateKey)
         {
             var publicKey = new byte[privateKey.Length];
             Curve_sigs.curve25519_keygen(publicKey, privateKey);
             return publicKey;
-        }
+        }        
 
-        public byte[] PublicKey
-        {
-            get { return _publicKey.ToArray(); }
-            set { _publicKey = value; }
-        }
-
-        /**
-     * Generates a 15-word random seed. This method implements the BIP-39 algorithm with 160 bits of entropy.
-     * @return the seed as a String
-     */
         public static string GenerateSeed()
         {
             var bytes = new byte[160 + 5];
@@ -97,30 +87,21 @@ namespace WavesCS
             var rhash = SHA256.ComputeHash(bytes, 0, 160);
             Array.Copy(rhash, 0, bytes, 160, 5);
             var rand = new BigInteger(bytes);
-            if(_seedWords == null)
+            if (_seedWords == null)
             {
                 var reader = new StreamReader("SeedWords.json");
                 var json = reader.ReadToEnd();
-                var items = serializer.Deserialize<Dictionary<string, List<string>>>(json);
+                var items = Serializer.Deserialize<Dictionary<string, List<string>>>(json);
                 _seedWords = items["words"];
-            }                  
+            }
             var result = new List<BigInteger>();
-            for(int i = 0; i < 15; i++)
+            for (int i = 0; i < 15; i++)
             {
                 result.Add(rand);
                 rand = rand >> 11;
-            }
-            var mask = new BigInteger(new byte[] { unchecked((byte)-1), 7, 0, 0 }); // 11 lower bits
-            return string.Join(" ", result.Select(bigint => _seedWords[(int)(bigint & mask)]));         
-        }
-
-        public static IEnumerable<T> Iterate<T>(T seed, Func<T, T> unaryOperator)
-        {
-            while (true)
-            {
-                yield return seed;
-                seed = unaryOperator(seed);
-            }
+            }                       
+            var mask = new BigInteger(new byte[] { 255, 7, 0, 0 }); // 11 lower bits
+            return string.Join(" ", result.Select(bigint => _seedWords[ (int) (bigint & mask)]));         
         }
     }
 }

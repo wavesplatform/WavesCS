@@ -9,44 +9,31 @@ namespace WavesCS
 {
     public class Node
     {
-        public static readonly String defaultNode = "https://testnode2.wavesnodes.com";
+        private const string DefaultNode = "https://testnode2.wavesnodes.com";
 
-        private readonly Uri Host;        
-        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        private readonly Uri _host;        
+        private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
         private const string MatcherPath = "/matcher";
-        private const string OrderStatusString = "status";
 
-        public Node()
+        public Node(string uri = DefaultNode)
         {
-            try
-            {
-                Host = new Uri(defaultNode);
-            }
-            catch (UriFormatException e)
-            {
-                throw new SystemException(e.Message);
-            }
-        }
-
-        public Node(string uri)
-        {
-            Host = new Uri(uri);
+            _host = new Uri(uri);
         }
 
         public T Get<T>(string url, string key)
         {
-            Console.WriteLine(Host + url);            
-            var json = new WebClient().DownloadString(Host + url);
-            dynamic result = serializer.DeserializeObject(json);
+            Console.WriteLine(_host + url);            
+            var json = new WebClient().DownloadString(_host + url);
+            dynamic result = _serializer.DeserializeObject(json);
             return result[key];
         }
         
         public T Get<T>(string url)
         {
-            Console.WriteLine(Host + url);            
-            var json = new WebClient().DownloadString(Host + url);
-            dynamic result = serializer.DeserializeObject(json);
+            Console.WriteLine(_host + url);            
+            var json = new WebClient().DownloadString(_host + url);
+            dynamic result = _serializer.DeserializeObject(json);
             return result;
         }
 
@@ -128,7 +115,6 @@ namespace WavesCS
 
         // Matcher transactions
 
-
         public string GetMatcherKey()
         {
             var json = Request<string>(MatcherPath);           
@@ -138,22 +124,22 @@ namespace WavesCS
         public string CreateOrder(PrivateKeyAccount account, string matcherKey, string amountAssetId, string priceAssetId,
                                   Order.OrderType orderType, long price, long amount, long expiration, long matcherFee)
         {
-            var transaction = Transaction.MakeOrderTransaction(account, matcherKey, orderType,
+            var transaction = Transaction.MakeOrder(account, matcherKey, orderType,
                     amountAssetId, priceAssetId, price, amount, expiration, matcherFee);            
-            return Request(transaction, false); 
+            return Request(transaction, "matcher/orderbook", false); 
         }
 
         public void CancelOrder(PrivateKeyAccount account,
                 string amountAssetId, string priceAssetId, string orderId, long fee)
         {
             var transaction = Transaction.MakeOrderCancelTransaction(account, amountAssetId, priceAssetId, orderId, fee);
-            Request(transaction, true);
+            Request(transaction, $"matcher/orderbook/{NormalizeAsset(amountAssetId)}/{NormalizeAsset(priceAssetId)}/cancel", true);
         }
 
         public OrderBook GetOrderBook(string asset1, string asset2)
         {
-            asset1 = Transaction.NormalizeAsset(asset1);
-            asset2 = Transaction.NormalizeAsset(asset2);
+            asset1 = NormalizeAsset(asset1);
+            asset2 = NormalizeAsset(asset2);
             string path = $"matcher/orderbook/{asset1}/{asset2}";
             var orderBookJson = Request<OrderBook.JsonOrderBook>(path);
             return new OrderBook(orderBookJson);
@@ -161,10 +147,10 @@ namespace WavesCS
 
         public string GetOrderStatus(string orderId, string asset1, string asset2)
         {
-            asset1 = Transaction.NormalizeAsset(asset1);
-            asset2 = Transaction.NormalizeAsset(asset2);
+            asset1 = NormalizeAsset(asset1);
+            asset2 = NormalizeAsset(asset2);
             string path = $"matcher/orderbook/{asset1}/{asset2}/{orderId}";
-            dynamic result = Get<string>(path, OrderStatusString);
+            dynamic result = Get<string>(path, "status");
             return result;
         }
 
@@ -188,10 +174,10 @@ namespace WavesCS
             var result = "";
             try
             {                
-                var uri = new Uri(Host + transaction.Endpoint);
+                var uri = new Uri(_host + "transactions/broadcast");
                 var currentClient = GetClientWithHeaders();
-                var json = currentClient.UploadString(uri, serializer.Serialize(transaction.Data));
-                var jsonTransaction = serializer.Deserialize<Transaction.JsonTransaction>(json);
+                var json = currentClient.UploadString(uri, _serializer.Serialize(transaction.Data));
+                var jsonTransaction = _serializer.Deserialize<Transaction.JsonTransaction>(json);
 
                 return jsonTransaction.Id;
             }
@@ -206,15 +192,15 @@ namespace WavesCS
             return result;
         }
 
-        private string  Request(Transaction transaction, bool isCancel)
+        private string Request(Transaction transaction, string path, bool isCancel)
         {            
             try
             {
-                string jsonTransaction = serializer.Serialize(transaction.Data);
-                Uri currentUri = new Uri(Host + transaction.Endpoint);
+                string jsonTransaction = _serializer.Serialize(transaction.Data);
+                Uri currentUri = new Uri(_host + path);
                 var clint = GetClientWithHeaders();
                 var json = clint.UploadString(currentUri, jsonTransaction);
-                var result = serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
+                var result = _serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
                 if (!isCancel)
                 {
                     var message = result.Message;
@@ -225,21 +211,21 @@ namespace WavesCS
             catch (WebException e)
             {
                 var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                Transaction.JsonTransactionError error = serializer.Deserialize<Transaction.JsonTransactionError>(resp);
+                Transaction.JsonTransactionError error = _serializer.Deserialize<Transaction.JsonTransactionError>(resp);
                 throw new IOException(error.Message);
             }
         }
 
         private T Request<T>(string path, params string[] headers)
         {
-            var uri = new Uri(Host + path);
+            var uri = new Uri(_host + path);
             var client = GetClientWithHeaders();
             for (int i = 0; i < headers.Length; i += 2)
             {
                 client.Headers.Add(headers[i], headers[i + 1]);
             }
             var json = client.DownloadString(uri);
-            var result = serializer.Deserialize<T>(json);
+            var result = _serializer.Deserialize<T>(json);
             return result;
         }
 
@@ -249,6 +235,11 @@ namespace WavesCS
             client.Headers.Add("Content-Type", "application/json");
             client.Headers.Add("Accept", "application/json");
             return client;
+        }
+        
+        public static string NormalizeAsset(string assetId)
+        {
+            return string.IsNullOrEmpty(assetId) ? "WAVES" : assetId;
         }
     }
 }
