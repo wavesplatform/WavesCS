@@ -89,7 +89,7 @@ namespace WavesCS
             writer.Write(Encoding.ASCII.GetBytes(name));
 
             int descriptionLegth = description?.Length ?? 0;
-            Utils.WriteShort(writer, (short)descriptionLegth);
+            writer.WriteShort((short)descriptionLegth);
             if (descriptionLegth > 0)
             {
                 writer.Write(Encoding.ASCII.GetBytes(description));

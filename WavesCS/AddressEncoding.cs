@@ -12,7 +12,7 @@ namespace WavesCS
         private static readonly IHash Keccak256 = HashFactory.Crypto.SHA3.CreateKeccak256();
 
         private static byte[] Hash(byte[] message, int offset, int lenght, IHash algorithm)
-        {
+        {            
             algorithm.Initialize();
             algorithm.TransformBytes(message, offset, lenght);
             return algorithm.TransformFinal().GetBytes();

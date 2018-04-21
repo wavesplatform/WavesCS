@@ -1,21 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <AssemblyTitle>WavesCSTests</AssemblyTitle>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net451</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\WavesCS\WavesCS.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
-
 </Project>
