@@ -2,6 +2,7 @@
 using WavesCS;
 using System.Web.Script.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCSTests
 {
@@ -25,19 +26,19 @@ namespace WavesCSTests
             var assetId = "AssetAssetAssetAssetAssetAssetAs";
             var transactionId = "TransactionTransactionTransactio";
 
-            Dump("alias", Transaction.MakeAliasTransaction(account, "daphnie", AddressEncoding.TestNet, FEE));
-            Dump("burn", Transaction.MakeBurnTransaction(account, assetId, AMOUNT, FEE));
-            Dump("issue", Transaction.MakeIssueTransaction(account, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
-            Dump("reissue", Transaction.MakeReissueTransaction(account, assetId, AMOUNT, false, FEE));
-            Dump("lease", Transaction.MakeLeaseTransaction(account, recipient, AMOUNT, FEE));
-            Dump("lease cancel", Transaction.MakeLeaseCancelTransaction(account, transactionId, FEE));
-            Dump("xfer", Transaction.MakeTransferTransaction(account, recipient, AMOUNT, null, FEE, null, "Shut up & take my money"));
+            Dump("alias", Transactions.MakeAliasTransaction(account, "daphnie", AddressEncoding.TestNet, FEE));
+            Dump("burn", Transactions.MakeBurnTransaction(account, assetId, AMOUNT, FEE));
+            Dump("issue", Transactions.MakeIssueTransaction(account, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
+            Dump("reissue", Transactions.MakeReissueTransaction(account, assetId, AMOUNT, false, FEE));
+            Dump("lease", Transactions.MakeLeaseTransaction(account, recipient, AMOUNT, FEE));
+            Dump("lease cancel", Transactions.MakeLeaseCancelTransaction(account, transactionId, FEE));
+            Dump("xfer", Transactions.MakeTransferTransaction(account, recipient, AMOUNT, null, FEE, null, "Shut up & take my money"));
         }
 
-        private void Dump(String header, Transaction transaction)
+        private void Dump(String header, DictionaryObject transaction)
         {
             TestContext.WriteLine("*** " + header + " ***");
-            TestContext.WriteLine("Transaction data: " + serializer.Serialize(transaction.Data));
+            TestContext.WriteLine("Transaction data: " + serializer.Serialize(transaction));
             TestContext.WriteLine("");
         }
     }

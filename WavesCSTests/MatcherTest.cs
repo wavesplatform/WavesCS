@@ -26,7 +26,7 @@ namespace WavesCSTests
         {
             var matcher = new Matcher("https://matcher.wavesnodes.com");
 
-            Assert.AreEqual("CRxqEuxhdZBEHX42MU4FfyJxuHmbDBTaHMhM3Uki7pLw", matcher.MatcherKey);
+            Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
         }        
         
         [TestMethod]
@@ -38,7 +38,7 @@ namespace WavesCSTests
             
             Assert.IsNotNull(orderBook);
             
-            Assert.AreEqual((orderBook.Timestamp - DateTime.Now).TotalSeconds, 0, 5);            
+            Assert.AreEqual((orderBook.Timestamp - DateTime.UtcNow).TotalSeconds, 0, 5);            
             
             Assert.IsTrue(orderBook.Bids.Length > 10);
             Assert.IsTrue(orderBook.Asks.Length > 10);

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Channels;
 using System.Web.Script.Serialization;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -22,20 +21,20 @@ namespace WavesCS
             return (string) Serializer.DeserializeObject(json);
         }                       
 
-        public static Dictionary<string, object> GetObject(string url, params object[] parameters)
+        public static DictionaryObject GetObject(string url, params object[] parameters)
         {            
             var json = GetJson(string.Format(url, parameters));            
             return (Dictionary<string, object>) Serializer.DeserializeObject(json);
         }
         
-        public static Dictionary<string, object> GetObjectWithHeaders(string url, NameValueCollection headers)
+        public static DictionaryObject GetObjectWithHeaders(string url, NameValueCollection headers)
         {
-            return GetWithHeaders<Dictionary<string, object>>(url, headers);
+            return GetWithHeaders<DictionaryObject>(url, headers);
         }
         
-        public static Dictionary<string, object>[] GetObjectsWithHeaders(string url, NameValueCollection headers)
+        public static DictionaryObject[] GetObjectsWithHeaders(string url, NameValueCollection headers)
         {
-            return GetWithHeaders<object[]>(url, headers).Cast<Dictionary<string, object>>().ToArray();
+            return GetWithHeaders<object[]>(url, headers).Cast<DictionaryObject>().ToArray();
         }
         
         public static T GetWithHeaders<T>(string url, NameValueCollection headers)
@@ -55,7 +54,7 @@ namespace WavesCS
             return result;
         }      
         
-        public static string Post(string url, Dictionary<string, object> data, NameValueCollection headers = null)
+        public static string Post(string url, DictionaryObject data, NameValueCollection headers = null)
         {
             var client = new WebClient();
             client.Headers.Add("Content-Type", "application/json");

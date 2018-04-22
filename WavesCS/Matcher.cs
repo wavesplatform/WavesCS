@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -109,14 +110,14 @@ namespace WavesCS
             };
         }
         
-        public static Dictionary<string, object> MakeOrderCancelRequest(PrivateKeyAccount sender, string orderId)
+        public static DictionaryObject MakeOrderCancelRequest(PrivateKeyAccount sender, string orderId)
         {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
             writer.Write(sender.PublicKey);
             writer.Write(Base58.Decode(orderId));
             string signature = sender.Sign(stream);
-            return new Dictionary<string, object>
+            return new DictionaryObject
             {
                 {"sender", sender.PublicKey.ToBase58()},
                 {"orderId", orderId},
@@ -124,7 +125,7 @@ namespace WavesCS
             };
         }
         
-        public static Dictionary<string, object> MakeOrder(PrivateKeyAccount sender, string matcherKey, OrderSide side,
+        public static DictionaryObject MakeOrder(PrivateKeyAccount sender, string matcherKey, OrderSide side,
             string amountAssetId, string priceAssetId, long price, long amount, DateTime expiration, long matcherFee)
         {
             long timestamp = Utils.CurrentTimestamp();
@@ -143,10 +144,10 @@ namespace WavesCS
             writer.WriteLong(matcherFee);
             string signature = sender.Sign(stream);
 
-            return new Dictionary<string, object> {
+            return new DictionaryObject {
                 { "senderPublicKey", Base58.Encode(sender.PublicKey) },
                 { "matcherPublicKey", matcherKey },
-                { "assetPair", new Dictionary<string, object> {
+                { "assetPair", new DictionaryObject {
                     {"amountAsset", amountAssetId},
                     {"priceAsset", priceAssetId }}
                 },

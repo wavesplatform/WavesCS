@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -36,63 +36,63 @@ namespace WavesCS
       
         public string Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
         { 
-            var transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, null, fee, null, message);
+            var transaction = Transactions.MakeTransferTransaction(from, toAddress, amount, null, fee, null, message);
             return Broadcast(transaction);
         }
 
         public string TransferAsset(PrivateKeyAccount from, string toAddress,
                 long amount, string assetId, long fee, string feeAssetId, string message)
         {
-            var transaction = Transaction.MakeTransferTransaction(from, toAddress, amount, assetId, fee, feeAssetId, message);
+            var transaction = Transactions.MakeTransferTransaction(from, toAddress, amount, assetId, fee, feeAssetId, message);
             return Broadcast(transaction);
         }
 
         public string Lease(PrivateKeyAccount from, string toAddress, long amount, long fee)
         {
-            var transaction = Transaction.MakeLeaseTransaction(from, toAddress, amount, fee);
+            var transaction = Transactions.MakeLeaseTransaction(from, toAddress, amount, fee);
             return Broadcast(transaction);
         }
 
         public string CancelLease(PrivateKeyAccount account, string transactionId, long fee)
         {
-            var transaction = Transaction.MakeLeaseCancelTransaction(account, transactionId, fee);
+            var transaction = Transactions.MakeLeaseCancelTransaction(account, transactionId, fee);
             return Broadcast(transaction);
         }
 
         public string IssueAsset(PrivateKeyAccount account,
                 string name, string description, long quantity, int decimals, bool reissuable, long fee)
         {
-            var transaction = Transaction.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
+            var transaction = Transactions.MakeIssueTransaction(account, name, description, quantity, decimals, reissuable, fee);
             return Broadcast(transaction);
         }
 
         public string ReissueAsset(PrivateKeyAccount account, string assetId, long quantity, bool reissuable, long fee)
         {
-            var transaction = Transaction.MakeReissueTransaction(account, assetId, quantity, reissuable, fee);
+            var transaction = Transactions.MakeReissueTransaction(account, assetId, quantity, reissuable, fee);
             return Broadcast(transaction);
         }
 
         public string BurnAsset(PrivateKeyAccount account, string assetId, long amount, long fee)
         {
-            var transaction = Transaction.MakeBurnTransaction(account, assetId, amount, fee);
+            var transaction = Transactions.MakeBurnTransaction(account, assetId, amount, fee);
             return Broadcast(transaction);
         }
 
         public string Alias(PrivateKeyAccount account, string alias, char scheme, long fee)
         {
-            var transaction = Transaction.MakeAliasTransaction(account, alias, scheme, fee);
+            var transaction = Transactions.MakeAliasTransaction(account, alias, scheme, fee);
             return Broadcast(transaction);
         }
         
-        public String PutData(PrivateKeyAccount account, Dictionary<string, object> entries, long fee)
+        public String PutData(PrivateKeyAccount account, DictionaryObject entries, long fee)
         {
-            var transaction = Transaction.MakeDataTransaction(account, entries, fee);
+            var transaction = Transactions.MakeDataTransaction(account, entries, fee);
             return Broadcast(transaction);
         }
 
-        public string Broadcast(Transaction transaction)
+        public string Broadcast(DictionaryObject transaction)
         {
-            return Api.Post($"{_host}/transactions/broadcast", transaction.Data);
+            return Api.Post($"{_host}/transactions/broadcast", transaction);
         }
     }
 }

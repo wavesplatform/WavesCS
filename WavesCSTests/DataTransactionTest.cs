@@ -13,10 +13,9 @@ namespace WavesCSTests
         [TestMethod]
         public void TestDataTransaction()
         {
-            var node = new Node("http://3.unblock.wavesnodes.com:6869");                        
+            var node = new Node();                        
             
-            // 3NQLzWYQi22dX3djSFdAS2yKeuqHNM5vGSS
-            var account = PrivateKeyAccount.CreateFromSeed("my seed", 'U');
+            var account = PrivateKeyAccount.CreateFromSeed("general rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme", AddressEncoding.TestNet);
 
             var data = new Dictionary<string, object>
             {
@@ -26,9 +25,9 @@ namespace WavesCSTests
                 { "test bytes", new byte[] { 1, 2, 3, 4, 5}}                
             };
 
-            var tx = Transaction.MakeDataTransaction(account, data, 100000);
+            var tx = Transactions.MakeDataTransaction(account, data, 100000);
             
-            TestContext.WriteLine(tx.Data.ToJson());
+            TestContext.WriteLine(tx.ToJson());
             
             TestContext.WriteLine("Response tx id: " + node.Broadcast(tx));
                                   
