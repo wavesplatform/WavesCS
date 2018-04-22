@@ -1,39 +1,57 @@
-﻿namespace WavesCS
+﻿using System;
+using System.Collections.Generic;
+
+namespace WavesCS
 {
+
+    public enum OrderStatus
+    {
+        Accepted,
+        Filled,
+        PartiallyFilled,
+        Cancelled,
+        NotFound
+    }
+    
     public class Order
     {
-        public class OrderType
+        public string Id { get; }
+        public OrderSide Side { get; }
+        public long Amount { get; }
+        public long Price { get; }
+        public DateTime Timestamp { get; }
+        public long Filled { get; }
+        public OrderStatus Status { get; }
+        public string AmountAsset { get; }
+        public string PriceAsset { get; }
+
+        public Order(
+            string id, OrderSide side, long amount, long price, DateTime timestamp, long filled, OrderStatus status,
+            string amountAsset, string priceAsset)
         {
-            public readonly string Json;
-
-            public OrderType(string json)
-            {
-                Json = json;
-            }
-
-            public int Ordinal => Json == "buy" ? 0 : 1;
-        }
-        public readonly long Price;
-        public readonly long Amount;
-        public readonly OrderType Type;
-
-        public Order(long price, long amount)
-        {
-            Price = price;
+            Id = id;
+            Side = side;
             Amount = amount;
+            Price = price;
+            Timestamp = timestamp;
+            Filled = filled;
+            Status = status;
+            AmountAsset = amountAsset;
+            PriceAsset = priceAsset;
         }
 
-        public Order(string type)
+        public static Order CreateFromJson(Dictionary<string, object> json)
         {
-            if(type == "sell" || type == "buy")
-            {
-                this.Type = new OrderType(type);
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"Order[price={Price}, amount={Amount}]";
+            return new Order(
+                json.GetString("id"),
+                (OrderSide) Enum.Parse(typeof(OrderSide), json.GetString("type"), true),
+                json.GetLong("amount"),
+                json.GetLong("price"),
+                json.GetDate("timestamp"),
+                json.GetLong("filled"),
+                (OrderStatus) Enum.Parse(typeof(OrderStatus), json.GetString("status")),
+                json.GetString("assetPair.amountAsset"),
+                json.GetString("assetPair.priceAsset"));
         }
     }
 }

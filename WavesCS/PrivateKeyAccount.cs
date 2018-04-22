@@ -7,14 +7,16 @@ using System.Security.Cryptography;
 using System.Numerics;
 using System.Web.Script.Serialization;
 using System.Collections.Generic;
+using org.whispersystems.curve25519;
 
 namespace WavesCS
 {
     public class PrivateKeyAccount
     {
         private static readonly SHA256Managed SHA256 = new SHA256Managed();
-        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
+        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
 
+        private static readonly Curve25519 Cipher = Curve25519.getInstance(Curve25519.BEST);
                 
         private readonly byte[] _privateKey;
         private readonly byte[] _publicKey;
@@ -101,7 +103,14 @@ namespace WavesCS
                 rand = rand >> 11;
             }                       
             var mask = new BigInteger(new byte[] { 255, 7, 0, 0 }); // 11 lower bits
-            return string.Join(" ", result.Select(bigint => _seedWords[ (int) (bigint & mask)]));         
+            return String.Join(" ", result.Select(bigint => _seedWords[ (int) (bigint & mask)]));         
+        }
+
+        public string Sign(MemoryStream stream)
+        {
+            var bytesToSign = stream.ToArray();
+            var signature = Cipher.calculateSignature(PrivateKey, bytesToSign);
+            return Base58.Encode(signature);
         }
     }
 }

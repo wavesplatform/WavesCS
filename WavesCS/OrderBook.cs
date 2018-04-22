@@ -1,55 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace WavesCS
 {
     public class OrderBook
     {
-        public List<Order> bids, asks;
+        public DateTime Timestamp { get; }
+        public string AmountAsset { get; }
+        public string PriceAsset { get; }
+        public Item[] Bids { get; }
+        public Item[] Asks { get; }
 
-        public List<Order> Bids => bids;
-
-        public List<Order> Asks
+        public class Item
         {
-            get { return asks; }
+            public long Price { get; }
+            public long Amount { get; }
+
+            public Item(long price, long amount)
+            {
+                Price = price;
+                Amount = amount;
+            }
+        }
+         
+        public OrderBook(DateTime timestamp, string amountAsset, string priceAsset, Item[] bids, Item[] asks)
+        {
+            Timestamp = timestamp;
+            AmountAsset = amountAsset;
+            PriceAsset = priceAsset;
+            Bids = bids;
+            Asks = asks;
         }
 
-        public OrderBook(List<Order> bids, List<Order> asks)
+        public static OrderBook CreateFromJson(Dictionary<string, object> json)
         {
-            this.bids = bids;
-            this.asks = asks;
+            return new OrderBook(
+                json.GetDate("timestamp"),
+                json.GetString("pair.amountAsset"),
+                json.GetString("pair.priceAsset"),
+                json.GetObjects("bids").Select(o => new Item(o.GetLong("price"), o.GetLong("amount"))).ToArray(),
+                json.GetObjects("asks").Select(o => new Item(o.GetLong("price"), o.GetLong("amount"))).ToArray());
         }
-
-        public OrderBook(JsonOrderBook jsonOrderBook)
-        {
-            bids = jsonOrderBook.Bids.Select(x => new Order(x.Price, x.Amount)).ToList();
-            asks = jsonOrderBook.Asks.Select(x => new Order(x.Price, x.Amount)).ToList();
-        }
-
-        public class Assets
-        {
-            public string AmountAsset { get; set; }
-            public string PriceAsset { get; set; }
-        }
-
-        public class Ask
-        {
-            public long Price { get; set; }
-            public long Amount { get; set; }
-        }
-
-        public class Bid
-        {
-            public long Price { get; set; }
-            public long Amount { get; set; }
-        }
-
-        public class JsonOrderBook
-        {
-            public long Timestamp { get; set; }
-            public Assets Pair { get; set; }
-            public List<Bid> Bids { get; set; }
-            public List<Ask> Asks { get; set; }
-        }        
     }
 }

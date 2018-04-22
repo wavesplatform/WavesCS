@@ -104,6 +104,11 @@ namespace WavesCS
             Array.Copy(decoded, outputStart - leadingZerosCount, result, 0, decoded.Length - outputStart + leadingZerosCount);
             return result;
         }
+
+        public static string ToBase58(this byte[] data)
+        {
+            return Encode(data);
+        }
     }
 }
 

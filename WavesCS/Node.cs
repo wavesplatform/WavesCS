@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.IO;
-using System.Linq;
-using System.Web.Script.Serialization;
 
 namespace WavesCS
 {
@@ -11,50 +7,31 @@ namespace WavesCS
     {
         private const string DefaultNode = "https://testnode2.wavesnodes.com";
 
-        private readonly Uri _host;        
-        private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
+        private readonly string _host;                
 
-        private const string MatcherPath = "/matcher";
-
-        public Node(string uri = DefaultNode)
+        public Node(string nodeHost = DefaultNode)
         {
-            _host = new Uri(uri);
-        }
-
-        public T Get<T>(string url, string key)
-        {
-            Console.WriteLine(_host + url);            
-            var json = new WebClient().DownloadString(_host + url);
-            dynamic result = _serializer.DeserializeObject(json);
-            return result[key];
-        }
-        
-        public T Get<T>(string url)
-        {
-            Console.WriteLine(_host + url);            
-            var json = new WebClient().DownloadString(_host + url);
-            dynamic result = _serializer.DeserializeObject(json);
-            return result;
+            _host = nodeHost;
         }
 
         public int GetHeight()
         {
-            return Get<int>("blocks/height", "height");
+            return Api.GetObject($"{_host}/blocks/height").GetInt("height");
         }
 
         public long GetBalance(string address)
         {
-            return Get<long>($"addresses/balance/{address}", "balance");
+            return  Api.GetObject($"{_host}/addresses/balance/{address}").GetLong("balance");
         }
 
         public long GetBalance(string address, int confirmations)
         {
-            return Get<long>($"addresses/balance/{address}/{confirmations}", "balance");
+            return Api.GetObject($"{_host}/addresses/balance/{address}/{confirmations}").GetLong("balance");
         }
 
         public long GetBalance(string address, string assetId)
         {
-            return Get<long>($"assets/balance/{address}/{assetId}", "balance"); 
+            return Api.GetObject($"{_host}/assets/balance/{address}/{assetId}").GetLong("balance"); 
         }
       
         public string Transfer(PrivateKeyAccount from, String toAddress, long amount, long fee, String message)
@@ -113,133 +90,9 @@ namespace WavesCS
             return Broadcast(transaction);
         }
 
-        // Matcher transactions
-
-        public string GetMatcherKey()
-        {
-            var json = Request<string>(MatcherPath);           
-            return json;
-        }
-
-        public string CreateOrder(PrivateKeyAccount account, string matcherKey, string amountAssetId, string priceAssetId,
-                                  Order.OrderType orderType, long price, long amount, long expiration, long matcherFee)
-        {
-            var transaction = Transaction.MakeOrder(account, matcherKey, orderType,
-                    amountAssetId, priceAssetId, price, amount, expiration, matcherFee);            
-            return Request(transaction, "matcher/orderbook", false); 
-        }
-
-        public void CancelOrder(PrivateKeyAccount account,
-                string amountAssetId, string priceAssetId, string orderId, long fee)
-        {
-            var transaction = Transaction.MakeOrderCancelTransaction(account, amountAssetId, priceAssetId, orderId, fee);
-            Request(transaction, $"matcher/orderbook/{NormalizeAsset(amountAssetId)}/{NormalizeAsset(priceAssetId)}/cancel", true);
-        }
-
-        public OrderBook GetOrderBook(string asset1, string asset2)
-        {
-            asset1 = NormalizeAsset(asset1);
-            asset2 = NormalizeAsset(asset2);
-            string path = $"matcher/orderbook/{asset1}/{asset2}";
-            var orderBookJson = Request<OrderBook.JsonOrderBook>(path);
-            return new OrderBook(orderBookJson);
-        }
-
-        public string GetOrderStatus(string orderId, string asset1, string asset2)
-        {
-            asset1 = NormalizeAsset(asset1);
-            asset2 = NormalizeAsset(asset2);
-            string path = $"matcher/orderbook/{asset1}/{asset2}/{orderId}";
-            dynamic result = Get<string>(path, "status");
-            return result;
-        }
-
-        public string GetOrders(PrivateKeyAccount account)
-        {
-            long timestamp = Utils.CurrentTimestamp();
-            var stream = new MemoryStream(40);
-            var writer = new BinaryWriter(stream);
-            writer.Write(account.PublicKey);
-
-            writer.WriteLong(timestamp);
-            string signature = Transaction.Sign(account, stream);
-            string path = "matcher/orderBook/" + Base58.Encode(account.PublicKey);
-            string json = Request<String>(path, "Timestamp", Convert.ToString(timestamp), "Signature", signature);
-
-            return json;
-        }
-
         public string Broadcast(Transaction transaction)
         {
-            var result = "";
-            try
-            {                
-                var uri = new Uri(_host + "transactions/broadcast");
-                var currentClient = GetClientWithHeaders();
-                var json = currentClient.UploadString(uri, _serializer.Serialize(transaction.Data));
-                var jsonTransaction = _serializer.Deserialize<Transaction.JsonTransaction>(json);
-
-                return jsonTransaction.Id;
-            }
-            catch (WebException e)
-            {
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                    throw new IOException(resp); 
-                }
-            }
-            return result;
-        }
-
-        private string Request(Transaction transaction, string path, bool isCancel)
-        {            
-            try
-            {
-                string jsonTransaction = _serializer.Serialize(transaction.Data);
-                Uri currentUri = new Uri(_host + path);
-                var clint = GetClientWithHeaders();
-                var json = clint.UploadString(currentUri, jsonTransaction);
-                var result = _serializer.Deserialize<Transaction.JsonTransactionWithStatus>(json);
-                if (!isCancel)
-                {
-                    var message = result.Message;
-                    return message.Id;
-                }
-                return "";
-            }
-            catch (WebException e)
-            {
-                var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                Transaction.JsonTransactionError error = _serializer.Deserialize<Transaction.JsonTransactionError>(resp);
-                throw new IOException(error.Message);
-            }
-        }
-
-        private T Request<T>(string path, params string[] headers)
-        {
-            var uri = new Uri(_host + path);
-            var client = GetClientWithHeaders();
-            for (int i = 0; i < headers.Length; i += 2)
-            {
-                client.Headers.Add(headers[i], headers[i + 1]);
-            }
-            var json = client.DownloadString(uri);
-            var result = _serializer.Deserialize<T>(json);
-            return result;
-        }
-
-        private static WebClient GetClientWithHeaders()
-        {
-            var client = new WebClient();
-            client.Headers.Add("Content-Type", "application/json");
-            client.Headers.Add("Accept", "application/json");
-            return client;
-        }
-        
-        public static string NormalizeAsset(string assetId)
-        {
-            return string.IsNullOrEmpty(assetId) ? "WAVES" : assetId;
+            return Api.Post($"{_host}/transactions/broadcast", transaction.Data);
         }
     }
 }

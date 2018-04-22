@@ -16,14 +16,21 @@ namespace WavesCSTests
         
         public TestContext TestContext { get; set; }
 
+        [TestInitialize]
+        public void Initialize()
+        {
+            Api.DataProcessed += s => TestContext.WriteLine(s);
+        }
+        
+        
         [TestMethod]
         public void TestGetters()
         {
             var node = new Node();
             Assert.IsTrue(node.GetHeight() > 0);
-//            Assert.IsTrue(node.GetBalance(bob.Address) >= 0);
-//            Assert.IsTrue(node.GetBalance(bob.Address, 100) >= 0);
-//            Assert.IsTrue(node.GetBalance(bob.Address, WBTC) >= 0);
+            Assert.IsTrue(node.GetBalance(bob.Address) >= 0);
+            Assert.IsTrue(node.GetBalance(bob.Address, 100) >= 0);
+            Assert.IsTrue(node.GetBalance(bob.Address, WBTC) >= 0);
         }
 
         [TestMethod]
@@ -38,24 +45,5 @@ namespace WavesCSTests
             Assert.IsNotNull(transactionId);
         }               
 
-        [TestMethod]
-        public void TestMatcher()
-        {
-            var matcher = new Node("https://testnet1.wavesnodes.com");
-            string matcherKey = "CRxqEuxhdZBEHX42MU4FfyJxuHmbDBTaHMhM3Uki7pLw";
-            long timestamp = Utils.CurrentTimestamp();
-
-            var orderBook = matcher.GetOrderBook(null, WBTC);
-            Assert.IsNotNull(orderBook);            
-
-            string orderId = matcher.CreateOrder(alice, matcherKey, "", WBTC,
-               new Order("sell").Type, 1, 100000000, timestamp + 3600000, 500000);
-            Assert.IsNotNull(orderId);
-
-            string status = matcher.GetOrderStatus(orderId, "", WBTC);
-            Assert.AreEqual("Accepted", status);
-         
-            matcher.CancelOrder(alice, "", WBTC, orderId, 400000);
-        }
     }
 }

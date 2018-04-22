@@ -35,12 +35,31 @@ namespace WavesCS
         public static long CurrentTimestamp()
         {
             long epochTicks = new DateTime(1970, 1, 1).Ticks;
-            return (DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond * 1000;
+            return (DateTime.UtcNow.Ticks - epochTicks) / (TimeSpan.TicksPerSecond / 1000);
+        }
+        
+        public static long DateToTimestamp(this DateTime date)
+        {
+            return (date - new DateTime(1970, 1, 1)).Ticks / (TimeSpan.TicksPerSecond / 1000);             
         }
 
         public static string ToJson(this Dictionary<string, object> data)
         {
             return Serializer.Serialize(data);
         }
+        
+        public static void WriteAsset(this BinaryWriter stream, string assetId)
+        {
+            if (string.IsNullOrEmpty(assetId))
+            {
+                stream.WriteByte(0);
+            }
+            else
+            {
+                stream.WriteByte(1);
+                var decoded = Base58.Decode(assetId);
+                stream.Write(decoded, 0, decoded.Length);
+            }
+        }  
     }
 }
