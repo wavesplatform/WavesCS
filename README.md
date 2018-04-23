@@ -12,7 +12,7 @@ using WavesCS;
 
 If you want to work with full WavesCS project as contributor you should use also all crypto **.dll** from releases in your References.
 
-Target framework .NET Framework 4.6.1
+Target framework .NET Framework 4.5.1
 ## Documentation
 
 The library utilizes classes to represent various Waves data structures and encoding and serialization methods:
