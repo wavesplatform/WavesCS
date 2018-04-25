@@ -17,6 +17,7 @@ namespace WavesCS
         Lease = 8,
         LeaseCancel = 9,
         Alias = 10,
+        MassTransfer = 11,
         DataTx = 12,    
     }
     
@@ -127,8 +128,59 @@ namespace WavesCS
             };
         }
 
+        public static DictionaryObject MakeMassTransferTransaction(PrivateKeyAccount account, List<MassTransferRecipient> transfers,
+           String assetId, long fee, String feeAssetId, String attachment)
+        {
+            byte[] attachmentBytes = Encoding.UTF8.GetBytes(attachment ?? "");
+            long timestamp = Utils.CurrentTimestamp();
+            const byte version = 1;
+
+            MemoryStream stream = new MemoryStream(MinBufferSize);
+            BinaryWriter writer = new BinaryWriter(stream);
+            writer.Write(TransactionType.MassTransfer);
+            writer.Write(version);
+            writer.Write(account.PublicKey);
+            writer.WriteAsset(assetId);
+            writer.WriteShort(transfers.Count);
+            foreach (var recipient in transfers)
+            {
+                writer.Write(Base58.Decode(recipient.recipient));
+                writer.WriteLong(recipient.amount);
+            }
+            writer.WriteLong(timestamp);
+            writer.WriteLong(fee);
+            writer.WriteShort((short)attachmentBytes.Length);
+            writer.Write(attachmentBytes);
+            string signature = account.Sign(stream);
+
+            return new DictionaryObject
+            {
+                { "type", TransactionType.MassTransfer},
+                { "version", version},
+                { "senderPublicKey", Base58.Encode(account.PublicKey)},
+                { "proofs", new[] { signature }},
+                { "transfers", transfers.ToArray()},
+                { "assetId", assetId},
+                { "fee", fee},
+                { "timestamp", timestamp},
+                { "attachment", Base58.Encode(attachmentBytes)}
+            };
+        }
+
+        public class MassTransferRecipient
+        {
+            public MassTransferRecipient(string recipient, long amount)
+            {
+                this.recipient = recipient;
+                this.amount = amount;
+            }
+            public string recipient { get; set; }
+            public long amount { get; set; }
+        }
+
         public static DictionaryObject MakeBurnTransaction(PrivateKeyAccount account, String assetId, long amount, long fee)
         {
+            
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(MinBufferSize);
             var writer = new BinaryWriter(stream);
