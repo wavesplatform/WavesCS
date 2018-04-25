@@ -26,8 +26,8 @@ namespace WavesCSTests
             };
 
             var tx = Transactions.MakeDataTransaction(account, data, 100000);
-            
-            TestContext.WriteLine(tx.ToJson());
+            var txJson = tx.ToJson();
+            TestContext.WriteLine(txJson);
             
             TestContext.WriteLine("Response tx id: " + node.Broadcast(tx));
                                   

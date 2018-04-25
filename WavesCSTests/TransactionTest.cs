@@ -3,6 +3,8 @@ using WavesCS;
 using System.Web.Script.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
+using static WavesCS.Transactions;
+using System.Collections.Generic;
 
 namespace WavesCSTests
 {
@@ -26,6 +28,10 @@ namespace WavesCSTests
             var assetId = "AssetAssetAssetAssetAssetAssetAs";
             var transactionId = "TransactionTransactionTransactio";
 
+            List<MassTransferRecipient> recipients = new List<MassTransferRecipient>();
+            recipients.Add(new MassTransferRecipient(recipient, AMOUNT));
+            recipients.Add(new MassTransferRecipient(recipient, AMOUNT));
+
             Dump("alias", Transactions.MakeAliasTransaction(account, "daphnie", AddressEncoding.TestNet, FEE));
             Dump("burn", Transactions.MakeBurnTransaction(account, assetId, AMOUNT, FEE));
             Dump("issue", Transactions.MakeIssueTransaction(account, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
@@ -33,6 +39,7 @@ namespace WavesCSTests
             Dump("lease", Transactions.MakeLeaseTransaction(account, recipient, AMOUNT, FEE));
             Dump("lease cancel", Transactions.MakeLeaseCancelTransaction(account, transactionId, FEE));
             Dump("xfer", Transactions.MakeTransferTransaction(account, recipient, AMOUNT, null, FEE, null, "Shut up & take my money"));
+            Dump("massxfer", Transactions.MakeMassTransferTransaction(account, recipients, null, FEE, null, "Shut up & take my money"));
         }
 
         private void Dump(String header, DictionaryObject transaction)
