@@ -9,9 +9,9 @@ namespace WavesCSTests
     {
         private static readonly long AMOUNT = 100000000L;
         private static readonly long FEE = 100000;
-        private static readonly String WBTC = "Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe";
+        private static readonly string WBTC = "Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe";
 
-        private static readonly PrivateKeyAccount alice = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
+        private static readonly PrivateKeyAccount alice = PrivateKeyAccount.CreateFromPrivateKey("DMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54o", AddressEncoding.TestNet);
         private static readonly PrivateKeyAccount bob = PrivateKeyAccount.CreateFromPrivateKey("25Um7fKYkySZnweUEVAn9RLtxN5xHRd7iqpqYSMNQEeT", AddressEncoding.TestNet);
         
         public TestContext TestContext { get; set; }
@@ -37,6 +37,7 @@ namespace WavesCSTests
         public void TestTransfer()
         {
             var node = new Node();
+            
             string transactionId = node.Transfer(alice, bob.Address, AMOUNT, FEE, "Hi Bob!");
             Assert.IsNotNull(transactionId);
 

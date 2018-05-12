@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Script.Serialization;
@@ -56,16 +57,25 @@ namespace WavesCS
         
         public static string Post(string url, DictionaryObject data, NameValueCollection headers = null)
         {
-            var client = new WebClient();
-            client.Headers.Add("Content-Type", "application/json");
-            client.Headers.Add("Accept", "application/json");
-            if (headers != null)
-                client.Headers.Add(headers);            
-            var json = Serializer.Serialize(data);
-            OnDataProcessed($"Sending: {json}");
-            var response = client.UploadString(url, json);
-            OnDataProcessed($"Response: {response}");
-            return response;		
+            try
+            {            
+                var client = new WebClient();
+                client.Headers.Add("Content-Type", "application/json");
+                client.Headers.Add("Accept", "application/json");
+                if (headers != null)
+                    client.Headers.Add(headers);            
+                var json = Serializer.Serialize(data);
+                OnDataProcessed($"Sending: {json}");
+                var response = client.UploadString(url, json);
+                OnDataProcessed($"Response: {response}");
+                return response;
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
+                throw;
+            }
         }
 
         private static void OnDataProcessed(string obj)
