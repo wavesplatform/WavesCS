@@ -32,3 +32,6 @@ Code examples are in [WavesCSTests](https://github.com/wavesplatform/WavesCS/tre
 
 ### Source code
 [WavesCS Github repository](https://github.com/wavesplatform/WavesCS)
+
+### Toic on Waves Forum
+https://forum.wavesplatform.com/t/wavescs-c-client-library-for-waves-api/83
