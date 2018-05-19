@@ -28,9 +28,11 @@ namespace WavesCSTests
             var assetId = "AssetAssetAssetAssetAssetAssetAs";
             var transactionId = "TransactionTransactionTransactio";
 
-            List<MassTransferRecipient> recipients = new List<MassTransferRecipient>();
-            recipients.Add(new MassTransferRecipient(recipient, AMOUNT));
-            recipients.Add(new MassTransferRecipient(recipient, AMOUNT));
+            var recipients = new List<MassTransferRecipient>
+            {
+                new MassTransferRecipient(recipient, AMOUNT),
+                new MassTransferRecipient(recipient, AMOUNT)
+            };
 
             Dump("alias", Transactions.MakeAliasTransaction(account, "daphnie", AddressEncoding.TestNet, FEE));
             Dump("burn", Transactions.MakeBurnTransaction(account, assetId, AMOUNT, FEE));

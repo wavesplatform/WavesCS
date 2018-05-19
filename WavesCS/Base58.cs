@@ -57,12 +57,13 @@ namespace WavesCS
             {
                 int digit = number[i] & 0xFF;
                 int temp = remainder * baseOfRepresentation + digit;
-                number[i] = (byte)(temp / divisor);
+                number[i] = (byte) (temp / divisor);
                 remainder = temp % divisor;
             }
-            return (byte)remainder;
+
+            return (byte) remainder;
         }
-        
+
         public static byte[] Decode(string input)
         {
             if (input.Length == 0)

@@ -15,8 +15,6 @@ namespace WavesCSTests
         {
             var node = new Node();                        
             
-            var account = PrivateKeyAccount.CreateFromSeed("general rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme", AddressEncoding.TestNet);
-
             var data = new Dictionary<string, object>
             {
                 { "test long", 1001L },
@@ -25,12 +23,11 @@ namespace WavesCSTests
                 { "test bytes", new byte[] { 1, 2, 3, 4, 5}}                
             };
 
-            var tx = Transactions.MakeDataTransaction(account, data, 100000);
+            var tx = Transactions.MakeDataTransaction(Accounts.Alice, data, 100000);
             var txJson = tx.ToJson();
             TestContext.WriteLine(txJson);
             
-            TestContext.WriteLine("Response tx id: " + node.Broadcast(tx));
-                                  
+            TestContext.WriteLine("Response tx id: " + node.Broadcast(tx));                                  
         }
     }
 }

@@ -10,15 +10,7 @@ namespace WavesCSTests
     public class MatcherTest
     {
         private static readonly string WBTC = "Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe";
-//
-//        private static readonly PrivateKeyAccount alice = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
-//        private static readonly PrivateKeyAccount bob = PrivateKeyAccount.CreateFromPrivateKey("25Um7fKYkySZnweUEVAn9RLtxN5xHRd7iqpqYSMNQEeT", AddressEncoding.TestNet);
 
-        private static readonly PrivateKeyAccount account = PrivateKeyAccount.CreateFromSeed(
-            "general rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme",
-            AddressEncoding.TestNet);
-        
-        
         public TestContext TestContext { get; set; }
 
         [TestMethod]
@@ -27,6 +19,9 @@ namespace WavesCSTests
             var matcher = new Matcher("https://matcher.wavesnodes.com");
 
             Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
+            
+            
+            Console.Write(new Node().GetBalance(Accounts.Carol.Address));
         }        
         
         [TestMethod]
@@ -58,7 +53,7 @@ namespace WavesCSTests
         {
             var matcher = new Matcher("https://testnet1.wavesnodes.com");
 
-            var balance = matcher.GetTradableBalance(account.Address, null, WBTC);
+            var balance = matcher.GetTradableBalance(Accounts.Carol.Address, null, WBTC);
 
             Assert.AreEqual(2, balance.Count);
             Assert.IsTrue(balance["WAVES"] > 0);
@@ -78,11 +73,11 @@ namespace WavesCSTests
             var orderBook = matcher.GetOrderBook(null, WBTC);
             var myPrice = orderBook.Asks.First().Price + 100000;
             
-            matcher.PlaceOrder(account, OrderSide.Sell, null, WBTC, myPrice, 50000000, DateTime.UtcNow.AddHours(1));
+            matcher.PlaceOrder(Accounts.Carol, OrderSide.Sell, null, WBTC, myPrice, 50000000, DateTime.UtcNow.AddHours(1));
 
             Thread.Sleep(3000);
             
-            var orders = matcher.GetOrders(account, null, WBTC);
+            var orders = matcher.GetOrders(Accounts.Carol, null, WBTC);
 
             var lastOrder = orders.OrderBy(o => o.Timestamp).Last();
 
@@ -96,23 +91,23 @@ namespace WavesCSTests
 
             foreach (var order in orders.Where(o => o.Status == OrderStatus.Accepted || o.Status == OrderStatus.PartiallyFilled))
             {
-                matcher.CancelOrder(account, null, WBTC, order.Id);
+                matcher.CancelOrder(Accounts.Carol, null, WBTC, order.Id);
             }
             
             Thread.Sleep(3000);
             
-            orders = matcher.GetOrders(account, null, WBTC);
+            orders = matcher.GetOrders(Accounts.Carol, null, WBTC);
             
             Assert.IsTrue(orders.All(o => o.Status == OrderStatus.Cancelled));
 
             foreach (var order in orders)
             {
-                matcher.DeleteOrder(account, null, WBTC, order.Id);
+                matcher.DeleteOrder(Accounts.Carol, null, WBTC, order.Id);
             }
             
             Thread.Sleep(3000);
 
-            orders = matcher.GetOrders(account, null, WBTC);
+            orders = matcher.GetOrders(Accounts.Carol, null, WBTC);
             
             Assert.IsFalse(orders.Any());
         }
