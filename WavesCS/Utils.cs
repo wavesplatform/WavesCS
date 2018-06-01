@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Web.Script.Serialization;
 
 namespace WavesCS
@@ -46,6 +47,16 @@ namespace WavesCS
         public static string ToJson(this Dictionary<string, object> data)
         {
             return Serializer.Serialize(data);
+        }
+
+        public static string ToBase64(this byte[] data)
+        {
+            return Convert.ToBase64String(data);
+        }
+        
+        public static byte[] Fromase64(this string data)
+        {
+            return Convert.FromBase64CharArray(data.ToCharArray(), 0, data.Length);
         }
         
         public static void WriteAsset(this BinaryWriter stream, string assetId)
