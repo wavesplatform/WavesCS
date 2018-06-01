@@ -22,7 +22,9 @@ namespace WavesCSTests
                 { "test long", 1001L },
                 { "test true", true },
                 { "test false", false },
-                { "test bytes", new byte[] { 1, 2, 3, 4, 5}}                
+                { "test bytes", new byte[] { 1, 2, 3, 4, 5}},
+                { "test string", "Hello, Waves!"},
+                { "test russian", "Привет" }                
             };
 
             var tx = Transactions.MakeDataTransaction(account, data, 100000);
