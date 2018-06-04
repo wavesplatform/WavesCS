@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -20,6 +21,8 @@ namespace WavesCS
         MassTransfer = 11,
         DataTx = 12,    
     }
+    
+    
     
     public static class Transactions
     {
@@ -290,6 +293,7 @@ namespace WavesCS
             const byte INTEGER = 0;
             const byte BOOLEAN = 1;
             const byte BINARY = 2;
+            const byte STRING = 3;
             const byte version = 1;
 
             writer.Write(TransactionType.DataTx);
@@ -316,6 +320,12 @@ namespace WavesCS
                         writer.WriteShort((short) value.Length);
                         writer.Write(value);
                         break;
+                    case string value:
+                        writer.Write(STRING);
+                        var encoded = Encoding.UTF8.GetBytes(value);
+                        writer.WriteShort((short) encoded.Length);
+                        writer.Write(encoded);                        
+                        break;
                     default:
                         throw new ArgumentException("Only long, bool and byte[] entry values supported",
                             nameof(entries));
@@ -329,12 +339,12 @@ namespace WavesCS
             {
                 {"type", TransactionType.DataTx},
                 {"version", version},
-                {"senderPublicKey", Base58.Encode(account.PublicKey)},
+                {"senderPublicKey", account.PublicKey.ToBase58() },
                 {"data", entries.Select(pair => new DictionaryObject
                 {
                     {"key", pair.Key},
-                    {"type", pair.Value is long ? "integer" : (pair.Value is bool ? "boolean" : "binary")},
-                    {"value", pair.Value is byte[] bytes ? Base58.Encode(bytes) : pair.Value }                    
+                    {"type", pair.Value is long ? "integer" : (pair.Value is bool ? "boolean" : (pair.Value is string ? "string"  : "binary"))},
+                    {"value", pair.Value is byte[] bytes ? "base64:" + bytes.ToBase64() : pair.Value }                    
                 })},
                 {"fee", fee},
                 {"timestamp", timestamp},
