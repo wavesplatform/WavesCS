@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
+using System.Text;
 using System.Web.Script.Serialization;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -47,7 +49,7 @@ namespace WavesCS
         public static string GetJson(string url, NameValueCollection headers = null)
         {
             OnDataProcessed($"Getting: {url}");
-            var client = new WebClient();
+            var client = new WebClient {Encoding = Encoding.UTF8};
             if (headers != null)
                 client.Headers.Add(headers);
             var result = client.DownloadString(url);
@@ -58,8 +60,8 @@ namespace WavesCS
         public static string Post(string url, DictionaryObject data, NameValueCollection headers = null)
         {
             try
-            {            
-                var client = new WebClient();
+            {
+                var client = new WebClient {Encoding = Encoding.UTF8};
                 client.Headers.Add("Content-Type", "application/json");
                 client.Headers.Add("Accept", "application/json");
                 if (headers != null)
