@@ -7,6 +7,7 @@
     <TargetFramework>net451</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="PCLCrypto" Version="2.0.147" />
   </ItemGroup>
   <ItemGroup>
@@ -19,8 +20,6 @@
     <Reference Include="HashLib, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\libs\HashLib.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
     <None Update="SeedWords.json">
