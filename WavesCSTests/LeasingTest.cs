@@ -3,7 +3,6 @@ using System.Runtime.Remoting.Lifetime;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
-using WavesCS.Txs;
 
 namespace WavesCSTests
 {

@@ -4,7 +4,6 @@ using System.Web.Script.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 using System.Collections.Generic;
-using WavesCS.Txs;
 
 namespace WavesCSTests
 {

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
-namespace WavesCS.Txs
+namespace WavesCS
 {
     public class LeaseTransaction : Transaction
     {
