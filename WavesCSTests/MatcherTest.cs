@@ -29,7 +29,7 @@ namespace WavesCSTests
         {
             var matcher = new Matcher("https://matcher.wavesnodes.com");            
 
-            var orderBook = matcher.GetOrderBook(Assets.WAVES, Assets.BTC);
+            var orderBook = matcher.GetOrderBook(Assets.WAVES.Id, Assets.BTC.Id);
             
             Assert.IsNotNull(orderBook);
             
@@ -71,7 +71,7 @@ namespace WavesCSTests
             var matcher = new Matcher("https://testnet1.wavesnodes.com");
 
             var orderBook = matcher.GetOrderBook(null, WBTC);
-            var myPrice = orderBook.Asks.First().Price + 100000;
+            var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 100000;
             
             matcher.PlaceOrder(Accounts.Carol, OrderSide.Sell, null, WBTC, myPrice, 50000000, DateTime.UtcNow.AddHours(1));
 

@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WavesCS.Txs;
 
 namespace WavesCSTests
 {
     [TestClass]
     public class DataTransactionTest
     {
-        public TestContext TestContext { get; set; }
-        
+        public TestContext TestContext { get; set; }        
         
         [TestMethod]
         public void TestDataTransaction()
@@ -25,11 +26,11 @@ namespace WavesCSTests
                 { "test russian", "Привет" }                
             };
 
-            var tx = Transactions.MakeDataTransaction(Accounts.Alice, data, 100000);
-            var txJson = tx.ToJson();
-            TestContext.WriteLine(txJson);
+            var tx = new DataTransaction(Accounts.Alice.PublicKey, data);
+            tx.Sign(Accounts.Alice);
+            Console.WriteLine(tx.GetBody().Length);
             
-            TestContext.WriteLine("Response tx id: " + node.Broadcast(tx));                                  
+            TestContext.WriteLine("Response tx id: " + node.Broadcast(tx.GetJsonWithSignature()));                                  
         }
     }
 }

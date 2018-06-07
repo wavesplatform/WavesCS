@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 using System.Numerics;
 using System.Web.Script.Serialization;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Resources;
 using org.whispersystems.curve25519;
 
 namespace WavesCS
@@ -89,12 +91,19 @@ namespace WavesCS
             var rhash = SHA256.ComputeHash(bytes, 0, 160);
             Array.Copy(rhash, 0, bytes, 160, 5);
             var rand = new BigInteger(bytes);
+
+
             if (_seedWords == null)
             {
-                var reader = new StreamReader("SeedWords.json");
-                var json = reader.ReadToEnd();
-                var items = Serializer.Deserialize<Dictionary<string, List<string>>>(json);
-                _seedWords = items["words"];
+                var assembly = Assembly.GetExecutingAssembly();                               
+
+                using (var stream = assembly.GetManifestResourceStream("WavesCS.Resources.SeedWords.txt"))
+                using (var reader = new StreamReader(stream))
+                {
+                    var json = reader.ReadToEnd();
+                    var items = Serializer.Deserialize<Dictionary<string, List<string>>>(json);
+                    _seedWords = items["words"];
+                }
             }
             var result = new List<BigInteger>();
             for (int i = 0; i < 15; i++)
@@ -103,14 +112,17 @@ namespace WavesCS
                 rand = rand >> 11;
             }                       
             var mask = new BigInteger(new byte[] { 255, 7, 0, 0 }); // 11 lower bits
-            return String.Join(" ", result.Select(bigint => _seedWords[ (int) (bigint & mask)]));         
+            return string.Join(" ", result.Select(bigint => _seedWords[ (int) (bigint & mask)]));         
         }
 
-        public string Sign(MemoryStream stream)
+        public byte[] Sign(byte[] data)
+        {            
+            return Cipher.calculateSignature(PrivateKey, data);
+        }
+        
+        public byte[] Sign(MemoryStream stream)
         {
-            var bytesToSign = stream.ToArray();
-            var signature = Cipher.calculateSignature(PrivateKey, bytesToSign);
-            return Base58.Encode(signature);
+            return Sign(stream.ToArray());
         }
     }
 }
