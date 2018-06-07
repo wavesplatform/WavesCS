@@ -1,16 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
 
 namespace WavesCSTests
 {
     [TestClass]
     public class NodeTest
-    {
-        private static readonly long AMOUNT = 100000000L;
-        private static readonly long FEE = 100000;
-        private static readonly string WBTC = "Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe";
-        
+    {        
+        private static readonly Asset WBTC = new Asset("Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe", "WBTC", 8);
         
         public TestContext TestContext { get; set; }
 
@@ -32,17 +28,34 @@ namespace WavesCSTests
         }
 
         [TestMethod]
+        public void TestGetAsset()
+        {
+            var node = new Node(Node.MainNetHost);
+            var assetId = "725Yv9oceWsB4GsYwyy4A52kEwyVrL5avubkeChSnL46";
+            
+            var asset = node.GetAsset(assetId);
+            
+            Assert.AreEqual(assetId, asset.Id);
+            Assert.AreEqual("EFYT", asset.Name);
+            Assert.AreEqual(8, asset.Decimals);
+            
+            Assert.AreEqual(200000, asset.AmountToLong(0.002m));
+            Assert.AreEqual(0.03m, asset.LongToAmount(3000000));
+        }
+
+        [TestMethod]
         public void TestTransfer()
         {
             var node = new Node();
             
-            string transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, AMOUNT, FEE, "Hi Bob!");
+            string transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
             Assert.IsNotNull(transactionId);
 
             // transfer back so that Alice's balance is not drained
-            transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, AMOUNT, FEE, "Thanks, Alice");
+            transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice");
             Assert.IsNotNull(transactionId);
-        }               
+        }
+
 
     }
 }

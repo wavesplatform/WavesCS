@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WavesCS.Txs;
 
 
 namespace WavesCSTests
@@ -9,27 +10,27 @@ namespace WavesCSTests
     public class MassTransferTest
     {
         public TestContext TestContext { get; set; }
-        private static readonly long FEE = 200000;
-
 
         [TestMethod]
         public void TestMassTransferTransaction()
         {
             var node = new Node();
            
-            var recipients = new List<Transactions.MassTransferRecipient>
+            var recipients = new List<MassTransferItem>
             {
-                new Transactions.MassTransferRecipient(Accounts.Alice.Address, 1000000),
-                new Transactions.MassTransferRecipient(Accounts.Bob.Address, 2000000),                
+                new MassTransferItem(Accounts.Alice.Address, 0.01m),                    
+                new MassTransferItem(Accounts.Bob.Address, 0.02m),  
+                new MassTransferItem("3N1JMgUfzYUZinPrzPWeRa6yqN67oo57XR7", 0.003m),    
             };
 
-            var tx = Transactions.MakeMassTransferTransaction(Accounts.Alice, recipients, null, FEE, null, "Shut up & take my money");
+            var tx = new MassTransferTransaction(Accounts.Alice.PublicKey, Assets.WAVES, recipients, "Shut up & take my money");
 
-            var txJson = tx.ToJson();
-            TestContext.WriteLine(txJson);
-
-            var txRx = node.Broadcast(tx);
-            TestContext.WriteLine("Response tx id: " + txRx);                                  
+            Assert.AreEqual(0.003m, tx.Fee);
+            
+            tx.Sign(Accounts.Alice);
+            var response = node.Broadcast(tx.GetJsonWithSignature());
+            
+            TestContext.WriteLine("Response tx id: " + response);                                  
         }
     }
 }
