@@ -35,6 +35,11 @@ namespace WavesCS
         {
             return Api.GetObject($"{_host}/assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset); 
         }
+        
+        public int GetUnconfirmedPoolSize()
+        {
+            return Api.GetObject($"{_host}/transactions/unconfirmed/size").GetInt("size"); 
+        }
 
         public Asset GetAsset(string assetId)
         {
