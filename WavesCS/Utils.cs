@@ -13,7 +13,7 @@ namespace WavesCS
         public static void WriteLong(this BinaryWriter writer, long n)
         {
             n = System.Net.IPAddress.HostToNetworkOrder(n);
-            writer.Write(n);
+            writer.Write(n);            
         }
         
         public static void WriteByte(this BinaryWriter writer, byte n)

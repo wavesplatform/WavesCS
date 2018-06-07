@@ -25,6 +25,7 @@ namespace WavesCSTests
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address) >= 0);
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address, 100) >= 0);
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address, WBTC) >= 0);
+            Assert.IsTrue(node.GetUnconfirmedPoolSize() >= 0);            
         }
 
         [TestMethod]
@@ -55,7 +56,5 @@ namespace WavesCSTests
             transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice");
             Assert.IsNotNull(transactionId);
         }
-
-
     }
 }
