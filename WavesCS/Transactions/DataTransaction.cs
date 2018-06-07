@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace WavesCS.Txs
+namespace WavesCS
 {
     public class DataTransaction : Transaction
     {

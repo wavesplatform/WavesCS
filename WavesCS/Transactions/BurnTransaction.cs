@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace WavesCS.Txs
+namespace WavesCS
 {
     public class BurnTransaction : Transaction
     {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace WavesCS.Txs
+namespace WavesCS
 {
     public class IssueTransaction : Transaction
     {

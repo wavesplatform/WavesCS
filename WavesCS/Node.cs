@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using WavesCS.Txs;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS

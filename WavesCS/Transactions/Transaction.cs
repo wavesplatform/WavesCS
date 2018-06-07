@@ -2,7 +2,7 @@
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
-namespace WavesCS.Txs
+namespace WavesCS
 {
     public abstract class Transaction
     {

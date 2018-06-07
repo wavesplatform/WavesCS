@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WavesCS.Txs;
 
 namespace WavesCSTests
 {
