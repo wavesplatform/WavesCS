@@ -29,9 +29,9 @@ namespace WavesCSTests
             Console.WriteLine("Carol address: {0}, balance: {1}", Carol.Address, carolBalanceWaves);
             
 
-            Assert.IsTrue(aliceBalanceWaves > 100000000);
-            Assert.IsTrue(bobBalanceWaves > 100000000);
-            Assert.IsTrue(carolBalanceWaves > 100000000);
+            Assert.IsTrue(aliceBalanceWaves > 1);
+            Assert.IsTrue(bobBalanceWaves > 1);
+            Assert.IsTrue(carolBalanceWaves > 1);
         }
     }
 }

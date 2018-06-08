@@ -61,6 +61,8 @@ namespace WavesCS
         
         public static byte[] FromBase64(this string data)
         {
+            if (data.StartsWith("base64:"))
+                data = data.Substring(7);                
             return Convert.FromBase64CharArray(data.ToCharArray(), 0, data.Length);
         }
         
