@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Text;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -14,20 +14,20 @@ namespace WavesCS
     public static class Api
     {        
         public static event Action<string> DataProcessed;
-        
-        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
-        
 
+        private static readonly JsonSerializer Serializer = new JsonSerializer();
+
+        
         public static string GetString(string url)
         {
             var json = GetJson(url);
-            return (string) Serializer.DeserializeObject(json);
+            return JsonConvert.DeserializeObject<string>(json);
         }                       
 
         public static DictionaryObject GetObject(string url, params object[] parameters)
         {            
             var json = GetJson(string.Format(url, parameters));            
-            return (Dictionary<string, object>) Serializer.DeserializeObject(json);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
         }
         
         public static IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
@@ -49,7 +49,7 @@ namespace WavesCS
         public static T GetWithHeaders<T>(string url, NameValueCollection headers)
         {
             var json = GetJson(url, headers);
-            return (T) Serializer.DeserializeObject(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
         
         public static string GetJson(string url, NameValueCollection headers = null)
@@ -71,9 +71,12 @@ namespace WavesCS
                 client.Headers.Add("Content-Type", "application/json");
                 client.Headers.Add("Accept", "application/json");
                 if (headers != null)
-                    client.Headers.Add(headers);            
-                var json = Serializer.Serialize(data);
-                OnDataProcessed($"Sending to {url} : {json}");
+                    client.Headers.Add(headers);  
+                var sb = new StringBuilder();
+                var sw = new StringWriter(sb);
+                Serializer.Serialize(sw, data);
+                var json = sb.ToString();
+                OnDataProcessed($"Sending: {json} : {json}");
                 var response = client.UploadString(url, json);
                 OnDataProcessed($"Response: {response}");
                 return response;
