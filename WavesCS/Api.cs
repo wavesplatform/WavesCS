@@ -30,6 +30,12 @@ namespace WavesCS
             return (Dictionary<string, object>) Serializer.DeserializeObject(json);
         }
         
+        public static IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
+        {
+            var json = GetJson(string.Format(url, args));
+            return ((object[]) Serializer.DeserializeObject(json)).Cast<Dictionary<String, object>>();		
+        }
+        
         public static DictionaryObject GetObjectWithHeaders(string url, NameValueCollection headers)
         {
             return GetWithHeaders<DictionaryObject>(url, headers);

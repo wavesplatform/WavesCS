@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -13,37 +15,66 @@ namespace WavesCS
 
         public Node(string nodeHost = TestNetHost)
         {
+            if (nodeHost.EndsWith("/"))
+                nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
             _host = nodeHost;
         }
 
+        
+        public Dictionary<string, object> GetObject(string url, params object[] args)
+        {            
+            return Api.GetObject($"{_host}/{url}", args);
+        }
+        
+        public IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
+        {
+            return Api.GetObjects($"{_host}/{url}", args);
+        }          
+        
         public int GetHeight()
         {
-            return Api.GetObject($"{_host}/blocks/height").GetInt("height");
+            return GetObject("blocks/height").GetInt("height");
         }
 
         public decimal GetBalance(string address)
         {
-            return  Api.GetObject($"{_host}/addresses/balance/{address}").GetDecimal("balance", Assets.WAVES);
+            return  GetObject($"addresses/balance/{address}").GetDecimal("balance", Assets.WAVES);
         }
 
         public decimal GetBalance(string address, int confirmations)
         {
-            return Api.GetObject($"{_host}/addresses/balance/{address}/{confirmations}").GetDecimal("balance", Assets.WAVES);
+            return GetObject($"addresses/balance/{address}/{confirmations}").GetDecimal("balance", Assets.WAVES);
         }
 
         public decimal GetBalance(string address, Asset asset)
         {
-            return Api.GetObject($"{_host}/assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset); 
+            return GetObject($"assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset); 
         }
         
         public int GetUnconfirmedPoolSize()
         {
-            return Api.GetObject($"{_host}/transactions/unconfirmed/size").GetInt("size"); 
+            return GetObject("transactions/unconfirmed/size").GetInt("size"); 
+        }
+        
+        public Dictionary<string, object> GetAddressData(string address)
+        {            
+            return GetObjects("addresses/data/{0}", address)
+                .ToDictionary(o => o.GetString("key"), o =>
+                {
+                    switch (o.GetString("type"))
+                    {
+                        case "string": return (object) o.GetString("value");
+                        case "binary": return (object) o.GetString("value").FromBase64();
+                        case "integer": return (object) o.GetLong("value");
+                        case "boolean": return (object) o.GetBool("value");
+                        default: throw new Exception("Unknown value type");
+                    }
+                });
         }
 
         public Asset GetAsset(string assetId)
         {
-            var tx = Api.GetObject($"{_host}/transactions/info/{assetId}");
+            var tx = GetObject($"transactions/info/{assetId}");
             if (tx.GetInt("type") != 3)
                 throw new ArgumentException("Wrong asset id (transaction type)");
             return new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
@@ -124,5 +155,6 @@ namespace WavesCS
         {
             return Api.Post($"{_host}/transactions/broadcast", transaction);
         }
+
     }
 }

@@ -71,5 +71,10 @@ namespace WavesCS
         {		
             return byte.Parse(d.GetValue(field).ToString());
         }
+        
+        public static bool GetBool(this DictionaryObject d, string field)
+        {		
+            return (bool) d.GetValue(field);
+        }
     }
 }
