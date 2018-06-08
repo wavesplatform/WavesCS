@@ -23,12 +23,12 @@ namespace WavesCS
         
         public Dictionary<string, object> GetObject(string url, params object[] args)
         {            
-            return Api.GetObject($"{_host}/{url}", args);
+            return Http.GetObject($"{_host}/{url}", args);
         }
         
         public IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
         {
-            return Api.GetObjects($"{_host}/{url}", args);
+            return Http.GetObjects($"{_host}/{url}", args);
         }          
         
         public int GetHeight()
@@ -148,12 +148,12 @@ namespace WavesCS
 
         public string Broadcast(Transaction transaction)
         {
-            return Api.Post($"{_host}/transactions/broadcast", transaction.GetJsonWithSignature());
+            return Http.Post($"{_host}/transactions/broadcast", transaction.GetJsonWithSignature());
         }
         
         public string Broadcast(DictionaryObject transaction)
         {
-            return Api.Post($"{_host}/transactions/broadcast", transaction);
+            return Http.Post($"{_host}/transactions/broadcast", transaction);
         }
 
     }

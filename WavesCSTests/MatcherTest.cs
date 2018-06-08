@@ -14,7 +14,7 @@ namespace WavesCSTests
         [TestInitialize]
         public void Init()
         {
-            Api.Tracing = true;
+            Http.Tracing = true;
         }
         
         [TestMethod]

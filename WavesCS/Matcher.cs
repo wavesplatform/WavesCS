@@ -14,7 +14,7 @@ namespace WavesCS
 
         private string GetMatcherKey()
         {
-            return Api.GetString(_host + "/matcher");            
+            return Http.GetString(_host + "/matcher");            
         }
 
         public Matcher(string host = "https://matcher.wavesnodes.com", string matcherKey = null)
@@ -28,14 +28,14 @@ namespace WavesCS
         {
             var order = MakeOrder(sender, MatcherKey, side, amountAsset, priceAsset, price, amount, expiration, 0.003m);
             
-            return Api.Post($"{_host}/matcher/orderbook", order);            
+            return Http.Post($"{_host}/matcher/orderbook", order);            
         }               
         
         public Dictionary<Asset, decimal> GetTradableBalance(string address, Asset amountAsset, Asset priceAsset)
         {
             var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/tradableBalance/{address}";
 
-            var response = Api.GetObject(url);
+            var response = Http.GetObject(url);
 
             return new Dictionary<Asset, decimal>
             {
@@ -47,7 +47,7 @@ namespace WavesCS
         public OrderBook GetOrderBook(Asset amountAsset, Asset priceAsset)
         {
             string path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}";
-            var json = Api.GetObject(path);
+            var json = Http.GetObject(path);
             return OrderBook.CreateFromJson(json, amountAsset, priceAsset);
         }
 
@@ -57,7 +57,7 @@ namespace WavesCS
             string path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/publicKey/{account.PublicKey.ToBase58()}";
 
             var headers = GetProtectionHeaders(account);
-            var response = Api.GetObjectsWithHeaders(path, headers);
+            var response = Http.GetObjectsWithHeaders(path, headers);
             
             return response.Select(j => Order.CreateFromJson(j, amountAsset, priceAsset)).ToArray();
         }
@@ -67,7 +67,7 @@ namespace WavesCS
         {
             var request = MakeOrderCancelRequest(account, orderId);            
             var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/cancel";
-            return Api.Post(url, request);
+            return Http.Post(url, request);
         }
         
         public string DeleteOrder(PrivateKeyAccount account,
@@ -75,7 +75,7 @@ namespace WavesCS
         {
             var request = MakeOrderCancelRequest(account, orderId);            
             var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/delete";
-            return Api.Post(url, request);
+            return Http.Post(url, request);
         }
 
         private static NameValueCollection GetProtectionHeaders(PrivateKeyAccount account)
