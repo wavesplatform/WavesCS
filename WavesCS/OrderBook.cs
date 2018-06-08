@@ -7,24 +7,24 @@ namespace WavesCS
     public class OrderBook
     {
         public DateTime Timestamp { get; }
-        public string AmountAsset { get; }
-        public string PriceAsset { get; }
+        public Asset AmountAsset { get; }
+        public Asset PriceAsset { get; }
         public Item[] Bids { get; }
         public Item[] Asks { get; }
 
         public class Item
         {
-            public long Price { get; }
-            public long Amount { get; }
+            public decimal Price { get; }
+            public decimal Amount { get; }
 
-            public Item(long price, long amount)
+            public Item(decimal price, decimal amount)
             {
                 Price = price;
                 Amount = amount;
             }
         }
          
-        public OrderBook(DateTime timestamp, string amountAsset, string priceAsset, Item[] bids, Item[] asks)
+        public OrderBook(DateTime timestamp, Asset amountAsset, Asset priceAsset, Item[] bids, Item[] asks)
         {
             Timestamp = timestamp;
             AmountAsset = amountAsset;
@@ -33,14 +33,21 @@ namespace WavesCS
             Asks = asks;
         }
 
-        public static OrderBook CreateFromJson(Dictionary<string, object> json)
+        public static OrderBook CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
         {
             return new OrderBook(
                 json.GetDate("timestamp"),
-                json.GetString("pair.amountAsset"),
-                json.GetString("pair.priceAsset"),
-                json.GetObjects("bids").Select(o => new Item(o.GetLong("price"), o.GetLong("amount"))).ToArray(),
-                json.GetObjects("asks").Select(o => new Item(o.GetLong("price"), o.GetLong("amount"))).ToArray());
+                amountAsset,
+                priceAsset,
+                json.GetObjects("bids").Select(o => ParseItem(amountAsset, priceAsset, o)).ToArray(),
+                json.GetObjects("asks").Select(o => ParseItem(amountAsset, priceAsset, o)).ToArray());
+        }
+
+        private static Item ParseItem(Asset amountAsset, Asset priceAsset, Dictionary<string, object> o)
+        {
+            return new Item(
+                Asset.LongToPrice(amountAsset, priceAsset, o.GetLong("price")), 
+                amountAsset.LongToAmount(o.GetLong("amount")));
         }
     }
 }
