@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace WavesCS
 {
     public static class Utils
     {
-        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        private static readonly JsonSerializer Serializer = new JsonSerializer();
         
         public static void WriteLong(this BinaryWriter writer, long n)
         {
@@ -46,7 +47,10 @@ namespace WavesCS
 
         public static string ToJson(this Dictionary<string, object> data)
         {
-            return Serializer.Serialize(data);
+            var sb = new StringBuilder();
+            var sw = new StringWriter(sb);
+            Serializer.Serialize(sw, data);
+            return sb.ToString();
         }
         
         public static Dictionary<string, object> GetJsonObject(this string data)

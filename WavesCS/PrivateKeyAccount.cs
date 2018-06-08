@@ -5,7 +5,7 @@ using System.IO;
 using org.whispersystems.curve25519.csharp;
 using System.Security.Cryptography;
 using System.Numerics;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Resources;
@@ -16,7 +16,6 @@ namespace WavesCS
     public class PrivateKeyAccount
     {
         private static readonly SHA256Managed SHA256 = new SHA256Managed();
-        private static readonly JavaScriptSerializer Serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
 
         private static readonly Curve25519 Cipher = Curve25519.getInstance(Curve25519.BEST);
                 
@@ -92,16 +91,14 @@ namespace WavesCS
             Array.Copy(rhash, 0, bytes, 160, 5);
             var rand = new BigInteger(bytes);
 
-
             if (_seedWords == null)
             {
                 var assembly = Assembly.GetExecutingAssembly();                               
-
                 using (var stream = assembly.GetManifestResourceStream("WavesCS.Resources.SeedWords.txt"))
                 using (var reader = new StreamReader(stream))
                 {
                     var json = reader.ReadToEnd();
-                    var items = Serializer.Deserialize<Dictionary<string, List<string>>>(json);
+                    var items = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
                     _seedWords = items["words"];
                 }
             }
