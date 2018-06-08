@@ -56,10 +56,25 @@ namespace WavesCS
         {		
             return long.Parse(d.GetValue(field).ToString());
         }
+        
+        public static decimal GetDecimal(this DictionaryObject d, string field, Asset asset)
+        {		
+            return asset.LongToAmount(long.Parse(d.GetValue(field).ToString()));
+        }
 	
         public static int GetInt(this DictionaryObject d, string field)
         {		
             return int.Parse(d.GetValue(field).ToString());
+        }
+        
+        public static byte GetByte(this DictionaryObject d, string field)
+        {		
+            return byte.Parse(d.GetValue(field).ToString());
+        }
+        
+        public static bool GetBool(this DictionaryObject d, string field)
+        {		
+            return (bool) d.GetValue(field);
         }
     }
 }

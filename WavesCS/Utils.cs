@@ -14,7 +14,7 @@ namespace WavesCS
         public static void WriteLong(this BinaryWriter writer, long n)
         {
             n = System.Net.IPAddress.HostToNetworkOrder(n);
-            writer.Write(n);
+            writer.Write(n);            
         }
         
         public static void WriteByte(this BinaryWriter writer, byte n)
@@ -40,7 +40,7 @@ namespace WavesCS
             return (DateTime.UtcNow.Ticks - epochTicks) / (TimeSpan.TicksPerSecond / 1000);
         }
         
-        public static long DateToTimestamp(this DateTime date)
+        public static long ToLong(this DateTime date)
         {
             return (date - new DateTime(1970, 1, 1)).Ticks / (TimeSpan.TicksPerSecond / 1000);             
         }
@@ -52,20 +52,27 @@ namespace WavesCS
             Serializer.Serialize(sw, data);
             return sb.ToString();
         }
+        
+        public static Dictionary<string, object> GetJsonObject(this string data)
+        {
+            return (Dictionary<string, object>) Serializer.DeserializeObject(data);
+        }
 
         public static string ToBase64(this byte[] data)
         {
             return Convert.ToBase64String(data);
         }
         
-        public static byte[] Fromase64(this string data)
+        public static byte[] FromBase64(this string data)
         {
+            if (data.StartsWith("base64:"))
+                data = data.Substring(7);                
             return Convert.FromBase64CharArray(data.ToCharArray(), 0, data.Length);
         }
         
         public static void WriteAsset(this BinaryWriter stream, string assetId)
         {
-            if (string.IsNullOrEmpty(assetId))
+            if (string.IsNullOrEmpty(assetId) || assetId == "WAVES")
             {
                 stream.WriteByte(0);
             }
