@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using WavesCS;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 using static WavesCS.Transactions;
@@ -14,7 +16,7 @@ namespace WavesCSTests
         private static readonly long AMOUNT = 100000000L;
         private static readonly long FEE = 100000;
 
-        private static JavaScriptSerializer serializer = new JavaScriptSerializer() { MaxJsonLength = int.MaxValue };
+        private static readonly JsonSerializer serializer = new JsonSerializer();
         
         public TestContext TestContext { get; set; }
         
@@ -47,7 +49,11 @@ namespace WavesCSTests
         private void Dump(String header, DictionaryObject transaction)
         {
             TestContext.WriteLine("*** " + header + " ***");
-            TestContext.WriteLine("Transaction data: " + serializer.Serialize(transaction));
+            var sb = new StringBuilder();
+            var sw = new StringWriter(sb);
+            serializer.Serialize(sw, transaction);
+            var json = sb.ToString();
+            TestContext.WriteLine("Transaction data: " + json);
             TestContext.WriteLine("");
         }
     }
