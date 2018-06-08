@@ -23,7 +23,7 @@ namespace WavesCSTests
             Console.WriteLine(response);
             Assert.IsFalse(string.IsNullOrEmpty(response));
 
-            var leasingId = response.GetJsonObject().GetString("id");
+            var leasingId = response.ParseJsonObject().GetString("id");
             
             Thread.Sleep(10000);
             

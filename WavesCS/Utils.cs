@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
 
 namespace WavesCS
 {
     public static class Utils
-    {
-        private static readonly JsonSerializer Serializer = new JsonSerializer();
-        
+    {               
         public static void WriteLong(this BinaryWriter writer, long n)
         {
             n = System.Net.IPAddress.HostToNetworkOrder(n);
@@ -43,19 +37,6 @@ namespace WavesCS
         public static long ToLong(this DateTime date)
         {
             return (date - new DateTime(1970, 1, 1)).Ticks / (TimeSpan.TicksPerSecond / 1000);             
-        }
-
-        public static string ToJson(this Dictionary<string, object> data)
-        {
-            var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
-            Serializer.Serialize(sw, data);
-            return sb.ToString();
-        }
-        
-        public static Dictionary<string, object> GetJsonObject(this string data)
-        {
-            return (Dictionary<string, object>) Serializer.DeserializeObject(data);
         }
 
         public static string ToBase64(this byte[] data)

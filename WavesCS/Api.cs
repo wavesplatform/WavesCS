@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Text;
-using Newtonsoft.Json;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -14,44 +10,31 @@ namespace WavesCS
     public static class Api
     {        
         public static event Action<string> DataProcessed;
-
-        private static readonly JsonSerializer Serializer = new JsonSerializer();
-
         
         public static string GetString(string url)
         {
             var json = GetJson(url);
-            return JsonConvert.DeserializeObject<string>(json);
+            return json.ParseJsonString();
         }                       
 
         public static DictionaryObject GetObject(string url, params object[] parameters)
         {            
             var json = GetJson(string.Format(url, parameters));            
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            return json.ParseJsonObject();
         }
         
-        public static IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
+        public static DictionaryObject[] GetObjects(string url, params object[] args)
         {
             var json = GetJson(string.Format(url, args));
-            return ((object[]) Serializer.DeserializeObject(json)).Cast<Dictionary<String, object>>();		
-        }
-        
-        public static DictionaryObject GetObjectWithHeaders(string url, NameValueCollection headers)
-        {
-            return GetWithHeaders<DictionaryObject>(url, headers);
+            return json.ParseJsonObjects();		
         }
         
         public static DictionaryObject[] GetObjectsWithHeaders(string url, NameValueCollection headers)
         {
-            return GetWithHeaders<object[]>(url, headers).Cast<DictionaryObject>().ToArray();
+            var json = GetJson(url, headers);            
+            return json.ParseJsonObjects();
         }
-        
-        public static T GetWithHeaders<T>(string url, NameValueCollection headers)
-        {
-            var json = GetJson(url, headers);
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-        
+
         public static string GetJson(string url, NameValueCollection headers = null)
         {
             OnDataProcessed($"Getting: {url}");
@@ -71,11 +54,8 @@ namespace WavesCS
                 client.Headers.Add("Content-Type", "application/json");
                 client.Headers.Add("Accept", "application/json");
                 if (headers != null)
-                    client.Headers.Add(headers);  
-                var sb = new StringBuilder();
-                var sw = new StringWriter(sb);
-                Serializer.Serialize(sw, data);
-                var json = sb.ToString();
+                    client.Headers.Add(headers);                  
+                var json = data.ToJson();
                 OnDataProcessed($"Sending: {json} : {json}");
                 var response = client.UploadString(url, json);
                 OnDataProcessed($"Response: {response}");
