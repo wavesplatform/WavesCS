@@ -7,7 +7,7 @@ using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
-    public static class Api
+    public static class Http
     {        
         public static bool Tracing { get; set; }
 
