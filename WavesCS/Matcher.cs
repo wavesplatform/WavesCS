@@ -11,7 +11,6 @@ namespace WavesCS
     {
         private readonly string _host;
         public string MatcherKey { get; }
-        private const long Fee = 300000L;       
 
         private string GetMatcherKey()
         {
@@ -25,76 +24,60 @@ namespace WavesCS
         }
 
         public string PlaceOrder(PrivateKeyAccount sender, OrderSide side,
-            string amountAssetId, string priceAssetId, long price, long amount, DateTime expiration)
+            Asset amountAsset, Asset priceAsset, decimal price, decimal amount, DateTime expiration)
         {
-            var order = MakeOrder(sender, MatcherKey, side, amountAssetId, priceAssetId, price, amount, expiration, Fee);
+            var order = MakeOrder(sender, MatcherKey, side, amountAsset, priceAsset, price, amount, expiration, 0.003m);
             
             return Api.Post($"{_host}/matcher/orderbook", order);            
         }               
         
-        public Dictionary<string, long> GetTradableBalance(string address, string amountAsset, string priceAsset)
+        public Dictionary<Asset, decimal> GetTradableBalance(string address, Asset amountAsset, Asset priceAsset)
         {
-            var url = $"{_host}/matcher/orderbook/{NormalizeAsset(amountAsset)}/{NormalizeAsset(priceAsset)}/tradableBalance/{address}";
+            var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/tradableBalance/{address}";
 
             var response = Api.GetObject(url);
-            
-            return response.ToDictionary(pair => pair.Key, pair => Convert.ToInt64(pair.Value));                       
+
+            return new Dictionary<Asset, decimal>
+            {
+                {amountAsset, amountAsset.LongToAmount(response.GetLong(amountAsset.Id))},
+                {priceAsset, priceAsset.LongToAmount(response.GetLong(priceAsset.Id))},
+            };
         }
         
-        public OrderBook GetOrderBook(string amountAsset, string priceAsset)
+        public OrderBook GetOrderBook(Asset amountAsset, Asset priceAsset)
         {
-            string path = $"{_host}/matcher/orderbook/{NormalizeAsset(amountAsset)}/{NormalizeAsset(priceAsset)}";
+            string path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}";
             var json = Api.GetObject(path);
-            return OrderBook.CreateFromJson(json);
+            return OrderBook.CreateFromJson(json, amountAsset, priceAsset);
         }
 
-        public Order[] GetOrders(PrivateKeyAccount account, string amountAsset, string priceAsset)
+        public Order[] GetOrders(PrivateKeyAccount account, Asset amountAsset, Asset priceAsset)
         {
                     
-            string path = $"{_host}/matcher/orderbook/{NormalizeAsset(amountAsset)}/{NormalizeAsset(priceAsset)}/publicKey/{account.PublicKey.ToBase58()}";
+            string path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/publicKey/{account.PublicKey.ToBase58()}";
 
             var headers = GetProtectionHeaders(account);
             var response = Api.GetObjectsWithHeaders(path, headers);
             
-            return response.Select(Order.CreateFromJson).ToArray();
+            return response.Select(j => Order.CreateFromJson(j, amountAsset, priceAsset)).ToArray();
         }
         
         public string CancelOrder(PrivateKeyAccount account,
-            string amountAssetId, string priceAssetId, string orderId)
+            Asset amountAsset, Asset priceAsset, string orderId)
         {
             var request = MakeOrderCancelRequest(account, orderId);            
-            var url = $"{_host}/matcher/orderbook/{NormalizeAsset(amountAssetId)}/{NormalizeAsset(priceAssetId)}/cancel";
+            var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/cancel";
             return Api.Post(url, request);
         }
         
         public string DeleteOrder(PrivateKeyAccount account,
-            string amountAssetId, string priceAssetId, string orderId)
+            Asset amountAsset, Asset priceAsset, string orderId)
         {
             var request = MakeOrderCancelRequest(account, orderId);            
-            var url = $"{_host}/matcher/orderbook/{NormalizeAsset(amountAssetId)}/{NormalizeAsset(priceAssetId)}/delete";
+            var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/delete";
             return Api.Post(url, request);
         }
-        
-//        public Dictionary<string, object> GetOrders(PrivateKeyAccount account)
-//        {            
-//            var url = "matcher/orderBook/" + Base58.Encode(account.PublicKey);
-//            return Api.GetObjectWithHeaders(url, GetProtectionHeaders(account));               
-//        }
-//
-//        public string GetOrderStatus(string orderId, string asset1, string asset2)
-//        {
-//            asset1 = NormalizeAsset(asset1);
-//            asset2 = NormalizeAsset(asset2);
-//            string path = $"matcher/orderbook/{asset1}/{asset2}/{orderId}";
-//            dynamic result = Get<string>(path, "status");
-//            return result;
-//        }
-        
-        public static string NormalizeAsset(string assetId)
-        {
-            return string.IsNullOrEmpty(assetId) ? "WAVES" : assetId;
-        }
-        
+
         private static NameValueCollection GetProtectionHeaders(PrivateKeyAccount account)
         {
             long timestamp = Utils.CurrentTimestamp();
@@ -126,7 +109,7 @@ namespace WavesCS
         }
         
         public static DictionaryObject MakeOrder(PrivateKeyAccount sender, string matcherKey, OrderSide side,
-            string amountAssetId, string priceAssetId, long price, long amount, DateTime expiration, long matcherFee)
+            Asset amountAsset, Asset priceAsset, decimal price, decimal amount, DateTime expiration, decimal matcherFee)
         {
             long timestamp = Utils.CurrentTimestamp();
 
@@ -134,29 +117,29 @@ namespace WavesCS
             var writer = new BinaryWriter(stream);
             writer.Write(sender.PublicKey);
             writer.Write(Base58.Decode(matcherKey));
-            writer.WriteAsset(amountAssetId);
-            writer.WriteAsset(priceAssetId);
+            writer.WriteAsset(amountAsset.Id);
+            writer.WriteAsset(priceAsset.Id);
             writer.Write((byte)(side == OrderSide.Buy ? 0x0 : 0x1)); 
-            writer.WriteLong(price);
-            writer.WriteLong(amount);
+            writer.WriteLong(Asset.PriceToLong(amountAsset, priceAsset, price));
+            writer.WriteLong(amountAsset.AmountToLong(amount));
             writer.WriteLong(timestamp);
             writer.WriteLong(expiration.ToLong() );
-            writer.WriteLong(matcherFee);
+            writer.WriteLong(Assets.WAVES.AmountToLong(matcherFee));
             var signature = sender.Sign(stream);
 
             return new DictionaryObject {
                 { "senderPublicKey", Base58.Encode(sender.PublicKey) },
                 { "matcherPublicKey", matcherKey },
                 { "assetPair", new DictionaryObject {
-                    {"amountAsset", amountAssetId},
-                    {"priceAsset", priceAssetId }}
+                    {"amountAsset", amountAsset.IdOrNull },
+                    {"priceAsset", priceAsset.IdOrNull}}
                 },
                 { "orderType", side.ToString().ToLower() },
-                { "price", price },
-                { "amount", amount },
+                { "price", Asset.PriceToLong(amountAsset, priceAsset, price) },
+                { "amount", amountAsset.AmountToLong(amount) },
                 { "timestamp", timestamp },
                 { "expiration", expiration.ToLong() },
-                { "matcherFee", matcherFee },
+                { "matcherFee", Assets.WAVES.AmountToLong(matcherFee) },
                 { "signature", signature.ToBase58() }                
             };
         }

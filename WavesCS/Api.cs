@@ -56,7 +56,7 @@ namespace WavesCS
                 if (headers != null)
                     client.Headers.Add(headers);                  
                 var json = data.ToJson();
-                OnDataProcessed($"Sending: {json} : {json}");
+                OnDataProcessed($"Sending to {url} : {json}");
                 var response = client.UploadString(url, json);
                 OnDataProcessed($"Response: {response}");
                 return response;

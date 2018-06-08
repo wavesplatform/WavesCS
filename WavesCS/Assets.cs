@@ -5,8 +5,10 @@
     {
         public string Id { get; }
         public string Name { get; }
-        public int Decimals { get; }
+        public byte Decimals { get; }
 
+        public string IdOrNull => Id == "WAVES" ? null : Id;
+        
         private readonly decimal _scale;
 
         public Asset(string id, string name, byte decimals)
@@ -32,11 +34,25 @@
             var scale = new decimal(1, 0, 0, false, digits);
             return decimal.ToInt64(amount / scale);
         }
+
+        public static long PriceToLong(Asset amountAsset, Asset priceAsset, decimal price)
+        {
+            var decimals =  8 - amountAsset.Decimals + priceAsset.Decimals;
+            var scale = new decimal(1, 0, 0, false, (byte) decimals);
+            return decimal.ToInt64(price / scale);
+        }
+        
+        public static decimal LongToPrice(Asset amountAsset, Asset priceAsset, long price)
+        {
+            var decimals =  8 - amountAsset.Decimals + priceAsset.Decimals;
+            var scale = new decimal(1, 0, 0, false, (byte) decimals);
+            return price * scale;
+        }
     }
 
     public static class Assets
     {
-        public static readonly Asset WAVES = new Asset(null, "WAVES", 8);
+        public static readonly Asset WAVES = new Asset("WAVES", "WAVES", 8);
         public static readonly Asset BTC = new Asset("8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS", "BTC", 8);
         public static readonly Asset BCH = new Asset("zMFqXuoyrn5w17PFurTqxB7GsS71fp9dfk6XFwxbPCy", "BCH", 8);
         public static readonly Asset MRT = new Asset("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC", "MRT", 2);
