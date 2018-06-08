@@ -9,7 +9,11 @@ namespace WavesCSTests
     [TestClass]
     public class LeasingTest
     {
-        public TestContext TestContext { get; set; }
+        [TestInitialize]
+        public void Init()
+        {
+            Api.Tracing = true;
+        }
         
         [TestMethod]
         public void Test()

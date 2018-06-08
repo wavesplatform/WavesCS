@@ -9,7 +9,13 @@ namespace WavesCS
 {
     public static class Api
     {        
-        public static event Action<string> DataProcessed;
+        public static bool Tracing { get; set; }
+
+        private static void Trace(string s)
+        {
+            if (Tracing)
+                Console.WriteLine(s);
+        }
         
         public static string GetString(string url)
         {
@@ -37,12 +43,12 @@ namespace WavesCS
 
         public static string GetJson(string url, NameValueCollection headers = null)
         {
-            OnDataProcessed($"Getting: {url}");
+            Trace($"Getting: {url}");
             var client = new WebClient {Encoding = Encoding.UTF8};
             if (headers != null)
                 client.Headers.Add(headers);
             var result = client.DownloadString(url);
-            OnDataProcessed($"Received: {result}");
+            Trace($"Received: {result}");
             return result;
         }      
         
@@ -56,9 +62,9 @@ namespace WavesCS
                 if (headers != null)
                     client.Headers.Add(headers);                  
                 var json = data.ToJson();
-                OnDataProcessed($"Sending to {url} : {json}");
+                Trace($"Posting to {url} : {json}");
                 var response = client.UploadString(url, json);
-                OnDataProcessed($"Response: {response}");
+                Trace($"Response: {response}");
                 return response;
             }
             catch (WebException e)
@@ -67,11 +73,6 @@ namespace WavesCS
                 Console.WriteLine(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
                 throw;
             }
-        }
-
-        private static void OnDataProcessed(string obj)
-        {
-            DataProcessed?.Invoke(obj);
         }
     }
 }
