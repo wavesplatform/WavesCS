@@ -11,8 +11,12 @@ namespace WavesCSTests
     {
         private static readonly Asset WBTC = new Asset("Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe", "BTC", 8);
 
-        public TestContext TestContext { get; set; }
-
+        [TestInitialize]
+        public void Init()
+        {
+            Api.Tracing = true;
+        }
+        
         [TestMethod]
         public void TestKey()
         {
@@ -27,8 +31,6 @@ namespace WavesCSTests
         [TestMethod]
         public void TestOrderBook()
         {
-            Api.DataProcessed += s => Console.WriteLine(s);
-            
             var matcher = new Matcher("https://matcher.wavesnodes.com");            
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, Assets.BTC);
@@ -61,15 +63,13 @@ namespace WavesCSTests
             Assert.IsTrue(balance[Assets.WAVES] > 0);
             Assert.IsTrue(balance[WBTC] >= 0);
             
-            TestContext.WriteLine(string.Join(", ", balance.Select(p => $"{p.Key}: {p.Value}")));
+            Console.WriteLine(string.Join(", ", balance.Select(p => $"{p.Key}: {p.Value}")));
         }
             
         
         [TestMethod]
         public void TestOrders()
-        {            
-            Api.DataProcessed += s => TestContext.WriteLine(s);
-
+        {                        
             var matcher = new Matcher("https://testnet1.wavesnodes.com");
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);

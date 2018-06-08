@@ -9,7 +9,12 @@ namespace WavesCSTests
 {
     [TestClass]
     public class DataTransactionTest
-    {        
+    {                
+        [TestInitialize]
+        public void Init()
+        {
+            Api.Tracing = true;
+        }
         
         [TestMethod]
         public void TestDataTransaction()

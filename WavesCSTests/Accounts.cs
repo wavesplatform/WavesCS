@@ -15,7 +15,6 @@ namespace WavesCSTests
         [TestMethod]
         public void TestBalance()
         {
-            
             // Use faucet to fill acounts https://testnet.wavesexplorer.com/faucet
             
             var node = new Node();

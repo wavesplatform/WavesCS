@@ -8,7 +8,11 @@ namespace WavesCSTests
     [TestClass]
     public class MassTransferTest
     {
-        public TestContext TestContext { get; set; }
+        [TestInitialize]
+        public void Init()
+        {
+            Api.Tracing = true;
+        }
 
         [TestMethod]
         public void TestMassTransferTransaction()
@@ -27,9 +31,7 @@ namespace WavesCSTests
             Assert.AreEqual(0.003m, tx.Fee);
             
             tx.Sign(Accounts.Alice);
-            var response = node.Broadcast(tx.GetJsonWithSignature());
-            
-            TestContext.WriteLine("Response tx id: " + response);                                  
+            node.Broadcast(tx.GetJsonWithSignature());                                             
         }
     }
 }

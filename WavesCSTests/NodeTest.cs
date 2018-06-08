@@ -7,15 +7,12 @@ namespace WavesCSTests
     public class NodeTest
     {        
         private static readonly Asset WBTC = new Asset("Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe", "WBTC", 8);
-        
-        public TestContext TestContext { get; set; }
 
         [TestInitialize]
-        public void Initialize()
+        public void Init()
         {
-            Api.DataProcessed += s => TestContext.WriteLine(s);
-        }
-        
+            Api.Tracing = true;
+        }        
         
         [TestMethod]
         public void TestGetters()
