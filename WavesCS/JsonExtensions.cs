@@ -1,13 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 
 namespace WavesCS
 {
     public static class JsonExtensions
-    {
+    {        
+        private static readonly JsonSerializer Serializer = new JsonSerializer();
+        
+        public static string ToJson(this Dictionary<string, object> data)
+        {
+            var sb = new StringBuilder();
+            var sw = new StringWriter(sb);
+            Serializer.Serialize(sw, data);
+            return sb.ToString();
+        }
+        
+        public static DictionaryObject ParseJsonObject(this string json)
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        }
+        
+        public static DictionaryObject[] ParseJsonObjects(this string json)
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, object>[]>(json);		
+        }
+        
+        public static string ParseJsonString(this string json)
+        {
+            return JsonConvert.DeserializeObject<string>(json);		
+        }
+        
         public static DictionaryObject GetObject(this DictionaryObject d, string field)
         {		
             return d.Get<DictionaryObject>(field);
@@ -23,24 +51,23 @@ namespace WavesCS
 		
         public static T Get<T>(this DictionaryObject d, string field)
         {
-            return (T) d.GetValue(field);
+            var value = d.GetValue(field);
+            if (value is JContainer j)
+                return j.ToObject<T>();
+            else
+                return (T) value;            
         }
 	
         public static IEnumerable<DictionaryObject> GetObjects(this DictionaryObject d, string field)
         {
-            return ((object[]) d.GetValue(field)).Cast<DictionaryObject>();
+            return d.Get<DictionaryObject[]>(field);
         }
 	
         public static string GetString(this DictionaryObject d, string field) 	
         {
             return d.Get<string>(field);
         }
-	
-        public static double GetFloat(this DictionaryObject d, string field, int digits) 	
-        {		
-            return d.GetLong(field) / Math.Pow(10, digits);		
-        }
-	
+
         public static DateTime GetDate(this DictionaryObject d, string field) 	
         {		
             var timestamp = d.GetLong(field);

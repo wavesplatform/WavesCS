@@ -114,7 +114,7 @@ namespace WavesCS
             var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable);
             tx.Sign(account);                
             var response = Broadcast(tx);
-            var assetId = response.GetJsonObject().GetString("id");
+            var assetId = response.ParseJsonObject().GetString("id");
             return new Asset(assetId, name, decimals);
         }
 
