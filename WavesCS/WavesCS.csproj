@@ -22,8 +22,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Update="SeedWords.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="Resources\SeedWords.txt" />
   </ItemGroup>
 </Project>

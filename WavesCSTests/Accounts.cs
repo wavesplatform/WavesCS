@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
 
@@ -14,18 +15,23 @@ namespace WavesCSTests
         [TestMethod]
         public void TestBalance()
         {
+            
+            // Use faucet to fill acounts https://testnet.wavesexplorer.com/faucet
+            
             var node = new Node();
-
+            
             var bobBalanceWaves = node.GetBalance(Bob.Address);
             var aliceBalanceWaves = node.GetBalance(Alice.Address);
-            var carolBalanceBalanceWaves = node.GetBalance(Carol.Address);
+            var carolBalanceWaves = node.GetBalance(Carol.Address);
                             
-            Console.WriteLine("Alice balance: {0} waves, Bob baance: {1}, Carol balance: {2}", 
-                aliceBalanceWaves, bobBalanceWaves, carolBalanceBalanceWaves);
+            Console.WriteLine("Alice address: {0}, balance: {1}", Alice.Address, aliceBalanceWaves);
+            Console.WriteLine("Bob address: {0}, balance: {1}", Bob.Address, bobBalanceWaves);
+            Console.WriteLine("Carol address: {0}, balance: {1}", Carol.Address, carolBalanceWaves);
+            
 
-            Assert.IsTrue(aliceBalanceWaves > 100000000);
-            Assert.IsTrue(bobBalanceWaves > 100000000);
-            Assert.IsTrue(carolBalanceBalanceWaves > 100000000);
+            Assert.IsTrue(aliceBalanceWaves > 1);
+            Assert.IsTrue(bobBalanceWaves > 1);
+            Assert.IsTrue(carolBalanceWaves > 1);
         }
     }
 }

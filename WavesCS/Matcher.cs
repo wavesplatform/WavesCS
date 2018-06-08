@@ -95,18 +95,18 @@ namespace WavesCS
             return string.IsNullOrEmpty(assetId) ? "WAVES" : assetId;
         }
         
-        private NameValueCollection GetProtectionHeaders(PrivateKeyAccount account)
+        private static NameValueCollection GetProtectionHeaders(PrivateKeyAccount account)
         {
             long timestamp = Utils.CurrentTimestamp();
             var stream = new MemoryStream(40);
             var writer = new BinaryWriter(stream);
             writer.Write(account.PublicKey);
             writer.WriteLong(timestamp);
-            string signature = account.Sign(stream);
+            var signature = account.Sign(stream);
             return new NameValueCollection
             {
-                {"Timestamp", Convert.ToString(timestamp)},
-                {"Signature", signature}
+                {"Timestamp", Convert.ToString(timestamp) },
+                {"Signature", signature.ToBase58() }
             };
         }
         
@@ -116,12 +116,12 @@ namespace WavesCS
             var writer = new BinaryWriter(stream);
             writer.Write(sender.PublicKey);
             writer.Write(Base58.Decode(orderId));
-            string signature = sender.Sign(stream);
+            var signature = sender.Sign(stream);
             return new DictionaryObject
             {
                 {"sender", sender.PublicKey.ToBase58()},
                 {"orderId", orderId},
-                {"signature", signature}
+                {"signature", signature.ToBase58()}
             };
         }
         
@@ -140,9 +140,9 @@ namespace WavesCS
             writer.WriteLong(price);
             writer.WriteLong(amount);
             writer.WriteLong(timestamp);
-            writer.WriteLong(expiration.DateToTimestamp() );
+            writer.WriteLong(expiration.ToLong() );
             writer.WriteLong(matcherFee);
-            string signature = sender.Sign(stream);
+            var signature = sender.Sign(stream);
 
             return new DictionaryObject {
                 { "senderPublicKey", Base58.Encode(sender.PublicKey) },
@@ -155,9 +155,9 @@ namespace WavesCS
                 { "price", price },
                 { "amount", amount },
                 { "timestamp", timestamp },
-                { "expiration", expiration.DateToTimestamp() },
+                { "expiration", expiration.ToLong() },
                 { "matcherFee", matcherFee },
-                { "signature", signature }                
+                { "signature", signature.ToBase58() }                
             };
         }
     }

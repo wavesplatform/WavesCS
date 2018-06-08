@@ -30,6 +30,12 @@ namespace WavesCS
             return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
         }
         
+        public static IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
+        {
+            var json = GetJson(string.Format(url, args));
+            return ((object[]) Serializer.DeserializeObject(json)).Cast<Dictionary<String, object>>();		
+        }
+        
         public static DictionaryObject GetObjectWithHeaders(string url, NameValueCollection headers)
         {
             return GetWithHeaders<DictionaryObject>(url, headers);
@@ -70,7 +76,7 @@ namespace WavesCS
                 var sw = new StringWriter(sb);
                 Serializer.Serialize(sw, data);
                 var json = sb.ToString();
-                OnDataProcessed($"Sending: {json}");
+                OnDataProcessed($"Sending: {json} : {json}");
                 var response = client.UploadString(url, json);
                 OnDataProcessed($"Response: {response}");
                 return response;
