@@ -77,7 +77,7 @@ namespace WavesCS
                     {"recipient", t.Recipient },
                     {"amount", Asset.AmountToLong(t.Amount)}
                 }).ToArray() },
-                { "assetId", Asset.Id},
+                { "assetId", Asset.IdOrNull},
                 { "fee", Assets.WAVES.AmountToLong(Fee)},
                 { "timestamp", Timestamp.ToLong() },
                 { "attachment", Attachment.ToBase58() }
