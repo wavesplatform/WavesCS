@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Dynamic;
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -54,7 +55,7 @@ namespace WavesCS
         public int GetUnconfirmedPoolSize()
         {
             return GetObject("transactions/unconfirmed/size").GetInt("size"); 
-        }
+        }               
         
         public Dictionary<string, object> GetAddressData(string address)
         {            
@@ -146,6 +147,11 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string Post(string url, string data)
+        {
+            return Http.Post(_host + url, data);
+        }
+        
         public string Broadcast(Transaction transaction)
         {
             return Http.Post($"{_host}/transactions/broadcast", transaction.GetJsonWithSignature());

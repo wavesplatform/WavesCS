@@ -10,6 +10,7 @@
         LeaseCancel = 9,
         Alias = 10,
         MassTransfer = 11,
-        DataTx = 12,    
+        DataTx = 12,
+        SetScript = 13
     }
 }
