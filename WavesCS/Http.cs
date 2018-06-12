@@ -17,6 +17,11 @@ namespace WavesCS
                 Console.WriteLine(s);
         }
         
+        public static string GetRawString(string url)
+        {
+            return GetJson(url);
+        }
+        
         public static string GetString(string url)
         {
             var json = GetJson(url);
