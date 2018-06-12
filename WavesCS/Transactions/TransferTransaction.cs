@@ -61,9 +61,9 @@ namespace WavesCS
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"recipient", Recipient},
                 {"amount", Asset.AmountToLong(Amount)},
-                {"assetId", Asset.Id},
+                {"assetId", Asset.IdOrNull},
                 {"fee", FeeAsset.AmountToLong(Fee)},
-                {"feeAssetId", FeeAsset.Id},
+                {"feeAssetId", FeeAsset.IdOrNull},
                 {"timestamp", Timestamp.ToLong()},
                 {"attachment", Attachment.ToBase58()}
             };
