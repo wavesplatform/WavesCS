@@ -54,6 +54,11 @@ namespace WavesCS
         
         public static string Post(string url, DictionaryObject data, NameValueCollection headers = null)
         {
+            return Post(url, data.ToJson(), headers);
+        }
+        
+        public static string Post(string url, string data, NameValueCollection headers = null)
+        {
             try
             {
                 var client = new WebClient {Encoding = Encoding.UTF8};
@@ -61,7 +66,7 @@ namespace WavesCS
                 client.Headers.Add("Accept", "application/json");
                 if (headers != null)
                     client.Headers.Add(headers);                  
-                var json = data.ToJson();
+                var json = data;
                 Trace($"Posting to {url} : {json}");
                 var response = client.UploadString(url, json);
                 Trace($"Response: {response}");
