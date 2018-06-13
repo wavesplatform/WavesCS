@@ -90,7 +90,9 @@ namespace WavesCS
         Asset GetAssetFromCacheOrNode(DictionaryObject tx, Dictionary<string, Asset> cache)
         {
             var assetId = tx.GetString("assetId");
-            Asset asset = null;
+            if (assetId == null)
+                return Assets.WAVES;
+            Asset asset = Assets.WAVES;
             if (cache.ContainsKey(assetId))
                 asset = cache[assetId];
             else
