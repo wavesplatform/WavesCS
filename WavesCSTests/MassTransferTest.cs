@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -26,7 +27,7 @@ namespace WavesCSTests
                 new MassTransferItem("3N1JMgUfzYUZinPrzPWeRa6yqN67oo57XR7", 0.003m),    
             };
 
-            var tx = new MassTransferTransaction(Accounts.Alice.PublicKey, Assets.WAVES, recipients, "Shut up & take my money");
+            var tx = new MassTransferTransaction(Accounts.Alice.PublicKey, DateTime.UtcNow, Assets.WAVES, recipients, "Shut up & take my money");
 
             Assert.AreEqual(0.003m, tx.Fee);
             

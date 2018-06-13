@@ -31,7 +31,7 @@ namespace WavesCSTests
                 { "test russian", "Привет" }                
             };
 
-            var tx = new DataTransaction(Accounts.Alice.PublicKey, data);
+            var tx = new DataTransaction(Accounts.Alice.PublicKey, DateTime.UtcNow, data);
             tx.Sign(Accounts.Alice);
             
             Console.WriteLine("Tx size: " + tx.GetBody().Length);            

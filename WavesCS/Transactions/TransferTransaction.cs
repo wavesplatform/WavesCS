@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -13,20 +14,20 @@ namespace WavesCS
         public Asset FeeAsset { get; }
         public byte[] Attachment { get; }
 
-        public TransferTransaction(byte[] senderPublicKey, string recipient,
+        public TransferTransaction(byte[] senderPublicKey, DateTime timestamp, string recipient,
             Asset asset, decimal amount, string attachment) : 
-            this(senderPublicKey, recipient, asset, amount, Encoding.UTF8.GetBytes(attachment))
+            this(senderPublicKey, timestamp, recipient, asset, amount, Encoding.UTF8.GetBytes(attachment))
         {                  
         }
         
-        public TransferTransaction(byte[] senderPublicKey, string recipient,
+        public TransferTransaction(byte[] senderPublicKey, DateTime timestamp, string recipient,
             Asset asset, decimal amount, byte[] attachment = null) : 
-            this(senderPublicKey, recipient, asset, amount, 0.001m, Assets.WAVES, attachment)
+            this(senderPublicKey, timestamp, recipient, asset, amount, 0.001m, Assets.WAVES, attachment)
         {                  
         }
         
-        public TransferTransaction(byte[] senderPublicKey, string recipient,
-            Asset asset, decimal amount, decimal fee, Asset feeAsset, byte[] attachment = null) : base(senderPublicKey)
+        public TransferTransaction(byte[] senderPublicKey, DateTime timestamp, string recipient,
+            Asset asset, decimal amount, decimal fee, Asset feeAsset, byte[] attachment = null) : base(senderPublicKey, timestamp)
         {                        
             Recipient = recipient;
             Amount = amount;

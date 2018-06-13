@@ -103,6 +103,14 @@ namespace WavesCS
             return asset;
         }
 
+        DateTime ConvertTimestamp(DictionaryObject tx)
+        {
+            var timestamp = tx.GetLong("timestamp");
+            // convert unix timestamp to DateTime object
+            var dt = new DateTime(1970,1,1,0,0,0,0,System.DateTimeKind.Utc);
+            return dt.AddMilliseconds(timestamp).ToLocalTime();
+        }
+
         public IEnumerable<Transaction> ListTransactions(string address, int limit=50)
         {
             // get the raw json and then manually remove the extra '[' & ']' characters from the json
@@ -120,45 +128,49 @@ namespace WavesCS
             {
                 var senderPublicKey = Base58.Decode(tx_.GetString("senderPublicKey"));
                 var type = (TransactionType)tx_.GetInt("type");
-                Transaction tx = new UnknownTransaction(senderPublicKey, (int)type);
+                Transaction tx = new UnknownTransaction(senderPublicKey, ConvertTimestamp(tx_), (int)type);
                 switch (type)
                 {
                     case TransactionType.Issue:
                         var decimals = (byte)tx_.GetInt("decimals");
-                        tx = new IssueTransaction(senderPublicKey, tx_.GetString("name"), tx_.GetString("description"),
-                            Asset.AmountToLong(decimals, tx_.GetLong("quantity")), decimals, tx_.GetBool("reissuable"),
-                            Asset.AmountToLong(decimals, tx_.GetLong("fee")));
+                        tx = new IssueTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            tx_.GetString("name"), tx_.GetString("description"), Asset.AmountToLong(decimals, tx_.GetLong("quantity")),
+                            decimals, tx_.GetBool("reissuable"), Asset.AmountToLong(decimals, tx_.GetLong("fee")));
                         break;
                     case TransactionType.Transfer:
                     {
                         var asset = GetAssetFromCacheOrNode(tx_, assets);
                         byte[] attachment = Encoding.UTF8.GetBytes(tx_.GetString("attachment"));
-                        tx = new TransferTransaction(senderPublicKey, tx_.GetString("recipient"), asset,
-                            asset.LongToAmount(tx_.GetLong("amount")), asset.LongToAmount(tx_.GetLong("fee")), asset, attachment);
+                        tx = new TransferTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            tx_.GetString("recipient"), asset, asset.LongToAmount(tx_.GetLong("amount")), asset.LongToAmount(tx_.GetLong("fee")),
+                            asset, attachment);
                         break;
                     }
                     case TransactionType.Reissue:
                     {
                         var asset = GetAssetFromCacheOrNode(tx_, assets);
-                        tx = new ReissueTransaction(senderPublicKey, asset, asset.LongToAmount(tx_.GetLong("quantity")),
-                            tx_.GetBool("reissuable"), asset.LongToAmount(tx_.GetLong("fee")));
+                        tx = new ReissueTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            asset, asset.LongToAmount(tx_.GetLong("quantity")), tx_.GetBool("reissuable"), asset.LongToAmount(tx_.GetLong("fee")));
                         break;
                     }
                     case TransactionType.Burn:
                     {
                         var asset = GetAssetFromCacheOrNode(tx_, assets);
-                        tx = new BurnTransaction(senderPublicKey, asset, asset.LongToAmount(tx_.GetLong("quantity")), asset.LongToAmount(tx_.GetLong("fee")));
+                        tx = new BurnTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            asset, asset.LongToAmount(tx_.GetLong("quantity")), asset.LongToAmount(tx_.GetLong("fee")));
                         break;
                     }
                     case TransactionType.Lease:
-                        tx = new LeaseTransaction(senderPublicKey, tx_.GetString("recipient"), Assets.WAVES.LongToAmount(tx_.GetLong("amount")),
-                            Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
+                        tx = new LeaseTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            tx_.GetString("recipient"), Assets.WAVES.LongToAmount(tx_.GetLong("amount")), Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
                         break;
                     case TransactionType.LeaseCancel:
-                        tx = new CancelLeasingTransaction(senderPublicKey, tx_.GetString("leaseid"), Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
+                        tx = new CancelLeasingTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            tx_.GetString("leaseid"), Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
                         break;
                     case TransactionType.Alias:
-                        tx = new AliasTransaction(senderPublicKey, tx_.GetString("alias"), '0'/*???*/, Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
+                        tx = new AliasTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            tx_.GetString("alias"), '0'/*???*/, Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
                         break;
                     case TransactionType.MassTransfer:
                     {
@@ -167,7 +179,8 @@ namespace WavesCS
                         var transfers = new List<MassTransferItem>();
                         foreach (var transfer_ in tx_.GetObjects("transfers"))
                             transfers.Add(new MassTransferItem(transfer_.GetString("recipient"), asset.LongToAmount(tx_.GetLong("amount"))));
-                        tx = new MassTransferTransaction(senderPublicKey, asset, transfers, attachment, asset.LongToAmount(tx_.GetLong("fee")));
+                        tx = new MassTransferTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            asset, transfers, attachment, asset.LongToAmount(tx_.GetLong("fee")));
                         break;
                     }
                     case TransactionType.DataTx:
@@ -193,7 +206,8 @@ namespace WavesCS
                             }
                             entries.Add(key, value);
                         }
-                        tx = new DataTransaction(senderPublicKey, entries, Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
+                        tx = new DataTransaction(senderPublicKey, ConvertTimestamp(tx_),
+                            entries, Assets.WAVES.LongToAmount(tx_.GetLong("fee")));
                         break;
                 }
                 txs.Add(tx);
@@ -203,28 +217,28 @@ namespace WavesCS
 
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount, string message = "")
         {
-            var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, message);
+            var tx = new TransferTransaction(sender.PublicKey, DateTime.UtcNow, recipient, asset, amount, message);
             tx.Sign(sender);                                   
             return Broadcast(tx);
         }
         
         public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers, string message = "")
         {
-            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message);
+            var tx = new MassTransferTransaction(sender.PublicKey, DateTime.UtcNow, asset, transfers, message);
             tx.Sign(sender);                                   
             return Broadcast(tx);
         }
         
         public string Lease(PrivateKeyAccount sender, string recipient, decimal amount)
         {
-            var tx = new LeaseTransaction(sender.PublicKey, recipient, amount);
+            var tx = new LeaseTransaction(sender.PublicKey, DateTime.UtcNow, recipient, amount);
             tx.Sign(sender);            
             return Broadcast(tx);
         }
 
         public string CancelLease(PrivateKeyAccount account, string transactionId)
         {
-            var tx = new CancelLeasingTransaction(account.PublicKey, transactionId);
+            var tx = new CancelLeasingTransaction(account.PublicKey, DateTime.UtcNow, transactionId);
             tx.Sign(account);            
             return Broadcast(tx);
         }
@@ -232,7 +246,7 @@ namespace WavesCS
         public Asset IssueAsset(PrivateKeyAccount account,
                 string name, string description, decimal quantity, byte decimals, bool reissuable)
         {            
-            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable);
+            var tx = new IssueTransaction(account.PublicKey, DateTime.UtcNow, name, description, quantity, decimals, reissuable);
             tx.Sign(account);                
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
@@ -241,28 +255,28 @@ namespace WavesCS
 
         public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable)
         {
-            var tx = new ReissueTransaction(account.PublicKey, asset, quantity, reissuable);
+            var tx = new ReissueTransaction(account.PublicKey, DateTime.UtcNow, asset, quantity, reissuable);
             tx.Sign(account);          
             return Broadcast(tx);
         }
 
         public string BurnAsset(PrivateKeyAccount account, Asset asset, decimal amount)
         {
-            var tx = new BurnTransaction(account.PublicKey, asset, amount);
+            var tx = new BurnTransaction(account.PublicKey, DateTime.UtcNow, asset, amount);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public string CreateAlias(PrivateKeyAccount account, string alias, char scheme, long fee)
         {
-            var tx = new AliasTransaction(account.PublicKey, alias, scheme);
+            var tx = new AliasTransaction(account.PublicKey, DateTime.UtcNow, alias, scheme);
             tx.Sign(account);
             return Broadcast(tx);
         }
         
         public string PutData(PrivateKeyAccount account, DictionaryObject entries)
         {
-            var tx = new DataTransaction(account.PublicKey, entries);
+            var tx = new DataTransaction(account.PublicKey, DateTime.UtcNow, entries);
             tx.Sign(account);            
             return Broadcast(tx);
         }

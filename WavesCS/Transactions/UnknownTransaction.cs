@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace WavesCS
     {
         int type;
 
-        public UnknownTransaction(byte[] senderPublicKey, int type) : base(senderPublicKey)
+        public UnknownTransaction(byte[] senderPublicKey, DateTime timestamp, int type) : base(senderPublicKey, timestamp)
         {
             this.type = type;
         }

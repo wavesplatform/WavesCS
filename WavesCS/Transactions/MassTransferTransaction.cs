@@ -27,14 +27,14 @@ namespace WavesCS
         
         private const byte Version = 1;
 
-        public MassTransferTransaction(byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
+        public MassTransferTransaction(byte[] senderPublicKey, DateTime timestamp, Asset asset, IEnumerable<MassTransferItem> transfers,
             string attachment, decimal? fee = null) : 
-            this(senderPublicKey, asset, transfers, Encoding.UTF8.GetBytes(attachment), fee) 
+            this(senderPublicKey, timestamp, asset, transfers, Encoding.UTF8.GetBytes(attachment), fee) 
         {            
         }
         
-        public MassTransferTransaction(byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
-            byte[] attachment = null, decimal? fee = null) : base(senderPublicKey)
+        public MassTransferTransaction(byte[] senderPublicKey, DateTime timestamp, Asset asset, IEnumerable<MassTransferItem> transfers,
+            byte[] attachment = null, decimal? fee = null) : base(senderPublicKey, timestamp)
         {
             Asset = asset;
             Attachment = attachment ?? new byte[0];
