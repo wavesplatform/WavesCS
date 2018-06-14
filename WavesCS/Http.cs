@@ -57,6 +57,11 @@ namespace WavesCS
             return Post(url, data.ToJson(), headers);
         }
         
+        public static string Post(string url, DictionaryObject[] data, NameValueCollection headers = null)
+        {
+            return Post(url, data.ToJson(), headers);
+        }
+        
         public static string Post(string url, string data, NameValueCollection headers = null)
         {
             try
