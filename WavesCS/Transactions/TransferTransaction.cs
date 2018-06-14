@@ -38,19 +38,21 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {                        
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
-            writer.Write(TransactionType.Transfer);
-            writer.Write(SenderPublicKey);
-            writer.WriteAsset(Asset.Id);
-            writer.WriteAsset(FeeAsset.Id);
-            writer.WriteLong(Timestamp.ToLong());
-            writer.WriteLong(Asset.AmountToLong(Amount));
-            writer.WriteLong(FeeAsset.AmountToLong(Fee));
-            writer.Write(Recipient.FromBase58());            
-            writer.WriteShort(Attachment.Length);
-            writer.Write(Attachment);
-            return stream.ToArray();
+            using(var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(TransactionType.Transfer);
+                writer.Write(SenderPublicKey);
+                writer.WriteAsset(Asset.Id);
+                writer.WriteAsset(FeeAsset.Id);
+                writer.WriteLong(Timestamp.ToLong());
+                writer.WriteLong(Asset.AmountToLong(Amount));
+                writer.WriteLong(FeeAsset.AmountToLong(Fee));
+                writer.Write(Recipient.FromBase58());
+                writer.WriteShort(Attachment.Length);
+                writer.Write(Attachment);
+                return stream.ToArray();
+            }
         }
 
         public override Dictionary<string, object> GetJson()

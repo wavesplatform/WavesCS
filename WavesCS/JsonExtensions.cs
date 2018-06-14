@@ -15,10 +15,18 @@ namespace WavesCS
         
         public static string ToJson(this Dictionary<string, object> data)
         {
-            var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
-            Serializer.Serialize(sw, data);
-            return sb.ToString();
+            var builder = new StringBuilder();
+            var writer = new StringWriter(builder);
+            Serializer.Serialize(writer, data);
+            return builder.ToString();
+        }
+        
+        public static string ToJson(this Dictionary<string, object>[] data)
+        {
+            var builder = new StringBuilder();
+            var writer = new StringWriter(builder);
+            Serializer.Serialize(writer, data);
+            return builder.ToString();
         }
         
         public static DictionaryObject ParseJsonObject(this string json)

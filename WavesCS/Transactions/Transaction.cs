@@ -38,6 +38,8 @@ namespace WavesCS
             }
             else
             {
+                if (Proofs.Length < 1)
+                    throw new InvalidOperationException("Transaction is not signed");
                 json.Add("signature", Proofs[0].ToBase58());
             }
             return json;

@@ -162,5 +162,11 @@ namespace WavesCS
             return Http.Post($"{_host}/transactions/broadcast", transaction);
         }
 
+        public string BatchBroadcast(IEnumerable<Transaction> transactions)
+        {
+            var data = transactions.Select(t => t.GetJsonWithSignature()).ToArray();
+            return Http.Post($"{_host}/assets/broadcast/batch-transfer", data);
+        }
+
     }
 }
