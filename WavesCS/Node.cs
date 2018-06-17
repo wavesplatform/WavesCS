@@ -128,7 +128,7 @@ namespace WavesCS
 
         public string BurnAsset(PrivateKeyAccount account, Asset asset, decimal amount)
         {
-            var tx = new BurnTransaction(account.PublicKey, asset, amount);
+            var tx = new BurnTransaction(account.PublicKey, asset, amount).Sign(account);
             tx.Sign(account);
             return Broadcast(tx);
         }

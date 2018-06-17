@@ -61,12 +61,9 @@ namespace WavesCSTests
 
             var transactons = new[]
             {
-                new TransferTransaction(Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m),
-                new TransferTransaction(Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m),
+                new TransferTransaction(Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
+                new TransferTransaction(Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
             };
-            
-            transactons[0].Sign(Accounts.Alice);
-            transactons[1].Sign(Accounts.Bob);
             
             var result = node.BatchBroadcast(transactons);
             Assert.IsNotNull(result);
