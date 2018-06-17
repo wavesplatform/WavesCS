@@ -10,7 +10,7 @@ namespace WavesCSTests
     {
         public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("DMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54o", AddressEncoding.TestNet);
         public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromPrivateKey("25Um7fKYkySZnweUEVAn9RLtxN5xHRd7iqpqYSMNQEeT", AddressEncoding.TestNet);       
-        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("general rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("another rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme", AddressEncoding.TestNet);
                 
         [TestMethod]
         public void TestBalance()
@@ -27,10 +27,26 @@ namespace WavesCSTests
             Console.WriteLine("Bob address: {0}, balance: {1}", Bob.Address, bobBalanceWaves);
             Console.WriteLine("Carol address: {0}, balance: {1}", Carol.Address, carolBalanceWaves);
             
-
             Assert.IsTrue(aliceBalanceWaves > 1);
             Assert.IsTrue(bobBalanceWaves > 1);
             Assert.IsTrue(carolBalanceWaves > 1);
+        }
+        
+        [TestMethod]
+        public void TestScripts()
+        {
+            Http.Tracing = true;
+            
+            var node = new Node();
+            
+            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
+            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
+            
+            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Bob.Address);
+            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
+            
+            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Carol.Address);
+            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
         }
     }
 }

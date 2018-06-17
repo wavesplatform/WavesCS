@@ -17,8 +17,8 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetScript()
         {
-            var node = new Node();
-
+            var node = new Node();            
+                
             var script = "true";
             var compiledScript = node.Post("/utils/script/compile", script).ParseJsonObject().Get<string>("script");
             
