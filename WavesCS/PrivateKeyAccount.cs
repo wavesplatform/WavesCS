@@ -80,7 +80,7 @@ namespace WavesCS
             var publicKey = new byte[privateKey.Length];
             Curve_sigs.curve25519_keygen(publicKey, privateKey);
             return publicKey;
-        }        
+        }
 
         public static string GenerateSeed()
         {

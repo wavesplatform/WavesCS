@@ -13,15 +13,17 @@ namespace WavesCS
         public Asset FeeAsset { get; }
         public byte[] Attachment { get; }
 
+        public static byte Version = 1;
+        
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, string attachment) : 
-            this(senderPublicKey, recipient, asset, amount, Encoding.UTF8.GetBytes(attachment))
+            this(senderPublicKey, recipient, asset, amount, 0.001m, Encoding.UTF8.GetBytes(attachment))
         {                  
         }
         
         public TransferTransaction(byte[] senderPublicKey, string recipient,
-            Asset asset, decimal amount, byte[] attachment = null) : 
-            this(senderPublicKey, recipient, asset, amount, 0.001m, Assets.WAVES, attachment)
+            Asset asset, decimal amount, decimal fee = 0.001m, byte[] attachment = null) : 
+            this(senderPublicKey, recipient, asset, amount, fee, Assets.WAVES, attachment)
         {                  
         }
         
@@ -39,9 +41,11 @@ namespace WavesCS
         public override byte[] GetBody()
         {                        
             using(var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
+            using(var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Transfer);
+                if (Version == 2)
+                    writer.Write(Version);
                 writer.Write(SenderPublicKey);
                 writer.WriteAsset(Asset.Id);
                 writer.WriteAsset(FeeAsset.Id);
@@ -57,9 +61,9 @@ namespace WavesCS
 
         public override Dictionary<string, object> GetJson()
         {
-            return new Dictionary<string, object>
+            var result = new Dictionary<string, object>
             {
-                {"type", TransactionType.Transfer},
+                {"type", TransactionType.Transfer},                
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"recipient", Recipient},
                 {"amount", Asset.AmountToLong(Amount)},
@@ -69,11 +73,14 @@ namespace WavesCS
                 {"timestamp", Timestamp.ToLong()},
                 {"attachment", Attachment.ToBase58()}
             };
+            if (Version > 1)
+                result.Add("version", Version);
+            return result;
         }
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version == 2;
         }
     }
 }
