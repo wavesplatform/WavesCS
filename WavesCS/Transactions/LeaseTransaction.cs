@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace WavesCS
@@ -9,8 +10,8 @@ namespace WavesCS
         public decimal Amount { get; }
         public decimal Fee { get; }
 
-        public LeaseTransaction(byte[] senderPublicKey, string recipient, decimal amount, decimal fee = 0.001m) : 
-            base(senderPublicKey)
+        public LeaseTransaction(byte[] senderPublicKey, DateTime timestamp, string recipient, decimal amount, decimal fee = 0.001m) : 
+            base(senderPublicKey, timestamp)
         {
             Recipient = recipient;
             Amount = amount;

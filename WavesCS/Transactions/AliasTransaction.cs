@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -10,8 +11,8 @@ namespace WavesCS
         public char Scheme { get; }
         public decimal Fee { get; }
 
-        public AliasTransaction(byte[] senderPublicKey, string alias, char scheme, decimal fee = 0.001m) : 
-            base(senderPublicKey)
+        public AliasTransaction(byte[] senderPublicKey, DateTime timestamp, string alias, char scheme, decimal fee = 0.001m) : 
+            base(senderPublicKey, timestamp)
         {
             Alias = alias;
             Scheme = scheme;

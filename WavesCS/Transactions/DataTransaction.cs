@@ -13,8 +13,8 @@ namespace WavesCS
 
         private const byte Version = 1;
         
-        public DataTransaction(byte[] senderPublicKey, Dictionary<string, object> entries,
-            decimal? fee = null) : base(senderPublicKey)
+        public DataTransaction(byte[] senderPublicKey, DateTime timestamp, Dictionary<string, object> entries,
+            decimal? fee = null) : base(senderPublicKey, timestamp)
         {
             Entries = entries;
             Fee = fee ?? ((GetBody().Length + 70) / 1024 + 1) * 0.001m;

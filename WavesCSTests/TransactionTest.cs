@@ -35,14 +35,14 @@ namespace WavesCSTests
                 new MassTransferItem(recipient, AMOUNT)
             };
 
-            Dump("alias", new AliasTransaction(account.PublicKey, "daphnie", AddressEncoding.TestNet, FEE));
-            Dump("burn", new BurnTransaction(account.PublicKey, asset, AMOUNT, FEE));
-            Dump("issue", new IssueTransaction(account.PublicKey, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
-            Dump("reissue", new ReissueTransaction(account.PublicKey, asset, AMOUNT, false, FEE));
-            Dump("lease", new LeaseTransaction(account.PublicKey, recipient, AMOUNT, FEE));
-            Dump("lease cancel", new CancelLeasingTransaction(account.PublicKey, transactionId, FEE));
-            Dump("xfer", new TransferTransaction(account.PublicKey, recipient, asset, AMOUNT, "Shut up & take my money"));
-            Dump("massxfer", new MassTransferTransaction(account.PublicKey, asset, recipients, "Shut up & take my money", FEE));
+            Dump("alias", new AliasTransaction(account.PublicKey, DateTime.UtcNow, "daphnie", AddressEncoding.TestNet, FEE));
+            Dump("burn", new BurnTransaction(account.PublicKey, DateTime.UtcNow, asset, AMOUNT, FEE));
+            Dump("issue", new IssueTransaction(account.PublicKey, DateTime.UtcNow, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
+            Dump("reissue", new ReissueTransaction(account.PublicKey, DateTime.UtcNow, asset, AMOUNT, false, FEE));
+            Dump("lease", new LeaseTransaction(account.PublicKey, DateTime.UtcNow, recipient, AMOUNT, FEE));
+            Dump("lease cancel", new CancelLeasingTransaction(account.PublicKey, DateTime.UtcNow, transactionId, FEE));
+            Dump("xfer", new TransferTransaction(account.PublicKey, DateTime.UtcNow, recipient, asset, AMOUNT, "Shut up & take my money"));
+            Dump("massxfer", new MassTransferTransaction(account.PublicKey, DateTime.UtcNow, asset, recipients, "Shut up & take my money", FEE));
         }
 
         private void Dump(String header, Transaction transaction)

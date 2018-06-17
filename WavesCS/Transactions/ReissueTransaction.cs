@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace WavesCS
@@ -10,8 +11,8 @@ namespace WavesCS
         public bool Reissuable { get; }
         public decimal Fee { get; }
 
-        public ReissueTransaction(byte[] senderPublicKey, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
-            base(senderPublicKey)
+        public ReissueTransaction(byte[] senderPublicKey, DateTime timestamp, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
+            base(senderPublicKey, timestamp)
         {
             Asset = asset;
             Quantity = quantity;

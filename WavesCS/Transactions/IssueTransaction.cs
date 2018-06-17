@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -13,8 +14,8 @@ namespace WavesCS
         public bool Reissuable { get; }
         public decimal Fee { get; }
        
-        public IssueTransaction(byte[] senderPublicKey,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m) : base(senderPublicKey)
+        public IssueTransaction(byte[] senderPublicKey, DateTime timestamp, 
+            string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m) : base(senderPublicKey, timestamp)
         {
             Name = name ?? "";
             Description = description ?? "";

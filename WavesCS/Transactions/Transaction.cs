@@ -15,9 +15,9 @@ namespace WavesCS
 
         private byte[][] Proofs { get; set; }        
 
-        protected Transaction(byte[] senderPublicKey)
+        protected Transaction(byte[] senderPublicKey, DateTime timestamp)
         {
-            Timestamp = DateTime.UtcNow;                        
+            Timestamp = timestamp;                        
             SenderPublicKey = senderPublicKey;
             Proofs = new byte[0][];
         }       
