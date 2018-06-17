@@ -31,8 +31,7 @@ namespace WavesCSTests
                 { "test russian", "Привет" }                
             };
 
-            var tx = new DataTransaction(Accounts.Alice.PublicKey, data);
-            tx.Sign(Accounts.Alice);
+            var tx = new DataTransaction(Accounts.Alice.PublicKey, data).Sign(Accounts.Alice);            
             
             Console.WriteLine("Tx size: " + tx.GetBody().Length);            
             Console.WriteLine("Response tx id: " + node.Broadcast(tx.GetJsonWithSignature()));

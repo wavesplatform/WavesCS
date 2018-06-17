@@ -22,7 +22,8 @@ namespace WavesCSTests
 
             var leaseTx = new LeaseTransaction(Accounts.Bob.PublicKey, Accounts.Alice.Address, 0.5m);            
             Assert.AreEqual(0.001m, leaseTx.Fee);
-            leaseTx.Sign(Accounts.Bob);                        
+            leaseTx.Sign(Accounts.Bob);
+            
             var response = node.Broadcast(leaseTx.GetJsonWithSignature());
             Console.WriteLine(response);
             Assert.IsFalse(string.IsNullOrEmpty(response));
