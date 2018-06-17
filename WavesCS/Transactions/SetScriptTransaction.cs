@@ -53,7 +53,7 @@ namespace WavesCS
                 {"type", TransactionType.SetScript},
                 {"version", Version},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"script", Script == null ? null : "base64:" + Script.ToBase64()},
+                {"script", Script == null ? null : Script.ToBase64()},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}
             };

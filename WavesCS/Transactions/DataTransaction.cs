@@ -83,7 +83,7 @@ namespace WavesCS
                 {
                     {"key", pair.Key},
                     {"type", pair.Value is long ? "integer" : (pair.Value is bool ? "boolean" : (pair.Value is string ? "string"  : "binary"))},
-                    {"value", pair.Value is byte[] bytes ? "base64:" + bytes.ToBase64() : pair.Value }                    
+                    {"value", pair.Value is byte[] bytes ? bytes.ToBase64() : pair.Value }                    
                 })},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},                

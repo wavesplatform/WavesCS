@@ -40,7 +40,7 @@ namespace WavesCS
                 if (proofs.Length == 0)
                     throw new InvalidOperationException("Transaction is not signed");
                 if (proofs.Length > 1)
-                    throw new InvalidOperationException("Transaction type and version doesn't support multipl proofs");
+                    throw new InvalidOperationException("Transaction type and version doesn't support multiple proofs");
                 json.Add("signature", proofs.Single());
             }
             return json;

@@ -12,7 +12,7 @@ namespace WavesCS
         public const string TestNetHost = "https://testnode1.wavesnodes.com";
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
-        private readonly string _host;                
+        private readonly string _host;
 
         public Node(string nodeHost = TestNetHost)
         {
@@ -21,17 +21,17 @@ namespace WavesCS
             _host = nodeHost;
         }
 
-        
+
         public Dictionary<string, object> GetObject(string url, params object[] args)
-        {            
+        {
             return Http.GetObject($"{_host}/{url}", args);
         }
-        
+
         public IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
         {
             return Http.GetObjects($"{_host}/{url}", args);
-        }          
-        
+        }
+
         public int GetHeight()
         {
             return GetObject("blocks/height").GetInt("height");
@@ -39,7 +39,7 @@ namespace WavesCS
 
         public decimal GetBalance(string address)
         {
-            return  GetObject($"addresses/balance/{address}").GetDecimal("balance", Assets.WAVES);
+            return GetObject($"addresses/balance/{address}").GetDecimal("balance", Assets.WAVES);
         }
 
         public decimal GetBalance(string address, int confirmations)
@@ -49,16 +49,16 @@ namespace WavesCS
 
         public decimal GetBalance(string address, Asset asset)
         {
-            return GetObject($"assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset); 
+            return GetObject($"assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset);
         }
-        
+
         public int GetUnconfirmedPoolSize()
         {
-            return GetObject("transactions/unconfirmed/size").GetInt("size"); 
-        }               
-        
+            return GetObject("transactions/unconfirmed/size").GetInt("size");
+        }
+
         public Dictionary<string, object> GetAddressData(string address)
-        {            
+        {
             return GetObjects("addresses/data/{0}", address)
                 .ToDictionary(o => o.GetString("key"), o =>
                 {
@@ -80,40 +80,42 @@ namespace WavesCS
                 throw new ArgumentException("Wrong asset id (transaction type)");
             return new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
         }
-        
-        public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount, string message = "")
+
+        public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
+            string message = "")
         {
             var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, message);
-            tx.Sign(sender);                                   
+            tx.Sign(sender);
             return Broadcast(tx);
         }
-        
-        public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers, string message = "")
+
+        public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers,
+            string message = "")
         {
             var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message);
-            tx.Sign(sender);                                   
+            tx.Sign(sender);
             return Broadcast(tx);
         }
-        
+
         public string Lease(PrivateKeyAccount sender, string recipient, decimal amount)
         {
             var tx = new LeaseTransaction(sender.PublicKey, recipient, amount);
-            tx.Sign(sender);            
+            tx.Sign(sender);
             return Broadcast(tx);
         }
 
         public string CancelLease(PrivateKeyAccount account, string transactionId)
         {
             var tx = new CancelLeasingTransaction(account.PublicKey, transactionId);
-            tx.Sign(account);            
+            tx.Sign(account);
             return Broadcast(tx);
         }
 
         public Asset IssueAsset(PrivateKeyAccount account,
-                string name, string description, decimal quantity, byte decimals, bool reissuable)
-        {            
+            string name, string description, decimal quantity, byte decimals, bool reissuable)
+        {
             var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable);
-            tx.Sign(account);                
+            tx.Sign(account);
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
             return new Asset(assetId, name, decimals);
@@ -122,7 +124,7 @@ namespace WavesCS
         public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable)
         {
             var tx = new ReissueTransaction(account.PublicKey, asset, quantity, reissuable);
-            tx.Sign(account);          
+            tx.Sign(account);
             return Broadcast(tx);
         }
 
@@ -139,12 +141,17 @@ namespace WavesCS
             tx.Sign(account);
             return Broadcast(tx);
         }
-        
+
         public string PutData(PrivateKeyAccount account, DictionaryObject entries)
         {
             var tx = new DataTransaction(account.PublicKey, entries);
-            tx.Sign(account);            
+            tx.Sign(account);
             return Broadcast(tx);
+        }
+
+        public byte[] CompileScript(string script)
+        {
+            return Post("/utils/script/compile", script).ParseJsonObject().Get<string>("script").FromBase64();
         }
 
         public string Post(string url, string data)

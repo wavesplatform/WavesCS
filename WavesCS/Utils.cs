@@ -41,7 +41,7 @@ namespace WavesCS
 
         public static string ToBase64(this byte[] data)
         {
-            return Convert.ToBase64String(data);
+            return "base64:" + Convert.ToBase64String(data);
         }
         
         public static byte[] FromBase64(this string data)
