@@ -26,7 +26,7 @@ namespace WavesCS
                 writer.Write(TransactionType.Alias);
                 writer.Write(SenderPublicKey);
                 writer.WriteShort(Alias.Length + 4);
-                writer.Write(0x02);
+                writer.Write((byte) 0x02);
                 writer.Write((byte) Scheme);
                 writer.WriteShort(Alias.Length);
                 writer.Write(Encoding.ASCII.GetBytes(Alias));
