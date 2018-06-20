@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
 
 namespace WavesCSTests
@@ -42,6 +43,17 @@ namespace WavesCSTests
         }
 
         [TestMethod]
+        public void TestGetTransactions()
+        {
+            var node = new Node();
+            var transactions = node.GetTransationsByAddress(Accounts.Alice.Address, 10);
+            
+            Assert.IsTrue(transactions.Count() == 10);
+            Assert.IsTrue(transactions.All(t => t.GetInt("type") < 20));
+            Assert.IsTrue(transactions.All(t => t.GetString("sender").Length > 30));
+        }
+
+        [TestMethod]
         public void TestTransfer()
         {
             var node = new Node();
@@ -67,7 +79,6 @@ namespace WavesCSTests
             
             var result = node.BatchBroadcast(transactons);
             Assert.IsNotNull(result);
-
         }
     }
 }
