@@ -175,5 +175,9 @@ namespace WavesCS
             return Http.Post($"{_host}/assets/broadcast/batch-transfer", data);
         }
 
+        public DictionaryObject[] GetTransationsByAddress(string address, int limit)
+        {
+            return Http.GetFlatObjects($"{_host}/transactions/address/{address}/limit/{limit}");
+        }
     }
 }

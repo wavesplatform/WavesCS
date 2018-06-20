@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -37,6 +38,11 @@ namespace WavesCS
         public static DictionaryObject[] ParseJsonObjects(this string json)
         {
             return JsonConvert.DeserializeObject<Dictionary<string, object>[]>(json);		
+        }
+        
+        public static DictionaryObject[] ParseFlatObjects(this string json)
+        {
+            return JsonConvert.DeserializeObject<JArray[]>(json).Single().ToObject<DictionaryObject[]>();		
         }
         
         public static string ParseJsonString(this string json)
