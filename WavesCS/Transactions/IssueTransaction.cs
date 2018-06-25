@@ -12,7 +12,8 @@ namespace WavesCS
         public byte Decimals { get; }
         public bool Reissuable { get; }
         public decimal Fee { get; }
-       
+        public Asset Asset { get; }
+
         public IssueTransaction(byte[] senderPublicKey,
             string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m) : base(senderPublicKey)
         {
@@ -22,6 +23,7 @@ namespace WavesCS
             Decimals = decimals;
             Reissuable = reissuable;
             Fee = fee;
+            Asset = new Asset("", "", Decimals);
         }
 
         public override byte[] GetBody()
@@ -51,7 +53,7 @@ namespace WavesCS
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},                
                 {"name", Name},
                 {"description", Description},
-                {"quantity", Quantity},
+                {"quantity", Asset.AmountToLong(Quantity)},
                 {"decimals", Decimals},
                 {"reissuable", Reissuable},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
