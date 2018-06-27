@@ -28,10 +28,10 @@ namespace WavesCS
                 writer.Write(TransactionType.SponsoredFee);                
                 writer.Write(Version);
                 writer.Write(SenderPublicKey);
-                writer.Write(Asset.Id.FromBase58());
+                writer.WriteAsset(Asset.Id);
                 writer.WriteLong(Asset.AmountToLong(MinimalFeeInAssets));
-                writer.WriteLong(Timestamp.ToLong());
-                writer.WriteLong(Assets.WAVES.AmountToLong(Fee));                                                         
+                writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
+                writer.WriteLong(Timestamp.ToLong());                                                                 
 
                 return stream.ToArray();
             }                
@@ -45,11 +45,13 @@ namespace WavesCS
         public override Dictionary<string, object> GetJson() => new Dictionary<string, object>
             {
                 {"type", TransactionType.SponsoredFee},
-                {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"assetId", Asset.Id.FromBase58()},
-                {"minimalFeeInAssets", Asset.AmountToLong(MinimalFeeInAssets)},
+                {"version", Version},
+                {"senderPublicKey", Base58.Encode(SenderPublicKey)},
+                {"assetId", Asset.IdOrNull},             
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
-                {"timestamp", Timestamp.ToLong()}
+                {"timestamp", Timestamp.ToLong()},
+                {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
             };
+
     }
 }
