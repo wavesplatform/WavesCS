@@ -64,8 +64,8 @@ namespace WavesCSTests
             // transfer back so that Alice's balance is not drained
             transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice");
             Assert.IsNotNull(transactionId);
-        }
-        
+        }        
+
         [TestMethod]
         public void BatchBroadcastTest()
         {

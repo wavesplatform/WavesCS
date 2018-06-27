@@ -142,6 +142,13 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string SponsoredFeeForAsset(PrivateKeyAccount account, Asset asset, decimal minimalFeeInAssets)
+        {
+            var tx = new SponsoredFeeTransaction(account.PublicKey, asset, minimalFeeInAssets);
+            tx.Sign(account);
+            return Broadcast(tx);
+        }
+
         public string PutData(PrivateKeyAccount account, DictionaryObject entries)
         {
             var tx = new DataTransaction(account.PublicKey, entries);
