@@ -20,7 +20,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSponsoredFeeTransaction()
         {
-            var node = new Node();
+            var node = new Node();                               
             var issueTx = new IssueTransaction(Accounts.Alice.PublicKey, "testAsset", "asset for c# issue testing", 2, 6, false);
             issueTx.Sign(Accounts.Alice);
             string response = node.Broadcast(issueTx.GetJsonWithSignature()); 
@@ -31,10 +31,8 @@ namespace WavesCSTests
             string assetId = response.ParseJsonObject().GetString("assetId");
             Asset asset = Assets.GetById(assetId, node);
             var minimalFeeInAssets = 0.0001m;
-            var sponsoredTx = new SponsoredFeeTransaction(Accounts.Alice.PublicKey, asset, minimalFeeInAssets);
-            sponsoredTx.Sign(Accounts.Alice);
-            var responseTwo = node.Broadcast(sponsoredTx.GetJsonWithSignature());
-            Assert.IsFalse(string.IsNullOrEmpty(responseTwo));
+            string transactionId = node.SponsoredFeeForAsset(Accounts.Alice, asset, minimalFeeInAssets);
+            Assert.IsNotNull(transactionId);
 
         }
     }
