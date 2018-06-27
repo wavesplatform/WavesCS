@@ -11,6 +11,7 @@
         Alias = 10,
         MassTransfer = 11,
         DataTx = 12,
-        SetScript = 13
+        SetScript = 13,
+        SponsoredFee = 14
     }
 }
