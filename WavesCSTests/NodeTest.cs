@@ -65,7 +65,17 @@ namespace WavesCSTests
             transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice");
             Assert.IsNotNull(transactionId);
         }
-        
+
+        [TestMethod]
+        public void TestSponsoredFee()
+        {
+            var node = new Node();
+            Asset asset = Assets.GetById("3xEkwjCavAq9hKdi5awW1Mb931TtrneMeM6F8RKHUogY", node);
+            var minimalFeeInAssets = 0.0001m;
+            string transactionId = node.SponsoredFeeForAsset(Accounts.Alice, asset, minimalFeeInAssets);
+            Assert.IsNotNull(transactionId);
+        }
+
         [TestMethod]
         public void BatchBroadcastTest()
         {

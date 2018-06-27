@@ -10,7 +10,7 @@ namespace WavesCS
         public decimal MinimalFeeInAssets { get; }
         public Asset Asset { get; }
 
-        public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 100000000) :
+        public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1) :
             base(senderPublicKey)
         {
             Asset = asset;            
@@ -28,7 +28,7 @@ namespace WavesCS
                 writer.Write(TransactionType.SponsoredFee);                
                 writer.Write(Version);
                 writer.Write(SenderPublicKey);
-                writer.WriteAsset(Asset.Id);
+                writer.Write(Asset.Id.FromBase58());
                 writer.WriteLong(Asset.AmountToLong(MinimalFeeInAssets));
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
                 writer.WriteLong(Timestamp.ToLong());                                                                 
