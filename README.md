@@ -5,12 +5,17 @@ Supports node interaction, offline transaction signing, Matcher orders, and crea
 
 ## Getting Started
 
-You can download **WavesCS.dll** from [releases](https://github.com/wavesplatform/WavesCS/releases) and add it to your project's References and in your code as:
+You can install **WavesPlatform.WavesCS** [NuGet package](https://www.nuget.org/packages/WavesPlatform.WavesCS/) and add it to your project's References and in your code as:
 ```
 using WavesCS;
 ```
 
-If you want to work with full WavesCS project as contributor you should use also all crypto **.dll** from releases in your References.
+For installation NuGet package from VS Package Manager Console you should use:
+```
+PM> Install-Package WavesPlatform.WavesCS -Version 1.1.0
+```
+
+For installation via UI Package Manager use this [instruction](https://docs.microsoft.com/en-us/nuget/tools/package-manager-ui).
 
 Target framework .NET Framework 4.5.1
 ## Documentation
