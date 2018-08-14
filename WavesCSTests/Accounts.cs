@@ -8,7 +8,7 @@ namespace WavesCSTests
     [TestClass]
     public class Accounts
     {
-        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("DMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54o", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
         public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromPrivateKey("25Um7fKYkySZnweUEVAn9RLtxN5xHRd7iqpqYSMNQEeT", AddressEncoding.TestNet);       
         public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("another rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme", AddressEncoding.TestNet);
                 

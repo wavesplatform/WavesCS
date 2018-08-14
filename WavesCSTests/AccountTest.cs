@@ -15,7 +15,7 @@ namespace WavesCSTests
             var privateKey = "CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t";
             var address = "3MzZCGFyuxgC4ZmtKRS7vpJTs75ZXdkbp1K";
 
-            var account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressEncoding.TestNet);
+            var account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressEncoding.TestNet);            
             Assert.AreEqual(privateKey, account.PrivateKey.ToBase58());
             Assert.AreEqual(publicKey, account.PublicKey.ToBase58());
             Assert.AreEqual(address, account.Address);
