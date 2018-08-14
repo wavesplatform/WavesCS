@@ -89,6 +89,14 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
+          decimal fee, Asset feeAsset, byte[] message = null)
+        {
+            var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, fee, feeAsset, message);           
+            tx.Sign(sender);
+            return Broadcast(tx);
+        }
+
         public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers,
             string message = "")
         {

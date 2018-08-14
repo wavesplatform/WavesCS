@@ -20,13 +20,33 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSponsoredFeeTransaction()
         {
-            var node = new Node();                             
-           
-            Asset asset = Assets.GetById("3xEkwjCavAq9hKdi5awW1Mb931TtrneMeM6F8RKHUogY", node);
+            var node = new Node();
+            Asset asset = null;
+            try
+            {
+                asset = Assets.GetById("8xCGc2VagKXM24K4AuWQ53Wmh86tXcSx1tZ44BtY77v2", node);
+            }
+            catch (Exception)
+            {
+                asset = node.IssueAsset(Accounts.Alice, "testAsset", "asset for c# issue testing", 2, 6, true);
+                Assert.IsNotNull(asset);
+
+                Thread.Sleep(15000);
+            }
+
             var minimalFeeInAssets = 0.0001m;
             string transaction = node.SponsoredFeeForAsset(Accounts.Alice, asset, minimalFeeInAssets);
             Assert.IsNotNull(transaction);
 
+            Thread.Sleep(10000);
+
+            var amount = 0.2m;
+            var transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, asset, amount, 0001m, asset).ParseJsonObject().GetString("id");
+            Thread.Sleep(10000);
+            var txInfo = node.GetObject("transactions/info/{0}", transactionId);
+            
+            Assert.AreEqual(asset.Id.ToString(), txInfo["assetId"]);
+            Assert.AreEqual(asset.Id.ToString(), txInfo["feeAssetId"]);
         }
     }
 }
