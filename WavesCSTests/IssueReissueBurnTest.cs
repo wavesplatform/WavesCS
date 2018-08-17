@@ -41,8 +41,6 @@ namespace WavesCSTests
             Thread.Sleep(20000);
             var quantityBurn = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreEqual(quantityBurn, 0);
-
-
         }
     }
 }

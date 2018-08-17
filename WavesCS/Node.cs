@@ -163,7 +163,6 @@ namespace WavesCS
             tx.Sign(sender);
             return Broadcast(tx);
         }
-
        
         public string CancelLease(PrivateKeyAccount account, string transactionId)
         {

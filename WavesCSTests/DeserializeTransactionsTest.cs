@@ -277,15 +277,5 @@ namespace WavesCSTests
             Assert.AreEqual(sponsoredFeeTx.Asset, asset);
             Assert.AreEqual(sponsoredFeeTx.MinimalFeeInAssets, asset.LongToAmount(10));
         }
-
     }
 }
-
-
-
-
-
-
-
-
-

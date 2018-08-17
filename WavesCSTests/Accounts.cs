@@ -8,10 +8,6 @@ namespace WavesCSTests
     [TestClass]
     public class Accounts
     {
-        // public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
-        // public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromPrivateKey("25Um7fKYkySZnweUEVAn9RLtxN5xHRd7iqpqYSMNQEeT", AddressEncoding.TestNet);  
-        // public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("another rose scissors hybrid clutch method era habit client caught toward actress pilot infant theme", AddressEncoding.TestNet);
-            
         public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("14DkNYr9gneTW1nrXDPHfaZ8XbghBNHd6cYVWu9E5bxo", AddressEncoding.TestNet);
         public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromPrivateKey("82WnjzpabwUXDFasptzVUvqmCfthCHerZ8f3sVeVwuxz", AddressEncoding.TestNet);       
         public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("truth affair hand pave loyal snack stem blanket slot mansion happy clock random burger sing", AddressEncoding.TestNet);
