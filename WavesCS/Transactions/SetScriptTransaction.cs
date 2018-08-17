@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace WavesCS
 {
@@ -16,6 +17,12 @@ namespace WavesCS
             Script = script;
             ChainId = chainId;
             Fee = fee;
+        }
+
+        public SetScriptTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Script = tx.GetString("script").FromBase64();
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee")); 
         }
 
         public override byte[] GetBody()

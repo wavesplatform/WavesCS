@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -14,13 +15,19 @@ namespace WavesCS
 
         private readonly string _host;
 
+        public static Node DefaultNode { get; private set; }
+        private Dictionary<string, Asset> AssetsCache;
+
         public Node(string nodeHost = TestNetHost)
         {
             if (nodeHost.EndsWith("/"))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
             _host = nodeHost;
-        }
 
+            if (DefaultNode == null)
+                DefaultNode = this;
+            AssetsCache = new Dictionary<string, Asset>();
+        }
 
         public Dictionary<string, object> GetObject(string url, params object[] args)
         {
@@ -76,9 +83,55 @@ namespace WavesCS
         public Asset GetAsset(string assetId)
         {
             var tx = GetObject($"transactions/info/{assetId}");
-            if (tx.GetInt("type") != 3)
+            if ((TransactionType) tx.GetInt("type") != TransactionType.Issue)
                 throw new ArgumentException("Wrong asset id (transaction type)");
-            return new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
+
+            Asset asset = null;
+
+            if (AssetsCache.ContainsKey(assetId))
+                asset = AssetsCache[assetId];
+            else
+            {
+                asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
+                AssetsCache[assetId] = asset;
+            }
+
+            return asset;
+        }
+
+        public Transaction CreateTransactionFromJson(DictionaryObject tx)
+        {
+            switch ((TransactionType)tx.GetInt("type"))
+            {
+                case TransactionType.Alias: return (Transaction)new AliasTransaction(tx);
+                case TransactionType.Burn: return new BurnTransaction(tx);
+                case TransactionType.DataTx: return new DataTransaction(tx);
+                case TransactionType.Lease: return new LeaseTransaction(tx);
+                case TransactionType.Issue: return new IssueTransaction(tx);
+                case TransactionType.LeaseCancel: return new CancelLeasingTransaction(tx);
+                case TransactionType.MassTransfer: return new MassTransferTransaction(tx);
+                case TransactionType.Reissue: return new ReissueTransaction(tx);
+                case TransactionType.SetScript: return new SetScriptTransaction(tx);
+                case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
+                case TransactionType.Transfer: return new TransferTransaction(tx);
+                case TransactionType.Exchange: return null;
+                default: throw new Exception("Unknown transaction type: " + (TransactionType)tx.GetInt("type"));
+            }
+        }
+
+        public IEnumerable<Transaction> ListTransactions(string address, int limit = 50)
+        {
+            return Http.GetJson($"{_host}/transactions/address/{address}/limit/{limit}")
+                       .ParseFlatObjects()
+                       .Select(CreateTransactionFromJson);
+        }
+
+        public Transaction GetTransactionById(string transactionId)
+        {
+            var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
+                       .ParseJsonObject();
+
+            return CreateTransactionFromJson(tx);
         }
 
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
@@ -112,6 +165,7 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+       
         public string CancelLease(PrivateKeyAccount account, string transactionId)
         {
             var tx = new CancelLeasingTransaction(account.PublicKey, transactionId);

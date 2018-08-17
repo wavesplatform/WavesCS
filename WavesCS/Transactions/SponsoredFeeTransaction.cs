@@ -18,6 +18,13 @@ namespace WavesCS
             MinimalFeeInAssets = minimalFeeInAssets;
         }
 
+        public SponsoredFeeTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Asset = Assets.GetById(tx.GetString("assetId"));
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            MinimalFeeInAssets = Asset.LongToAmount(tx.GetLong("minSponsoredAssetFee"));
+        }
+
         public readonly byte Version = 1;
 
         public override byte[] GetBody()

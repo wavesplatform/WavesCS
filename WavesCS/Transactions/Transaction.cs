@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -20,7 +21,28 @@ namespace WavesCS
             Timestamp = DateTime.UtcNow;                        
             SenderPublicKey = senderPublicKey;            
             Proofs = new byte[8][];
-        }       
+        }
+
+        protected Transaction(DictionaryObject tx)
+        {
+            Timestamp = tx.GetDate("timestamp");
+
+            SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
+
+
+            if (tx.ContainsKey("proofs"))
+            {
+                Proofs = tx.Get<string[]>("proofs")
+                           .Select(item => item.FromBase58())
+                           .ToArray();
+            }
+            else
+            {
+                Proofs = new byte[8][];
+                if (tx.ContainsKey("signature"))
+                    Proofs[0] = tx.GetString("signature").FromBase58();
+            }
+        }
         
         protected abstract bool SupportsProofs();
 
