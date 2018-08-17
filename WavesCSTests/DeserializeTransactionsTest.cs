@@ -12,14 +12,6 @@ namespace WavesCSTests
     [TestClass]
     public class DeserializeTransactionsTest
     {
-        
-
-        [TestInitialize]
-        public void Init()
-        {
-            
-        }
-
         [TestMethod]
         public void TestListTransactions()
         {
@@ -41,7 +33,7 @@ namespace WavesCSTests
 
             Assert.IsInstanceOfType(tx, typeof(IssueTransaction));
 
-            /*var issueTx = (IssueTransaction)tx;
+            var issueTx = (IssueTransaction)tx;
             Assert.AreEqual(issueTx.Timestamp.ToLong(), 1534264221840);
 
             Assert.AreEqual(issueTx.SenderPublicKey.ToBase58(), "7rSpgoCWeAPp3dKdBq5PExGJ63DM91MpDLHkdZqVzmVV");
@@ -52,12 +44,10 @@ namespace WavesCSTests
             Assert.AreEqual(issueTx.Name, "MoX.");
             Assert.AreEqual(issueTx.Description, "MoX is a fork of the anonymous currency Monero. Visit our site http://getmox.org");
 
-            Asset asset = Assets.GetById("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
-            Assert.AreEqual(issueTx.Asset, asset);
-
+            Assert.AreEqual(issueTx.Asset.Id, "37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
             Assert.IsTrue(issueTx.Reissuable);
             Assert.AreEqual(issueTx.Decimals, 8);
-            Assert.AreEqual(issueTx.Quantity, asset.LongToAmount(1840000000000000));*/
+            Assert.AreEqual(issueTx.Quantity, issueTx.Asset.LongToAmount(1840000000000000));
         }
 
         [TestMethod]
@@ -264,8 +254,6 @@ namespace WavesCSTests
             Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(500000));
 
             Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAALYWxpY2VTaWduZWQJAAH0AAAAAwgFAAAAAnR4AAAACWJvZHlCeXRlcwkAAZEAAAACCAUAAAACdHgAAAAGcHJvb2ZzAAAAAAAAAAAAAQAAACAyuczjMUkCXNyulQ5XMJoscp6PpQdKiwOVTUaNdinzewQAAAAJYm9iU2lnbmVkCQAB9AAAAAMIBQAAAAJ0eAAAAAlib2R5Qnl0ZXMJAAGRAAAAAggFAAAAAnR4AAAABnByb29mcwAAAAAAAAAAAQEAAAAg8vnnzoTlg42VE3HxgTtzt0sm8go1mP98KmEv2vvB31QDBQAAAAthbGljZVNpZ25lZAUAAAAJYm9iU2lnbmVkB7Ewcq0=");
-                
-
         }
 
         [TestMethod]
