@@ -6,8 +6,6 @@ namespace WavesCS
 {
     public class IssueTransaction : Transaction
     {
-        private Dictionary<string, object> tx;
-
         public string Name { get; }
         public string Description { get; }
         public decimal Quantity { get; }
@@ -37,7 +35,7 @@ namespace WavesCS
             Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            Asset = Assets.GetById("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
+            Asset = Assets.GetById(tx.GetString("assetId"));
         }
 
         public override byte[] GetBody()

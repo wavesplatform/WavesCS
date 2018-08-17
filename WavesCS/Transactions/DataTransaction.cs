@@ -25,19 +25,19 @@ namespace WavesCS
         {
             Entries = tx.Get<DictionaryObject[]>("data")
                         .ToDictionary(entry => entry["key"].ToString(), entry =>
-            {
-                                          var value = entry["value"].ToString();
-                                          switch (entry["type"])
-                                          {
-                                              case "binary":
-                                                  if (value.StartsWith("base64:") && value.Length > 7)
-                                                      return Convert.FromBase64String(value.Substring(7));
-                                                  break;
-                                              case "boolean": return Convert.ToBoolean(value);
-                                              case "integer": return Convert.ToInt64(value);
-                                          }
-                                          return (object)value;
-            });
+                        {
+                            var value = entry["value"].ToString();
+                            switch (entry["type"])
+                            {
+                                case "binary":
+                                    if (value.StartsWith("base64:") && value.Length > 7)
+                                        return Convert.FromBase64String(value.Substring(7));
+                                    break;
+                                case "boolean": return Convert.ToBoolean(value);
+                                case "integer": return Convert.ToInt64(value);
+                            }
+                            return (object)value;
+                        });
 
      
 

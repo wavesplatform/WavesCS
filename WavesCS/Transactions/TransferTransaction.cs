@@ -14,7 +14,6 @@ namespace WavesCS
         public byte[] Attachment { get; }
 
         public static byte Version = 1;
-        private Dictionary<string, object> tx;
 
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, string attachment) : 

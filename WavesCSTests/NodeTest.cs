@@ -33,13 +33,13 @@ namespace WavesCSTests
             var assetId = "725Yv9oceWsB4GsYwyy4A52kEwyVrL5avubkeChSnL46";
 
             var asset = node.GetAsset(assetId);
-            /*
+
             Assert.AreEqual(assetId, asset.Id);
             Assert.AreEqual("EFYT", asset.Name);
             Assert.AreEqual(8, asset.Decimals);
             
             Assert.AreEqual(200000, asset.AmountToLong(0.002m));
-            Assert.AreEqual(0.03m, asset.LongToAmount(3000000));*/
+            Assert.AreEqual(0.03m, asset.LongToAmount(3000000));
         }
 
         [TestMethod]
