@@ -1,7 +1,8 @@
 ﻿namespace WavesCS
-{    
+{
     public enum TransactionType : byte
     {
+        Unknown = 0,
         Issue = 3,
         Transfer = 4,
         Reissue = 5,
@@ -13,6 +14,7 @@
         MassTransfer = 11,
         DataTx = 12,
         SetScript = 13,
-        SponsoredFee = 14
+        SponsoredFee = 14,
+
     }
 }

@@ -39,8 +39,6 @@ namespace WavesCS
                             return (object)value;
                         });
 
-     
-
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
         }
 

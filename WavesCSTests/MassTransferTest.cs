@@ -2,7 +2,6 @@
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-
 namespace WavesCSTests
 {
     [TestClass]
