@@ -11,7 +11,6 @@ namespace WavesCS
         private static readonly char ENCODED_ZERO = ALPHABET[0];
         private static readonly int[] INDEXES = new int[128];
 
-
         static Base58()
         {
 
@@ -73,7 +72,6 @@ namespace WavesCS
             // Return encoded string (including encoded leading zeros).
             return new String(encoded, outputStart, encoded.Length - outputStart);
         }
-
 
         /**
          * Decodes the given base58 string into the original data bytes.
@@ -153,7 +151,6 @@ namespace WavesCS
 
             return (byte) remainder;
         }
-
 
         public static string ToBase58(this byte[] data)
         {

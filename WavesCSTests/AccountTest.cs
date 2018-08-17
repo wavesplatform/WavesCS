@@ -50,7 +50,6 @@ namespace WavesCSTests
             Assert.AreEqual("3MzZCGFyuxgC4ZmtKRS7vpJTs75ZXdkbp1K", account2.Address);
         }
 
-
         [TestMethod]
         public void TestSeedGeneration()
         {
