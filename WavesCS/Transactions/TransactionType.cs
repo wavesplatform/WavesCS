@@ -6,6 +6,7 @@
         Transfer = 4,
         Reissue = 5,
         Burn = 6,
+        Exchange = 7,
         Lease = 8,
         LeaseCancel = 9,
         Alias = 10,

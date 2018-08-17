@@ -20,10 +20,29 @@ namespace WavesCSTests
         [TestMethod]
         public void TestIssueReissueBurnTransactions()
         {
+            /*
+            Console.WriteLine("Here");
+            Console.WriteLine(Accounts.Alice.Address);
+            Console.WriteLine(Accounts.Bob.Address);
+            Console.WriteLine(Accounts.Carol.Address);
+            */
+
+            /*
+            Console.WriteLine("Here");
+            var t = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), AddressEncoding.TestNet);
+            Console.WriteLine(t.PrivateKey.ToBase58());
+            */
+
+
+            /*
+            Console.WriteLine("Here");
+            Console.WriteLine(PrivateKeyAccount.GenerateSeed());
+            */
+
             var node = new Node();          
 
             Asset asset = node.IssueAsset(Accounts.Alice, "testAsset", "asset for c# issue testing", 2, 6, true);
-            Assert.IsNotNull(asset);         
+            Assert.IsNotNull(asset);
             
             Thread.Sleep(15000);
             var quantityIssue = node.GetBalance(Accounts.Alice.Address, asset);
@@ -41,6 +60,7 @@ namespace WavesCSTests
             Thread.Sleep(20000);
             var quantityBurn = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreEqual(quantityBurn, 0);
+
 
         }
     }

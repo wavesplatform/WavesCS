@@ -14,7 +14,8 @@ namespace WavesCS
         public byte[] Attachment { get; }
 
         public static byte Version = 1;
-        
+        private Dictionary<string, object> tx;
+
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, string attachment) : 
             this(senderPublicKey, recipient, asset, amount, 0.001m, Encoding.UTF8.GetBytes(attachment))
@@ -36,6 +37,28 @@ namespace WavesCS
             Fee = fee;
             FeeAsset = feeAsset;
             Attachment = attachment ?? new byte[0];
+        }
+
+        public TransferTransaction(Dictionary<string, object> tx): base(tx)
+        {
+            Asset = Assets.WAVES;
+            if (tx.ContainsKey("assetId"))
+                Asset = Assets.GetById(tx.GetString("assetId"));
+
+            FeeAsset = Assets.WAVES;
+            if (tx.ContainsKey("feeAsset") && tx.GetString("feeAsset") != null)
+                FeeAsset = Assets.GetById(tx.GetString("feeAssetId"));
+            
+
+            Amount = Asset.LongToAmount(tx.GetLong("amount"));
+            Fee = FeeAsset.LongToAmount(tx.GetLong("fee"));
+
+            Recipient = tx.GetString("recipient");
+
+            if (tx.ContainsKey("attachment"))
+                Attachment = tx.GetString("attachment").FromBase58();
+            else
+                Attachment = new byte[0];
         }
 
         public override byte[] GetBody()

@@ -17,6 +17,13 @@ namespace WavesCS
             Fee = fee;
         }
 
+        public LeaseTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Recipient = tx.GetString("recipient");
+            Amount = Assets.WAVES.LongToAmount(tx.GetLong("amount"));
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+        }
+
         public override byte[] GetBody()
         {
             

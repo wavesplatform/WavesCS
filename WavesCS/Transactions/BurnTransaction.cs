@@ -16,6 +16,13 @@ namespace WavesCS
             Fee = fee;
         }
 
+        public BurnTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Asset = Assets.GetById(tx.GetString("assetId"));
+            Quantity = Asset.LongToAmount(tx.GetLong("amount"));
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+        }
+
         public override byte[] GetBody()
         {
             using(var stream = new MemoryStream())
@@ -38,7 +45,7 @@ namespace WavesCS
                 {"type", TransactionType.Burn},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"assetId", Asset.Id},
-                {"quantity", Asset.AmountToLong(Quantity)},
+                {"amount", Asset.AmountToLong(Quantity)},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}
             };

@@ -18,7 +18,7 @@ namespace WavesCS
             if (Tracing)
                 Console.WriteLine(s);
         }
-        
+
         public static string GetString(string url)
         {
             var json = GetJson(url);
