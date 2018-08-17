@@ -22,9 +22,6 @@ namespace WavesCSTests
         {
             var node = new Node();
 
-            //Asset asset1 = node.IssueAsset(Accounts.Alice, "testAsset", "asset for c# issue testing", 2, 6, true);
-            //Assert.IsNotNull(asset1);
-
             Asset asset = null;
             try
             {
@@ -37,10 +34,6 @@ namespace WavesCSTests
 
                 Thread.Sleep(15000);
             }
-
-
-            Thread.Sleep(15000);
-
 
             var minimalFeeInAssets = 0.0001m;
             string transaction = node.SponsoredFeeForAsset(Accounts.Alice, asset, minimalFeeInAssets);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS

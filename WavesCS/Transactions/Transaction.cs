@@ -29,7 +29,6 @@ namespace WavesCS
 
             SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
 
-
             if (tx.ContainsKey("proofs"))
             {
                 Proofs = tx.Get<string[]>("proofs")
