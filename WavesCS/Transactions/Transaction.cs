@@ -85,7 +85,7 @@ namespace WavesCS
                 case TransactionType.SetScript: return new SetScriptTransaction(tx);
                 case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
                 case TransactionType.Transfer: return new TransferTransaction(tx);
-                case TransactionType.Exchange: return new ExchangeTransaction(tx);
+                // !!! case TransactionType.Exchange: return new ExchangeTransaction(tx);
                 default: return new UnknownTransaction(tx);
             }
         }
