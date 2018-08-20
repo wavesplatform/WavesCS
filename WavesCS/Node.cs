@@ -98,31 +98,11 @@ namespace WavesCS
             return asset;
         }
 
-        public Transaction CreateTransactionFromJson(DictionaryObject tx)
-        {
-            switch ((TransactionType)tx.GetInt("type"))
-            {
-                case TransactionType.Alias: return (Transaction)new AliasTransaction(tx);
-                case TransactionType.Burn: return new BurnTransaction(tx);
-                case TransactionType.DataTx: return new DataTransaction(tx);
-                case TransactionType.Lease: return new LeaseTransaction(tx);
-                case TransactionType.Issue: return new IssueTransaction(tx);
-                case TransactionType.LeaseCancel: return new CancelLeasingTransaction(tx);
-                case TransactionType.MassTransfer: return new MassTransferTransaction(tx);
-                case TransactionType.Reissue: return new ReissueTransaction(tx);
-                case TransactionType.SetScript: return new SetScriptTransaction(tx);
-                case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
-                case TransactionType.Transfer: return new TransferTransaction(tx);
-                case TransactionType.Exchange: return new UnknownTransaction(tx);
-                default: throw new Exception("Unknown transaction type: " + (TransactionType)tx.GetInt("type"));
-            }
-        }
-
         public IEnumerable<Transaction> ListTransactions(string address, int limit = 50)
         {
             return Http.GetJson($"{_host}/transactions/address/{address}/limit/{limit}")
                        .ParseFlatObjects()
-                       .Select(CreateTransactionFromJson);
+                       .Select(Transaction.FromJson);
         }
 
         public Transaction GetTransactionById(string transactionId)
@@ -130,7 +110,7 @@ namespace WavesCS
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
                        .ParseJsonObject();
 
-            return CreateTransactionFromJson(tx);
+            return Transaction.FromJson(tx);
         }
 
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,

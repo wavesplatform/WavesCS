@@ -66,6 +66,26 @@ namespace WavesCS
             }
             return json;
         }
+
+        public static Transaction FromJson(DictionaryObject tx)
+        {
+            switch ((TransactionType)tx.GetInt("type"))
+            {
+                case TransactionType.Alias: return (Transaction)new AliasTransaction(tx);
+                case TransactionType.Burn: return new BurnTransaction(tx);
+                case TransactionType.DataTx: return new DataTransaction(tx);
+                case TransactionType.Lease: return new LeaseTransaction(tx);
+                case TransactionType.Issue: return new IssueTransaction(tx);
+                case TransactionType.LeaseCancel: return new CancelLeasingTransaction(tx);
+                case TransactionType.MassTransfer: return new MassTransferTransaction(tx);
+                case TransactionType.Reissue: return new ReissueTransaction(tx);
+                case TransactionType.SetScript: return new SetScriptTransaction(tx);
+                case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
+                case TransactionType.Transfer: return new TransferTransaction(tx);
+                case TransactionType.Exchange: return new ExchangeTransaction(tx);
+                default: return new UnknownTransaction(tx);
+            }
+        }
     }
 
     public static class TransactionExtensons
