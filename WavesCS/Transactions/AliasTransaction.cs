@@ -18,6 +18,12 @@ namespace WavesCS
             Fee = fee;
         }
 
+        public AliasTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Alias = tx.GetString("alias");
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+        }
+
         public override byte[] GetBody()
         {
             using (var stream = new MemoryStream())

@@ -12,12 +12,20 @@ namespace WavesCS
         public decimal Fee { get; }
 
         private const byte Version = 1;
-        
+
         public DataTransaction(byte[] senderPublicKey, Dictionary<string, object> entries,
             decimal? fee = null) : base(senderPublicKey)
         {
             Entries = entries;
             Fee = fee ?? ((GetBody().Length + 70) / 1024 + 1) * 0.001m;
+        }
+
+        public DataTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Entries = tx.GetObjects("data")
+                        .ToDictionary(o => o.GetString("key"), Node.DataValue);
+
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
         }
 
         public override byte[] GetBody()

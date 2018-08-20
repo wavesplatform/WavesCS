@@ -68,5 +68,10 @@
         {
             return node.GetAsset(assetId);
         }
+
+        public static Asset GetById(string assetId)
+        {
+            return GetById(assetId, Node.DefaultNode);
+        }
     }
 }

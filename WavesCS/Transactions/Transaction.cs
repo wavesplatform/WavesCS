@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -9,6 +10,7 @@ namespace WavesCS
         public DateTime Timestamp { get; }        
         
         public byte[] SenderPublicKey { get; }
+        public string Sender { get; }
 
         public abstract byte[] GetBody();
         public abstract DictionaryObject GetJson();
@@ -20,7 +22,27 @@ namespace WavesCS
             Timestamp = DateTime.UtcNow;                        
             SenderPublicKey = senderPublicKey;            
             Proofs = new byte[8][];
-        }       
+        }
+
+        protected Transaction(DictionaryObject tx)
+        {
+            Timestamp = tx.GetDate("timestamp");
+            Sender = tx.GetString("sender");
+            SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
+
+            if (tx.ContainsKey("proofs"))
+            {
+                Proofs = tx.Get<string[]>("proofs")
+                           .Select(item => item.FromBase58())
+                           .ToArray();
+            }
+            else
+            {
+                Proofs = new byte[8][];
+                if (tx.ContainsKey("signature"))
+                    Proofs[0] = tx.GetString("signature").FromBase58();
+            }
+        }
         
         protected abstract bool SupportsProofs();
 
@@ -44,6 +66,26 @@ namespace WavesCS
                 json.Add("signature", proofs.Single());
             }
             return json;
+        }
+
+        public static Transaction FromJson(DictionaryObject tx)
+        {
+            switch ((TransactionType)tx.GetInt("type"))
+            {
+                case TransactionType.Alias: return new AliasTransaction(tx);
+                case TransactionType.Burn: return new BurnTransaction(tx);
+                case TransactionType.DataTx: return new DataTransaction(tx);
+                case TransactionType.Lease: return new LeaseTransaction(tx);
+                case TransactionType.Issue: return new IssueTransaction(tx);
+                case TransactionType.LeaseCancel: return new CancelLeasingTransaction(tx);
+                case TransactionType.MassTransfer: return new MassTransferTransaction(tx);
+                case TransactionType.Reissue: return new ReissueTransaction(tx);
+                case TransactionType.SetScript: return new SetScriptTransaction(tx);
+                case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
+                case TransactionType.Transfer: return new TransferTransaction(tx);
+                case TransactionType.Exchange: return new ExchangeTransaction(tx);
+                default: return new UnknownTransaction(tx);
+            }
         }
     }
 

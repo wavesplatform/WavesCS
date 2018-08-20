@@ -15,6 +15,12 @@ namespace WavesCS
             Fee = fee;
         }
 
+        public CancelLeasingTransaction(Dictionary<string, object> tx) : base (tx)
+        {
+            TransactionId = tx.GetString("leaseId");
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+        }
+
         public override byte[] GetBody()
         {
             using(var stream = new MemoryStream())

@@ -42,8 +42,20 @@ namespace WavesCS
             Fee = fee ?? Math.Round(0.001m + Transfers.Length * 0.0005m, 3, MidpointRounding.AwayFromZero);
         }
 
+        public MassTransferTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Asset = Assets.GetById(tx.GetString("assetId"));
+            Attachment = tx.GetString("attachment").FromBase58();
+
+            Transfers = tx.GetObjects("transfers")
+                          .Select(transfer => new MassTransferItem(transfer.GetString("recipient"),
+                                                                   Asset.LongToAmount(transfer.GetLong("amount"))))
+                          .ToArray();
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+        }
+
         public override byte[] GetBody()
-        {                                    
+        {
             using(var stream = new MemoryStream())
             using(var writer = new BinaryWriter(stream))
             {

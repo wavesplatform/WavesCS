@@ -31,9 +31,9 @@ namespace WavesCSTests
         {
             var node = new Node(Node.MainNetHost);
             var assetId = "725Yv9oceWsB4GsYwyy4A52kEwyVrL5avubkeChSnL46";
-            
+
             var asset = node.GetAsset(assetId);
-            
+
             Assert.AreEqual(assetId, asset.Id);
             Assert.AreEqual("EFYT", asset.Name);
             Assert.AreEqual(8, asset.Decimals);

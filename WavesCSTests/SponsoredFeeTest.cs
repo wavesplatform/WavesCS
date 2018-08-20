@@ -21,10 +21,11 @@ namespace WavesCSTests
         public void TestSponsoredFeeTransaction()
         {
             var node = new Node();
+
             Asset asset = null;
             try
             {
-                asset = Assets.GetById("8xCGc2VagKXM24K4AuWQ53Wmh86tXcSx1tZ44BtY77v2", node);
+                asset = Assets.GetById("5zXUZq8ZUhgQVqdeiJnMzgtYkm7WGRe7DGg6dNh6mnjt", node);
             }
             catch (Exception)
             {
