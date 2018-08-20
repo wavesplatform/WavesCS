@@ -59,8 +59,8 @@ namespace WavesCS
                 writer.Write(TransactionType.Exchange);
                 writer.Write(SenderPublicKey);
 
-                // ??? writer.WriteOrder(Order1);
-                // ??? writer.WriteOrder(Order2);
+                writer.Write(Order1.Id);
+                writer.Write(Order2.Id);
 
                 writer.WriteLong(PriceAsset.AmountToLong(Price));
                 writer.WriteLong(AmountAsset.AmountToLong(Amount));
