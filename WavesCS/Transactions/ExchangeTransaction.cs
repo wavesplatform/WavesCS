@@ -39,7 +39,7 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {
-            throw new Exception();
+            throw new NotImplementedException();
         }
 
         public override Dictionary<string, object> GetJson()
