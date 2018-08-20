@@ -91,6 +91,6 @@ namespace WavesCSTests
             
             Assert.IsTrue(node.GetBalance(multiAccount.Address) < 0.02m);
         }
-        
+       
     }
 }

@@ -26,6 +26,17 @@ namespace WavesCS
             Asset = new Asset("", "", Decimals);
         }
 
+        public IssueTransaction(Dictionary<string, object> tx): base(tx)
+        {
+            Name = tx.GetString("name");
+            Description = tx.GetString("description");
+            Decimals = (byte)tx.GetInt("decimals");
+            Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
+            Reissuable = tx.GetBool("reissuable");
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            Asset = Assets.GetById(tx.GetString("assetId"));
+        }
+
         public override byte[] GetBody()
         {
             var asset = new Asset("", "", Decimals);             

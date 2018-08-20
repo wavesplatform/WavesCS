@@ -14,13 +14,19 @@ namespace WavesCS
 
         private readonly string _host;
 
+        public static Node DefaultNode { get; private set; }
+        private Dictionary<string, Asset> AssetsCache;
+
         public Node(string nodeHost = TestNetHost)
         {
             if (nodeHost.EndsWith("/"))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
             _host = nodeHost;
-        }
 
+            if (DefaultNode == null)
+                DefaultNode = this;
+            AssetsCache = new Dictionary<string, Asset>();
+        }
 
         public Dictionary<string, object> GetObject(string url, params object[] args)
         {
@@ -57,28 +63,59 @@ namespace WavesCS
             return GetObject("transactions/unconfirmed/size").GetInt("size");
         }
 
+        static public object DataValue(DictionaryObject o)
+        {
+            switch (o.GetString("type"))
+            {
+                case "string": return (object)o.GetString("value");
+                case "binary": return (object)o.GetString("value").FromBase64();
+                case "integer": return (object)o.GetLong("value");
+                case "boolean": return (object)o.GetBool("value");
+                default: throw new Exception("Unknown value type");
+            }
+        }
+
         public Dictionary<string, object> GetAddressData(string address)
         {
             return GetObjects("addresses/data/{0}", address)
-                .ToDictionary(o => o.GetString("key"), o =>
-                {
-                    switch (o.GetString("type"))
-                    {
-                        case "string": return (object) o.GetString("value");
-                        case "binary": return (object) o.GetString("value").FromBase64();
-                        case "integer": return (object) o.GetLong("value");
-                        case "boolean": return (object) o.GetBool("value");
-                        default: throw new Exception("Unknown value type");
-                    }
-                });
+                .ToDictionary(o => o.GetString("key"), DataValue);
         }
 
         public Asset GetAsset(string assetId)
         {
-            var tx = GetObject($"transactions/info/{assetId}");
-            if (tx.GetInt("type") != 3)
-                throw new ArgumentException("Wrong asset id (transaction type)");
-            return new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
+            if (assetId == Assets.WAVES.Id)
+                return Assets.WAVES;
+            
+            Asset asset = null;
+
+            if (AssetsCache.ContainsKey(assetId))
+                asset = AssetsCache[assetId];
+            else
+            {
+                var tx = GetObject($"transactions/info/{assetId}");
+                if ((TransactionType)tx.GetInt("type") != TransactionType.Issue)
+                    throw new ArgumentException("Wrong asset id (transaction type)");
+
+                asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
+                AssetsCache[assetId] = asset;
+            }
+
+            return asset;
+        }
+
+        public Transaction[] ListTransactions(string address, int limit = 50)
+        {
+            return GetTransationsByAddress(address, limit)
+                       .Select(Transaction.FromJson)
+                       .ToArray();
+        }
+
+        public Transaction GetTransactionById(string transactionId)
+        {
+            var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
+                         .ParseJsonObject();
+
+            return Transaction.FromJson(tx);
         }
 
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
@@ -111,7 +148,7 @@ namespace WavesCS
             tx.Sign(sender);
             return Broadcast(tx);
         }
-
+       
         public string CancelLease(PrivateKeyAccount account, string transactionId)
         {
             var tx = new CancelLeasingTransaction(account.PublicKey, transactionId);

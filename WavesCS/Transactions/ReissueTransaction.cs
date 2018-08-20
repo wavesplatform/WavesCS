@@ -19,6 +19,14 @@ namespace WavesCS
             Fee = fee;            
         }
 
+        public ReissueTransaction(Dictionary<string, object> tx) : base(tx)
+        {
+            Asset = Assets.GetById(tx.GetString("assetId"));
+            Quantity = Asset.LongToAmount(tx.GetLong("quantity"));
+            Reissuable = tx.GetBool("reissuable");
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee")); 
+        }
+
         public override byte[] GetBody()
         {            
             using (var stream = new MemoryStream())
