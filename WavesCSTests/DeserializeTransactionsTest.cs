@@ -251,5 +251,55 @@ namespace WavesCSTests
             Assert.AreEqual(sponsoredFeeTx.Asset, asset);
             Assert.AreEqual(sponsoredFeeTx.MinimalFeeInAssets, asset.LongToAmount(10));
         }
+
+        [TestMethod]
+        public void TestExchangeTransactionDeserialize()
+        {
+            var node = new Node(Node.MainNetHost);
+            var tx = node.GetTransactionById("G4wGLw9XtnScqk5eWoLb7r3GXEf1FFg4CMmSX7du1wmg");
+
+            Assert.IsInstanceOfType(tx, typeof(ExchangeTransaction));
+
+            var exchangeTx = (ExchangeTransaction)tx;
+            Assert.AreEqual(exchangeTx.Sender, "3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3");
+            Assert.AreEqual(exchangeTx.SenderPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
+            Assert.AreEqual(exchangeTx.Fee, Assets.WAVES.LongToAmount(300000));
+            Assert.AreEqual(exchangeTx.Timestamp.ToLong(), 1534759535561);
+            Assert.AreEqual(exchangeTx.Proofs[0].ToBase58(), "5KiaSpEdYePbHkVGVNFUWeJhwyimiQ4iXenV4hpz1curVwk3ag91mWzhb6rzCFH64LiQLi4tbmKfJAjGrX5ico5b");
+
+            Assert.AreEqual(exchangeTx.Order1.Id, "9JoHuni4tyU4qV7xrK1DcRn9U6RVsdiJh94nqvCBzvT5");
+            // ??? Assert.AreEqual(exchangeTx.Order1.Sender, "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ");
+            // ??? Assert.AreEqual(exchangeTx.Order1.SenderPublicKey, "6gs6QPtujkQ6SbagvHMzXyGMjtS2UrseATxCnn84TDFC");
+            // ??? Assert.AreEqual(exchangeTx.Order1.MatcherPublicKey, "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
+            Assert.AreEqual(exchangeTx.Order1.AmountAsset.Id, "4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
+            Assert.AreEqual(exchangeTx.Order1.PriceAsset, Assets.WAVES);
+            Assert.AreEqual(exchangeTx.Order1.Side, OrderSide.Buy);
+            Assert.AreEqual(exchangeTx.Order1.Price, Asset.LongToPrice(exchangeTx.Order1.AmountAsset, exchangeTx.Order1.PriceAsset, 3920710000000));
+            Assert.AreEqual(exchangeTx.Order1.Amount, exchangeTx.Order1.AmountAsset.LongToAmount(38028));
+            Assert.AreEqual(exchangeTx.Order1.Timestamp.ToLong(), 1534759534978);
+            // ??? Assert.AreEqual(exchangeTx.Order1.Expiration.ToLong(), 1534845934978);
+            // ??? Assert.AreEqual(exchangeTx.Order1.MatcherFee, Assets.WAVES.LongToAmount(300000));
+            // ??? Assert.AreEqual(exchangeTx.Order1.Signature, "BpPNM5jveAV1p7GLeEuQ9RmCmst8MGyiJkQ7JNHaw2Hu1trpyB7f3C9vUFiMjWqccZfdwaL91yGpCRdLsv9GKGa");
+
+            Assert.AreEqual(exchangeTx.Order2.Id, "985YULuysPMwJXSH8JzcvTJ1VBezRuSDXPcwG566nmQz");
+            // ??? Assert.AreEqual(exchangeTx.Order2.Sender, "3P2bd2EQ1vojNuCmFYa3d7qrn7JMSz1EXBz");
+            // ??? Assert.AreEqual(exchangeTx.Order2.SenderPublicKey, "FYdPsmUnT8DoMEDCrUYfT1WGExfs48nn7EGuX5HozV3T");
+            // ??? Assert.AreEqual(exchangeTx.Order2.MatcherPublicKey, "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
+            Assert.AreEqual(exchangeTx.Order2.AmountAsset.Id, "4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
+            Assert.AreEqual(exchangeTx.Order2.PriceAsset, Assets.WAVES);
+            Assert.AreEqual(exchangeTx.Order2.Side, OrderSide.Sell);
+            Assert.AreEqual(exchangeTx.Order2.Price, Asset.LongToPrice(exchangeTx.Order2.AmountAsset, exchangeTx.Order2.PriceAsset, 3920710000000));
+            Assert.AreEqual(exchangeTx.Order2.Amount, exchangeTx.Order2.AmountAsset.LongToAmount(500000));
+            Assert.AreEqual(exchangeTx.Order2.Timestamp.ToLong(), 1534681075225);
+            // ??? Assert.AreEqual(exchangeTx.Order2.Expiration.ToLong(), 1537272775177);
+            // ??? Assert.AreEqual(exchangeTx.Order2.MatcherFee, 300000);
+            // ??? Assert.AreEqual(exchangeTx.Order2.Signature, "rpVQaKB6vvLbzyf3RECHSNBoTM6V8JiR8f7s3x96jF5TMcnH4wZWEqgn4Sqkf4TUGDBYutEsvfU2gYrSPHqdTHU");
+
+            Assert.AreEqual(exchangeTx.Price, exchangeTx.Order1.PriceAsset.LongToAmount(3920710000000));
+            Assert.AreEqual(exchangeTx.Amount, exchangeTx.Order1.AmountAsset.LongToAmount(32986));
+            Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(260224));
+            Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
+
+        }
     }
 }

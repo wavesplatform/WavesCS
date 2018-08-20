@@ -2,7 +2,6 @@
 {
     public enum TransactionType : byte
     {
-        Unknown = 0,
         Issue = 3,
         Transfer = 4,
         Reissue = 5,

@@ -42,14 +42,26 @@ namespace WavesCS
 
         public static Order CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
         {
+            var status = OrderStatus.NotFound;
+
+            var side = OrderSide.Buy;
+            if (json.ContainsKey("orderType"))
+                side = json.GetString("orderType") == "buy" ? OrderSide.Buy : OrderSide.Sell;
+            else
+                side = (OrderSide)Enum.Parse(typeof(OrderSide), json.GetString("type"), true);
+
+            var filled = json.ContainsKey("filled") ? amountAsset.LongToAmount(json.GetLong("filled")) : 1;
+
+            if (json.ContainsKey("status"))
+                status = (OrderStatus) Enum.Parse(typeof(OrderStatus), json.GetString("status"));
             return new Order(
                 json.GetString("id"),
-                (OrderSide) Enum.Parse(typeof(OrderSide), json.GetString("type"), true),
+                side,
                 amountAsset.LongToAmount(json.GetLong("amount")),
                 Asset.LongToPrice(amountAsset, priceAsset, json.GetLong("price")),
                 json.GetDate("timestamp"),
-                amountAsset.LongToAmount(json.GetLong("filled")),
-                (OrderStatus) Enum.Parse(typeof(OrderStatus), json.GetString("status")),
+                filled,
+                status,
                 amountAsset,
                 priceAsset);
         }
