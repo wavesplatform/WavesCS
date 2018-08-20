@@ -17,8 +17,8 @@ namespace WavesCS
         public IssueTransaction(byte[] senderPublicKey,
             string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m) : base(senderPublicKey)
         {
-            Name = name;
-            Description = description;
+            Name = name ?? "";
+            Description = description ?? "";
             Quantity = quantity;
             Decimals = decimals;
             Reissuable = reissuable;
@@ -28,9 +28,8 @@ namespace WavesCS
 
         public IssueTransaction(Dictionary<string, object> tx): base(tx)
         {
-            Name = tx.GetString("name") ?? "";
-            Description = tx.GetString("description") ?? "";
-
+            Name = tx.GetString("name");
+            Description = tx.GetString("description");
             Decimals = (byte)tx.GetInt("decimals");
             Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");

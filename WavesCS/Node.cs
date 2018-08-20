@@ -111,7 +111,7 @@ namespace WavesCS
         public Transaction GetTransactionById(string transactionId)
         {
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
-                       .ParseJsonObject();
+                         .ParseJsonObject();
 
             return Transaction.FromJson(tx);
         }
