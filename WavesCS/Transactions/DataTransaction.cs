@@ -20,24 +20,11 @@ namespace WavesCS
             Entries = entries;
             Fee = fee ?? ((GetBody().Length + 70) / 1024 + 1) * 0.001m;
         }
-      
+
         public DataTransaction(Dictionary<string, object> tx) : base(tx)
         {
-            Entries = tx.Get<DictionaryObject[]>("data")
-                        .ToDictionary(entry => entry["key"].ToString(), entry =>
-                        {
-                            var value = entry["value"].ToString();
-                            switch (entry["type"])
-                            {
-                                case "binary":
-                                    if (value.StartsWith("base64:") && value.Length > 7)
-                                        return Convert.FromBase64String(value.Substring(7));
-                                    break;
-                                case "boolean": return Convert.ToBoolean(value);
-                                case "integer": return Convert.ToInt64(value);
-                            }
-                            return (object)value;
-                        });
+            Entries = tx.GetObjects("data")
+                        .ToDictionary(o => o.GetString("key"), Node.ParseValue);
 
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
         }

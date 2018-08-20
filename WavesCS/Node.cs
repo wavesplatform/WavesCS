@@ -63,34 +63,36 @@ namespace WavesCS
             return GetObject("transactions/unconfirmed/size").GetInt("size");
         }
 
+        static public object ParseValue(DictionaryObject o)
+        {
+            switch (o.GetString("type"))
+            {
+                case "string": return (object)o.GetString("value");
+                case "binary": return (object)o.GetString("value").FromBase64();
+                case "integer": return (object)o.GetLong("value");
+                case "boolean": return (object)o.GetBool("value");
+                default: throw new Exception("Unknown value type");
+            }
+        }
+
         public Dictionary<string, object> GetAddressData(string address)
         {
             return GetObjects("addresses/data/{0}", address)
-                .ToDictionary(o => o.GetString("key"), o =>
-                {
-                    switch (o.GetString("type"))
-                    {
-                        case "string": return (object) o.GetString("value");
-                        case "binary": return (object) o.GetString("value").FromBase64();
-                        case "integer": return (object) o.GetLong("value");
-                        case "boolean": return (object) o.GetBool("value");
-                        default: throw new Exception("Unknown value type");
-                    }
-                });
+                .ToDictionary(o => o.GetString("key"), ParseValue);
         }
 
         public Asset GetAsset(string assetId)
         {
-            var tx = GetObject($"transactions/info/{assetId}");
-            if ((TransactionType) tx.GetInt("type") != TransactionType.Issue)
-                throw new ArgumentException("Wrong asset id (transaction type)");
-
             Asset asset = null;
 
             if (AssetsCache.ContainsKey(assetId))
                 asset = AssetsCache[assetId];
             else
             {
+                var tx = GetObject($"transactions/info/{assetId}");
+                if ((TransactionType)tx.GetInt("type") != TransactionType.Issue)
+                    throw new ArgumentException("Wrong asset id (transaction type)");
+
                 asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
                 AssetsCache[assetId] = asset;
             }
@@ -98,11 +100,12 @@ namespace WavesCS
             return asset;
         }
 
-        public IEnumerable<Transaction> ListTransactions(string address, int limit = 50)
+        public Transaction[] ListTransactions(string address, int limit = 50)
         {
             return Http.GetJson($"{_host}/transactions/address/{address}/limit/{limit}")
                        .ParseFlatObjects()
-                       .Select(Transaction.FromJson);
+                       .Select(Transaction.FromJson)
+                       .ToArray();
         }
 
         public Transaction GetTransactionById(string transactionId)
