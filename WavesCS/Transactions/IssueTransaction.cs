@@ -17,8 +17,8 @@ namespace WavesCS
         public IssueTransaction(byte[] senderPublicKey,
             string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m) : base(senderPublicKey)
         {
-            Name = name ?? "";
-            Description = description ?? "";
+            Name = name;
+            Description = description;
             Quantity = quantity;
             Decimals = decimals;
             Reissuable = reissuable;

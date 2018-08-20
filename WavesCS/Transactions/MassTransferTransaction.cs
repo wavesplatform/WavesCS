@@ -47,8 +47,6 @@ namespace WavesCS
             Asset = Assets.GetById(tx.GetString("assetId"));
             Attachment = tx.GetString("attachment").FromBase58();
 
-            var t = tx.GetObjects("transfers");
-
             Transfers = tx.GetObjects("transfers")
                           .Select(transfer => new MassTransferItem(transfer.GetString("recipient"),
                                                                    Asset.LongToAmount(transfer.GetLong("amount"))))
@@ -89,7 +87,7 @@ namespace WavesCS
                 { "transfers", Transfers.Select(t => new Dictionary<string, object>()
                 {
                     {"recipient", t.Recipient },
-                    {"totalAmount", Asset.AmountToLong(t.Amount)}
+                    {"amount", Asset.AmountToLong(t.Amount)}
                 }).ToArray() },
                 { "assetId", Asset.IdOrNull},
                 { "fee", Assets.WAVES.AmountToLong(Fee)},

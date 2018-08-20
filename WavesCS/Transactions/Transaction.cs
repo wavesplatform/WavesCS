@@ -10,6 +10,7 @@ namespace WavesCS
         public DateTime Timestamp { get; }        
         
         public byte[] SenderPublicKey { get; }
+        public string Sender { get; }
 
         public abstract byte[] GetBody();
         public abstract DictionaryObject GetJson();
@@ -26,6 +27,8 @@ namespace WavesCS
         protected Transaction(DictionaryObject tx)
         {
             Timestamp = tx.GetDate("timestamp");
+
+            Sender = tx.GetString("sender");
 
             SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
 
