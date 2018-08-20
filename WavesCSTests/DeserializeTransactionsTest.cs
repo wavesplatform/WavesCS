@@ -267,11 +267,14 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.Timestamp.ToLong(), 1534759535561);
             Assert.AreEqual(exchangeTx.Proofs[0].ToBase58(), "5KiaSpEdYePbHkVGVNFUWeJhwyimiQ4iXenV4hpz1curVwk3ag91mWzhb6rzCFH64LiQLi4tbmKfJAjGrX5ico5b");
 
+            var priceAsset = exchangeTx.Order1.PriceAsset;
+            var amountAsset = exchangeTx.Order1.AmountAsset;
+
             Assert.AreEqual(exchangeTx.Order1.Id, "9JoHuni4tyU4qV7xrK1DcRn9U6RVsdiJh94nqvCBzvT5");
             Assert.AreEqual(exchangeTx.Order1.AmountAsset.Id, "4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
             Assert.AreEqual(exchangeTx.Order1.PriceAsset, Assets.WAVES);
             Assert.AreEqual(exchangeTx.Order1.Side, OrderSide.Buy);
-            Assert.AreEqual(exchangeTx.Order1.Price, Asset.LongToPrice(exchangeTx.Order1.AmountAsset, exchangeTx.Order1.PriceAsset, 3920710000000));
+            Assert.AreEqual(exchangeTx.Order1.Price, Asset.LongToPrice(amountAsset, priceAsset, 3920710000000));
             Assert.AreEqual(exchangeTx.Order1.Amount, exchangeTx.Order1.AmountAsset.LongToAmount(38028));
             Assert.AreEqual(exchangeTx.Order1.Timestamp.ToLong(), 1534759534978);
 
@@ -279,12 +282,12 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.Order2.AmountAsset.Id, "4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
             Assert.AreEqual(exchangeTx.Order2.PriceAsset, Assets.WAVES);
             Assert.AreEqual(exchangeTx.Order2.Side, OrderSide.Sell);
-            Assert.AreEqual(exchangeTx.Order2.Price, Asset.LongToPrice(exchangeTx.Order2.AmountAsset, exchangeTx.Order2.PriceAsset, 3920710000000));
-            Assert.AreEqual(exchangeTx.Order2.Amount, exchangeTx.Order2.AmountAsset.LongToAmount(500000));
+            Assert.AreEqual(exchangeTx.Order2.Price, Asset.LongToPrice(amountAsset, priceAsset, 3920710000000));
+            Assert.AreEqual(exchangeTx.Order2.Amount, amountAsset.LongToAmount(500000));
             Assert.AreEqual(exchangeTx.Order2.Timestamp.ToLong(), 1534681075225);
 
-            Assert.AreEqual(exchangeTx.Price, exchangeTx.Order1.PriceAsset.LongToAmount(3920710000000));
-            Assert.AreEqual(exchangeTx.Amount, exchangeTx.Order1.AmountAsset.LongToAmount(32986));
+            Assert.AreEqual(exchangeTx.Price, priceAsset.LongToAmount(3920710000000));
+            Assert.AreEqual(exchangeTx.Amount, amountAsset.LongToAmount(32986));
             Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(260224));
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
 

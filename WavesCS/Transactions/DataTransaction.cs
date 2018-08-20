@@ -24,7 +24,7 @@ namespace WavesCS
         public DataTransaction(Dictionary<string, object> tx) : base(tx)
         {
             Entries = tx.GetObjects("data")
-                        .ToDictionary(o => o.GetString("key"), Node.ParseValue);
+                        .ToDictionary(o => o.GetString("key"), Node.DataValue);
 
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
         }

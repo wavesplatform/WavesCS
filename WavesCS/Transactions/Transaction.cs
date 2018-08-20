@@ -27,9 +27,7 @@ namespace WavesCS
         protected Transaction(DictionaryObject tx)
         {
             Timestamp = tx.GetDate("timestamp");
-
             Sender = tx.GetString("sender");
-
             SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
 
             if (tx.ContainsKey("proofs"))
