@@ -63,7 +63,7 @@ namespace WavesCS
             return GetObject("transactions/unconfirmed/size").GetInt("size");
         }
 
-        static public object ParseValue(DictionaryObject o)
+        static public object DataValue(DictionaryObject o)
         {
             switch (o.GetString("type"))
             {
@@ -78,11 +78,14 @@ namespace WavesCS
         public Dictionary<string, object> GetAddressData(string address)
         {
             return GetObjects("addresses/data/{0}", address)
-                .ToDictionary(o => o.GetString("key"), ParseValue);
+                .ToDictionary(o => o.GetString("key"), DataValue);
         }
 
         public Asset GetAsset(string assetId)
         {
+            if (assetId == Assets.WAVES.Id)
+                return Assets.WAVES;
+            
             Asset asset = null;
 
             if (AssetsCache.ContainsKey(assetId))
@@ -102,8 +105,7 @@ namespace WavesCS
 
         public Transaction[] ListTransactions(string address, int limit = 50)
         {
-            return Http.GetJson($"{_host}/transactions/address/{address}/limit/{limit}")
-                       .ParseFlatObjects()
+            return GetTransationsByAddress(address, limit)
                        .Select(Transaction.FromJson)
                        .ToArray();
         }

@@ -30,19 +30,9 @@ namespace WavesCS
             BuyMatcherFee = Assets.WAVES.LongToAmount(tx.GetLong("buyMatcherFee"));
             SellMatcherFee = Assets.WAVES.LongToAmount(tx.GetLong("sellMatcherFee"));
 
-            if (tx.GetObject("order1").GetObject("assetPair").GetString("amountAsset") != null)
-                AmountAsset = Assets.GetById(tx.GetObject("order1")
-                                               .GetObject("assetPair")
-                                             .GetString("amountAsset"));
-            else
-                AmountAsset = Assets.WAVES;
-
-            if (tx.GetObject("order1").GetObject("assetPair").GetString("priceAsset") != null)
-                PriceAsset = Assets.GetById(tx.GetObject("order1")
-                                              .GetObject("assetPair")
-                                              .GetString("priceAsset"));
-            else
-                PriceAsset = Assets.WAVES;
+            AmountAsset = Assets.GetById((tx.GetValue("order1.assetPair.amountAsset") ?? Assets.WAVES.Id).ToString());
+            PriceAsset = Assets.GetById((tx.GetValue("order1.assetPair.priceAsset") ?? Assets.WAVES.Id).ToString());
+                
 
             Order1 = Order.CreateFromJson(tx.GetObject("order1"), AmountAsset, PriceAsset);
             Order2 = Order.CreateFromJson(tx.GetObject("order2"), AmountAsset, PriceAsset);
@@ -53,24 +43,7 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {
-            using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
-            {
-                writer.Write(TransactionType.Exchange);
-                writer.Write(SenderPublicKey);
-
-                writer.Write(Order1.Id);
-                writer.Write(Order2.Id);
-
-                writer.WriteLong(PriceAsset.AmountToLong(Price));
-                writer.WriteLong(AmountAsset.AmountToLong(Amount));
-                writer.WriteLong(Assets.WAVES.AmountToLong(BuyMatcherFee));
-                writer.WriteLong(Assets.WAVES.AmountToLong(SellMatcherFee));
-
-                writer.WriteLong(Timestamp.ToLong());
-                writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
-                return stream.ToArray();
-            }
+            throw new Exception("???");
         }
 
         public override Dictionary<string, object> GetJson()
@@ -92,7 +65,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return true;
+            return false;
         }
     }
 }
