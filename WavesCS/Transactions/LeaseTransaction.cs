@@ -8,6 +8,7 @@ namespace WavesCS
         public string Recipient { get; }
         public decimal Amount { get; }
         public decimal Fee { get; }
+        public bool IsActive { get; }
 
         public LeaseTransaction(byte[] senderPublicKey, string recipient, decimal amount, decimal fee = 0.001m) : 
             base(senderPublicKey)
@@ -22,6 +23,7 @@ namespace WavesCS
             Recipient = tx.GetString("recipient");
             Amount = Assets.WAVES.LongToAmount(tx.GetLong("amount"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            IsActive = tx.GetString("status") == "active";
         }
 
         public override byte[] GetBody()

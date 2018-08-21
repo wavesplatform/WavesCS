@@ -128,6 +128,7 @@ namespace WavesCSTests
             Assert.AreEqual(leaseTx.Proofs[0].ToBase58(), "2bPuQJncTh4eeARfB4PJ4L1tYJSAKkaNRyJhjfovSKjyUCNcaSEzqBNGY9r6MoEt4M1a1KwabKDa8xo6yhPf3t7L");
             Assert.AreEqual(Assets.WAVES.AmountToLong(leaseTx.Amount), 1658046538);
             Assert.AreEqual(leaseTx.Recipient, "3P23fi1qfVw6RVDn4CH2a5nNouEtWNQ4THs");
+            Assert.IsTrue(leaseTx.IsActive);
         }
 
         [TestMethod]
@@ -290,7 +291,6 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.Amount, amountAsset.LongToAmount(32986));
             Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(260224));
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
-
         }
     }
 }

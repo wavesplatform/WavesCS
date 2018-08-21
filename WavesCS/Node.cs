@@ -103,7 +103,7 @@ namespace WavesCS
             return asset;
         }
 
-        public Transaction[] ListTransactions(string address, int limit = 50)
+        public Transaction[] ListTransactions(string address, int limit = 100)
         {
             return GetTransationsByAddress(address, limit)
                        .Select(Transaction.FromJson)
