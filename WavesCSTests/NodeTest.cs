@@ -43,10 +43,10 @@ namespace WavesCSTests
         }
 
         [TestMethod]
-        public void TestGetTransactions()
+        public void TestGetTransactionsByAddress()
         {
             var node = new Node();
-            var transactions = node.GetTransationsByAddress(Accounts.Alice.Address, 10);
+            var transactions = node.GetTransactionsByAddress(Accounts.Alice.Address, 10);
             
             Assert.IsTrue(transactions.Count() == 10);
             Assert.IsTrue(transactions.All(t => t.GetInt("type") < 20));

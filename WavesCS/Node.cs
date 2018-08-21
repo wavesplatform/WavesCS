@@ -103,9 +103,9 @@ namespace WavesCS
             return asset;
         }
 
-        public Transaction[] ListTransactions(string address, int limit = 100)
+        public Transaction[] GetTransactions(string address, int limit = 100)
         {
-            return GetTransationsByAddress(address, limit)
+            return GetTransactionsByAddress(address, limit)
                        .Select(Transaction.FromJson)
                        .ToArray();
         }
@@ -227,7 +227,7 @@ namespace WavesCS
             return Http.Post($"{_host}/assets/broadcast/batch-transfer", data);
         }
 
-        public DictionaryObject[] GetTransationsByAddress(string address, int limit)
+        public DictionaryObject[] GetTransactionsByAddress(string address, int limit)
         {
             return Http.GetFlatObjects($"{_host}/transactions/address/{address}/limit/{limit}");
         }
