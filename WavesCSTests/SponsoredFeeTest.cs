@@ -25,7 +25,7 @@ namespace WavesCSTests
             Asset asset = null;
             try
             {
-                asset = Assets.GetById("5zXUZq8ZUhgQVqdeiJnMzgtYkm7WGRe7DGg6dNh6mnjt", node);
+                asset = Assets.GetById("2KBaHikFNUVhSVkJ2ZnArGVmw6JCwF6mGkazMmKJg3E4", node);
             }
             catch (Exception)
             {
