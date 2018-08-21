@@ -41,7 +41,7 @@ namespace WavesCS
         public TransferTransaction(Dictionary<string, object> tx): base(tx)
         {
             Asset = Assets.WAVES;
-            if (tx.ContainsKey("assetId"))
+            if (tx.ContainsKey("assetId") && tx.GetString("assetId") != null)
                 Asset = Assets.GetById(tx.GetString("assetId"));
 
             FeeAsset = Assets.WAVES;
