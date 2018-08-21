@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -38,7 +39,35 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {
-            
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            {
+                var buyOrder = Order1;
+                var sellOrder = Order2;
+
+                if (Order1.Side == OrderSide.Sell)
+                {
+                    buyOrder = Order2;
+                    sellOrder = Order1;
+                }
+
+                writer.Write(TransactionType.Exchange);
+
+                var buyOrderBytes = buyOrder.GetBytes();
+                var sellOrderBytes = sellOrder.GetBytes();
+
+                writer.WriteShort(buyOrderBytes.Length);
+                writer.WriteShort(sellOrderBytes.Length); 
+                writer.Write(buyOrderBytes);
+                writer.Write(sellOrderBytes);
+                writer.WriteLong(PriceAsset.AmountToLong(Price));
+                writer.WriteLong(AmountAsset.AmountToLong(Amount));
+                writer.WriteLong(Assets.WAVES.AmountToLong(BuyMatcherFee));
+                writer.WriteLong(Assets.WAVES.AmountToLong(SellMatcherFee));
+                writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
+                writer.WriteLong(Timestamp.ToLong());
+                return stream.ToArray();
+            }
         }
 
         public override Dictionary<string, object> GetJson()

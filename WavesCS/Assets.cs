@@ -1,4 +1,6 @@
-﻿namespace WavesCS
+﻿using System;
+
+namespace WavesCS
 {
 
     public class Asset
@@ -47,6 +49,16 @@
             var decimals =  8 - amountAsset.Decimals + priceAsset.Decimals;
             var scale = new decimal(1, 0, 0, false, (byte) decimals);
             return price * scale;
+        }
+
+        public bool Equals(Asset other)
+        {
+            return Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 

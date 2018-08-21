@@ -15,12 +15,12 @@ namespace WavesCS
         public abstract byte[] GetBody();
         public abstract DictionaryObject GetJson();
 
-        public byte[][] Proofs { get; }        
+        public byte[][] Proofs { get; }
 
         protected Transaction(byte[] senderPublicKey)
         {
-            Timestamp = DateTime.UtcNow;                        
-            SenderPublicKey = senderPublicKey;            
+            Timestamp = DateTime.UtcNow;
+            SenderPublicKey = senderPublicKey;
             Proofs = new byte[8][];
         }
 
