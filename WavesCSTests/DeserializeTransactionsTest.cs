@@ -13,14 +13,14 @@ namespace WavesCSTests
     public class DeserializeTransactionsTest
     {
         [TestMethod]
-        public void TestListTransactions()
+        public void TestGetTransactions()
         {
            
             Node node = new Node(Node.MainNetHost);
 
             var limit = 100;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
-            var transactions = node.ListTransactions(address, limit);
+            var transactions = node.GetTransactions(address, limit);
             
             Assert.AreEqual(transactions.Count(), limit);
         }
