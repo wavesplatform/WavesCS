@@ -28,7 +28,6 @@ namespace WavesCS
 
             AmountAsset = Assets.GetById((tx.GetValue("order1.assetPair.amountAsset") ?? Assets.WAVES.Id).ToString());
             PriceAsset = Assets.GetById((tx.GetValue("order1.assetPair.priceAsset") ?? Assets.WAVES.Id).ToString());
-                
 
             Order1 = Order.CreateFromJson(tx.GetObject("order1"), AmountAsset, PriceAsset);
             Order2 = Order.CreateFromJson(tx.GetObject("order2"), AmountAsset, PriceAsset);
@@ -39,7 +38,7 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {
-            throw new NotImplementedException();
+            
         }
 
         public override Dictionary<string, object> GetJson()
