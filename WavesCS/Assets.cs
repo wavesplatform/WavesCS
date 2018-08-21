@@ -62,7 +62,7 @@
         public static readonly Asset USD = new Asset("Ft8X1v1LTa1ABafufpaCWyVj8KkaxUWE6xBhW6sNFJck", "USD", 2);
         public static readonly Asset EUR = new Asset("Gtb1WRznfchDnTh37ezoDTJ4wcoKaRsKqKjJjy7nm2zU", "EUR", 2);
         public static readonly Asset DASH = new Asset("B3uGHFRpSUuGEDWjqB9LWWxafQj8VTvpMucEyoxzws5H", "DASH", 8);
-        public static readonly Asset MONERO = new Asset("5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3", "Monero", 8);
+        public static readonly Asset MONERO = new Asset("5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3", "XMR", 8);
 
         public static Asset GetById(string assetId, Node node)
         {
