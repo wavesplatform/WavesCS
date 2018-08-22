@@ -20,6 +20,28 @@ namespace WavesCS
         public Order Order1;
         public Order Order2;
 
+        public ExchangeTransaction(byte[] senderPublicKey,
+                                   decimal fee, decimal buyMatcherFee,
+                                   decimal sellMatcherFee, Asset amountAsset,
+                                   Asset priceAsset,
+                                   Order order1, Order order2,
+                                   decimal amount, decimal price) : base(senderPublicKey)
+        {
+            Fee = fee;
+
+            BuyMatcherFee = buyMatcherFee;
+            SellMatcherFee = sellMatcherFee;
+
+            AmountAsset = amountAsset;
+            PriceAsset = priceAsset;
+
+            Order1 = order1;
+            Order2 = order2;
+
+            Amount = amount;
+            Price = price;
+        }
+
         public ExchangeTransaction(Dictionary<string, object> tx) : base(tx)
         {
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
