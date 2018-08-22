@@ -79,7 +79,7 @@ namespace WavesCS
                 var sellOrderBytes = sellOrder.GetBytes();
 
                 writer.WriteShort(buyOrderBytes.Length);
-                writer.WriteShort(sellOrderBytes.Length); 
+                writer.WriteShort(sellOrderBytes.Length);
                 writer.Write(buyOrderBytes);
                 writer.Write(sellOrderBytes);
                 writer.WriteLong(PriceAsset.AmountToLong(Price));
@@ -100,12 +100,12 @@ namespace WavesCS
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
-                {"order1", Order1},
-                {"order2", Order2},
+                {"order1", Order1.GetJson()},
+                {"order2", Order2.GetJson()},
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price) },
                 {"amount", AmountAsset.AmountToLong(Amount) },
                 {"buyMatcherFee", Assets.WAVES.AmountToLong(BuyMatcherFee)},
-                {"sellMatcherFee", Assets.WAVES.AmountToLong(SellMatcherFee)},
+                {"sellMatcherFee", Assets.WAVES.AmountToLong(SellMatcherFee)}
             };
         }
 
