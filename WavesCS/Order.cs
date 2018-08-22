@@ -93,9 +93,9 @@ namespace WavesCS
             {
                 writer.Write(SenderPublicKey);
                 writer.Write(MatcherPublicKey);
-                writer.Write((byte)0x01); // ???
+                writer.Write((byte)0x01);
                 writer.Write(AmountAsset.Id.FromBase58());
-                writer.Write((byte)0x01); // ???
+                writer.Write((byte)0x01);
                 writer.Write(PriceAsset.Id.FromBase58());
                 writer.Write(Side == OrderSide.Buy ? 0x00 : 0x01);
                 writer.WriteLong(PriceAsset.AmountToLong(Price));
