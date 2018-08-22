@@ -106,5 +106,32 @@ namespace WavesCS
                 return stream.ToArray();
             }
         }
+
+        public Dictionary<string, object> GetJson()
+        {
+            return new Dictionary<string, object>
+            {
+                {"id", Id},
+                {"side", Side.ToString() },
+                {"amount", AmountAsset.AmountToLong(Amount)},
+                {"price", PriceAsset.AmountToLong(Price)},
+                {"timestamp", Timestamp.ToLong()},
+                {"expiration", Expiration.ToLong()},
+                {"filled", Filled},
+                {"status", Status.ToString() },
+                {"amountAsset", AmountAsset.Id},
+                {"priceAsset", PriceAsset.Id},
+                {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"matcherPublicKey", MatcherPublicKey.ToBase58()},
+                {"matcherFee", Assets.WAVES.AmountToLong(MatcherFee)},
+                {"assetPair", new Dictionary<string, object>
+                    {
+                        {"amountAsset", AmountAsset.IdOrNull},
+                        {"priceAsset", PriceAsset.IdOrNull}
+                    }
+                },
+                {"orderType", Side.ToString()}
+            };
+        }
     }
 }
