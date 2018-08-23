@@ -29,8 +29,15 @@ namespace WavesCS
             var order = MakeOrder(sender, MatcherKey, side, amountAsset, priceAsset, price, amount, expiration, 0.003m);
             
             return Http.Post($"{_host}/matcher/orderbook", order);            
-        }               
-        
+        }
+
+        public string PlaceOrder(PrivateKeyAccount sender, Order order)
+        {
+            var json = MakeOrder(sender, order);
+
+            return Http.Post($"{_host}/matcher/orderbook", json);
+        }
+
         public Dictionary<Asset, decimal> GetTradableBalance(string address, Asset amountAsset, Asset priceAsset)
         {
             var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/tradableBalance/{address}";
@@ -107,7 +114,7 @@ namespace WavesCS
                 {"signature", signature.ToBase58()}
             };
         }
-        
+
         public static DictionaryObject MakeOrder(PrivateKeyAccount sender, string matcherKey, OrderSide side,
             Asset amountAsset, Asset priceAsset, decimal price, decimal amount, DateTime expiration, decimal matcherFee)
         {
@@ -119,11 +126,11 @@ namespace WavesCS
             writer.Write(Base58.Decode(matcherKey));
             writer.WriteAsset(amountAsset.Id);
             writer.WriteAsset(priceAsset.Id);
-            writer.Write((byte)(side == OrderSide.Buy ? 0x0 : 0x1)); 
+            writer.Write((byte)(side == OrderSide.Buy ? 0x0 : 0x1));
             writer.WriteLong(Asset.PriceToLong(amountAsset, priceAsset, price));
             writer.WriteLong(amountAsset.AmountToLong(amount));
             writer.WriteLong(timestamp);
-            writer.WriteLong(expiration.ToLong() );
+            writer.WriteLong(expiration.ToLong());
             writer.WriteLong(Assets.WAVES.AmountToLong(matcherFee));
             var signature = sender.Sign(stream);
 
@@ -140,8 +147,17 @@ namespace WavesCS
                 { "timestamp", timestamp },
                 { "expiration", expiration.ToLong() },
                 { "matcherFee", Assets.WAVES.AmountToLong(matcherFee) },
-                { "signature", signature.ToBase58() }                
+                { "signature", signature.ToBase58() }
             };
         }
+
+        public static DictionaryObject MakeOrder(PrivateKeyAccount sender, Order order)
+        {
+            var bytes = order.GetBytes();
+            order.Signature = sender.Sign(bytes);
+
+            return order.GetJson();
+        }
+
     }
 }
