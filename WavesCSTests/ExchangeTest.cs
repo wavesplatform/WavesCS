@@ -72,19 +72,5 @@ namespace WavesCSTests
             var response = node.Broadcast(exchangeTx.GetJson());
             Console.WriteLine(response);
         }
-
-        [TestMethod]
-        public void Testt()
-        {
-            Node node = new Node(Node.TestNetHost);
-            var account = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), AddressEncoding.TestNet);
-            var address = account.Address;
-            var privateKey = account.PrivateKey.ToBase58();
-
-            Console.WriteLine($"Address: { address}");
-            Console.WriteLine($"Private key: { privateKey}");
-
-            Console.WriteLine(PrivateKeyAccount.GenerateSeed());
-        }
     }
 }
