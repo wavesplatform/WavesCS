@@ -23,14 +23,6 @@ namespace WavesCS
             MatcherKey = matcherKey ?? GetMatcherKey();
         }
 
-        public string PlaceOrder(PrivateKeyAccount sender, OrderSide side,
-            Asset amountAsset, Asset priceAsset, decimal price, decimal amount, DateTime expiration)
-        {
-            var order = MakeOrder(sender, MatcherKey, side, amountAsset, priceAsset, price, amount, expiration, 0.003m);
-            
-            return Http.Post($"{_host}/matcher/orderbook", order);            
-        }
-
         public string PlaceOrder(PrivateKeyAccount sender, Order order)
         {
             var json = MakeOrder(sender, order);
@@ -112,42 +104,6 @@ namespace WavesCS
                 {"sender", sender.PublicKey.ToBase58()},
                 {"orderId", orderId},
                 {"signature", signature.ToBase58()}
-            };
-        }
-
-        public static DictionaryObject MakeOrder(PrivateKeyAccount sender, string matcherKey, OrderSide side,
-            Asset amountAsset, Asset priceAsset, decimal price, decimal amount, DateTime expiration, decimal matcherFee)
-        {
-            long timestamp = Utils.CurrentTimestamp();
-
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
-            writer.Write(sender.PublicKey);
-            writer.Write(Base58.Decode(matcherKey));
-            writer.WriteAsset(amountAsset.Id);
-            writer.WriteAsset(priceAsset.Id);
-            writer.Write((byte)(side == OrderSide.Buy ? 0x0 : 0x1));
-            writer.WriteLong(Asset.PriceToLong(amountAsset, priceAsset, price));
-            writer.WriteLong(amountAsset.AmountToLong(amount));
-            writer.WriteLong(timestamp);
-            writer.WriteLong(expiration.ToLong());
-            writer.WriteLong(Assets.WAVES.AmountToLong(matcherFee));
-            var signature = sender.Sign(stream);
-
-            return new DictionaryObject {
-                { "senderPublicKey", Base58.Encode(sender.PublicKey) },
-                { "matcherPublicKey", matcherKey },
-                { "assetPair", new DictionaryObject {
-                    {"amountAsset", amountAsset.IdOrNull },
-                    {"priceAsset", priceAsset.IdOrNull}}
-                },
-                { "orderType", side.ToString().ToLower() },
-                { "price", Asset.PriceToLong(amountAsset, priceAsset, price) },
-                { "amount", amountAsset.AmountToLong(amount) },
-                { "timestamp", timestamp },
-                { "expiration", expiration.ToLong() },
-                { "matcherFee", Assets.WAVES.AmountToLong(matcherFee) },
-                { "signature", signature.ToBase58() }
             };
         }
 
