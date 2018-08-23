@@ -38,7 +38,7 @@ namespace WavesCSTests
             DateTime expiration1 = (ts.ToLong() + 3000).ToDate();
             decimal matcherFee1 = Assets.WAVES.LongToAmount(300001L);
 
-            Order order1 = new Order("id121", OrderSide.Sell, amount1, price,
+            Order order1 = new Order(OrderSide.Sell, amount1, price,
                                      ts, 0.1m, OrderStatus.Accepted,
                                      asset1, asset2,
                                      senderPublicKey, matcherPublicKey,
@@ -49,19 +49,12 @@ namespace WavesCSTests
             DateTime expiration2 = (ts.ToLong() + 3001).ToDate();
             decimal matcherFee2 = Assets.WAVES.LongToAmount(300002L);
 
-            Order order2 = new Order("id22", OrderSide.Buy, amount2, price,
+            Order order2 = new Order(OrderSide.Buy, amount2, price,
                                      ts, 0.1m, OrderStatus.Accepted,
                                      asset1, asset2,
                                      senderPublicKey, matcherPublicKey,
                                      expiration2, matcherFee2,
                                      account1);
-
-            // var matcher = new Matcher("https://testnode2.wavesnodes.com");
-            // var balance = matcher.GetTradableBalance(account1.Address, asset1, asset2);
-            // matcher.PlaceOrder(account1, order1);
-            // Thread.Sleep(3000);
-            // matcher.PlaceOrder(account1, order2);
-            // Thread.Sleep(3000);
 
             var amount = asset1.LongToAmount(100000000L);
             var buyMatcherFee = Assets.WAVES.LongToAmount(300002L);
@@ -75,7 +68,9 @@ namespace WavesCSTests
                                                      order2, order1,
                                                      amount, price, timestamp);
             exchangeTx.Sign(matcherAccount);
-            node.Broadcast(exchangeTx.GetJson());
+
+            var response = node.Broadcast(exchangeTx.GetJson());
+            Console.WriteLine(response);
         }
 
         [TestMethod]
