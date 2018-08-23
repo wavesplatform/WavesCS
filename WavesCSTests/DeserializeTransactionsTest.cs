@@ -219,7 +219,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetScriptTransactionDeserialize()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node("https://testnode2.wavesnodes.com/");
             var tx = node.GetTransactionById("7XcsgCeHV1jKYGdpYHTgAMijz5TdLfKZMv2u2oe1EuXT");
 
             Assert.IsInstanceOfType(tx, typeof(SetScriptTransaction));
@@ -295,7 +295,7 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.Order2.Expiration.ToLong(), 1537272775177);
             Assert.AreEqual(exchangeTx.Order2.MatcherFee, Assets.WAVES.LongToAmount(300000));
 
-            Assert.AreEqual(exchangeTx.Price, priceAsset.LongToAmount(3920710000000));
+            Assert.AreEqual(exchangeTx.Price, Asset.LongToPrice(amountAsset, priceAsset, 3920710000000));
             Assert.AreEqual(exchangeTx.Amount, amountAsset.LongToAmount(32986));
             Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(260224));
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));

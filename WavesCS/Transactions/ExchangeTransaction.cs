@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -25,7 +26,7 @@ namespace WavesCS
                                    decimal sellMatcherFee, Asset amountAsset,
                                    Asset priceAsset,
                                    Order order1, Order order2,
-                                   decimal amount, decimal price) : base(senderPublicKey)
+                                   decimal amount, decimal price, DateTime timestamp) : base(senderPublicKey)
         {
             Fee = fee;
 
@@ -40,6 +41,7 @@ namespace WavesCS
 
             Amount = amount;
             Price = price;
+            Timestamp = timestamp;
         }
 
         public ExchangeTransaction(Dictionary<string, object> tx) : base(tx)
@@ -56,7 +58,7 @@ namespace WavesCS
             Order2 = Order.CreateFromJson(tx.GetObject("order2"), AmountAsset, PriceAsset);
 
             Amount = AmountAsset.LongToAmount(tx.GetLong("amount"));
-            Price = PriceAsset.LongToAmount(tx.GetLong("price"));
+            Price = Asset.LongToPrice(AmountAsset, PriceAsset, tx.GetLong("price"));
         }
 
         public override byte[] GetBody()
@@ -75,14 +77,17 @@ namespace WavesCS
 
                 writer.Write(TransactionType.Exchange);
 
-                var buyOrderBytes = buyOrder.GetBytes();
-                var sellOrderBytes = sellOrder.GetBytes();
+                var buyOrderBytes = buyOrder.GetBytes().Concat(buyOrder.Signature).ToArray();
 
-                writer.WriteShort(buyOrderBytes.Length);
-                writer.WriteShort(sellOrderBytes.Length);
+                var sellOrderBytes = sellOrder.GetBytes().Concat(sellOrder.Signature).ToArray();
+
+                writer.WriteShort(0);
+                writer.WriteShort((short)buyOrderBytes.Length);
+                writer.WriteShort(0);
+                writer.WriteShort((short)sellOrderBytes.Length);
                 writer.Write(buyOrderBytes);
                 writer.Write(sellOrderBytes);
-                writer.WriteLong(PriceAsset.AmountToLong(Price));
+                writer.WriteLong(Asset.PriceToLong(AmountAsset, PriceAsset, Price));
                 writer.WriteLong(AmountAsset.AmountToLong(Amount));
                 writer.WriteLong(Assets.WAVES.AmountToLong(BuyMatcherFee));
                 writer.WriteLong(Assets.WAVES.AmountToLong(SellMatcherFee));
@@ -105,13 +110,14 @@ namespace WavesCS
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price) },
                 {"amount", AmountAsset.AmountToLong(Amount) },
                 {"buyMatcherFee", Assets.WAVES.AmountToLong(BuyMatcherFee)},
+                {"signature", Proofs[0].ToBase58()},
                 {"sellMatcherFee", Assets.WAVES.AmountToLong(SellMatcherFee)}
             };
         }
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return true;
         }
     }
 }

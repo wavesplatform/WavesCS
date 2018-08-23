@@ -7,7 +7,7 @@ namespace WavesCS
 {
     public abstract class Transaction
     {
-        public DateTime Timestamp { get; }        
+        public DateTime Timestamp { get; protected set; }        
         
         public byte[] SenderPublicKey { get; }
         public string Sender { get; }

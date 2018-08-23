@@ -3,6 +3,8 @@ using System.Threading;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.IO;
+using System.Text;
 
 namespace WavesCSTests
 {
@@ -18,44 +20,76 @@ namespace WavesCSTests
         [TestMethod]
         public void TestExchangeTransaction()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetHost);
 
-            var priceAsset = Assets.WAVES;
-            var amountAsset = Assets.WAVES;
+            var account1 = Accounts.Alice;
+            var matcherAccount = Accounts.Bob;
 
-            Asset WBTC = new Asset("Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe", "BTC", 8);
+            byte[] senderPublicKey = account1.PublicKey;
+            byte[] matcherPublicKey = matcherAccount.PublicKey;
 
-            var matcher = new Matcher("https://testnet2.wavesnodes.com");
-            var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
-            var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
-            var amount = 0.5m;
+            var asset1 = Assets.WAVES;
+            var asset2 = Assets.GetById("FUMBLu8GVgegKf8WYzahTUaiBqxfVsXoxyMrv99vKSeC", node);
 
-            matcher.PlaceOrder(Accounts.Alice, OrderSide.Buy, Assets.WAVES, WBTC, myPrice, amount, DateTime.UtcNow.AddHours(1));
-            Thread.Sleep(3000);
-            var order1 = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC)
-                                .OrderBy(o => o.Timestamp).Last();
+            var ts = 1535043887572.ToDate(); //DateTime.Now;
+            var price = Asset.LongToPrice(asset1, asset2, 176L);
 
-            matcher.PlaceOrder(Accounts.Carol, OrderSide.Sell, Assets.WAVES, WBTC, myPrice, amount, DateTime.UtcNow.AddHours(1));
-            Thread.Sleep(3000);
-            var order2 = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC)
-                                .OrderBy(o => o.Timestamp).Last();
+            decimal amount1 = asset1.LongToAmount(100000000L);
+            DateTime expiration1 = (ts.ToLong() + 3000).ToDate();
+            decimal matcherFee1 = Assets.WAVES.LongToAmount(300001L);
 
-            var fee = 0.001m;
-            var buyMatcherFee = 0.001m;
-            var sellMatcherFee = 0.001m;
+            Order order1 = new Order("id121", OrderSide.Sell, amount1, price,
+                                     ts, 0.1m, OrderStatus.Accepted,
+                                     asset1, asset2,
+                                     senderPublicKey, matcherPublicKey,
+                                     expiration1, matcherFee1,
+                                     account1);
+            
+            decimal amount2 = asset1.LongToAmount(100000000L);
+            DateTime expiration2 = (ts.ToLong() + 3001).ToDate();
+            decimal matcherFee2 = Assets.WAVES.LongToAmount(300002L);
 
-            ExchangeTransaction exchangeTx = new ExchangeTransaction(Accounts.Alice.PublicKey,
-                                                                     fee, buyMatcherFee, sellMatcherFee,
-                                                                     amountAsset, priceAsset,
-                                                                     order1, order2,
-                                                                     amount, myPrice);
-            var json = exchangeTx.GetJson();
+            Order order2 = new Order("id22", OrderSide.Buy, amount2, price,
+                                     ts, 0.1m, OrderStatus.Accepted,
+                                     asset1, asset2,
+                                     senderPublicKey, matcherPublicKey,
+                                     expiration2, matcherFee2,
+                                     account1);
 
-            exchangeTx.Sign(Accounts.Alice);
+            // var matcher = new Matcher("https://testnode2.wavesnodes.com");
+            // var balance = matcher.GetTradableBalance(account1.Address, asset1, asset2);
+            // matcher.PlaceOrder(account1, order1);
+            // Thread.Sleep(3000);
+            // matcher.PlaceOrder(account1, order2);
+            // Thread.Sleep(3000);
 
-            var response = node.Broadcast(exchangeTx);
-            Console.WriteLine(response);
+            var amount = asset1.LongToAmount(100000000L);
+            var buyMatcherFee = Assets.WAVES.LongToAmount(300002L);
+            var sellMatcherFee = Assets.WAVES.LongToAmount(300001L);
+            var fee = Assets.WAVES.LongToAmount(600003L);
+            var timestamp = (ts.ToLong() + 1).ToDate();
 
+            var exchangeTx = new ExchangeTransaction(matcherPublicKey, fee,
+                                                     buyMatcherFee, sellMatcherFee,
+                                                     asset1, asset2,
+                                                     order2, order1,
+                                                     amount, price, timestamp);
+            exchangeTx.Sign(matcherAccount);
+            node.Broadcast(exchangeTx.GetJson());
+        }
+
+        [TestMethod]
+        public void Testt()
+        {
+            Node node = new Node(Node.TestNetHost);
+            var account = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), AddressEncoding.TestNet);
+            var address = account.Address;
+            var privateKey = account.PrivateKey.ToBase58();
+
+            Console.WriteLine($"Address: { address}");
+            Console.WriteLine($"Private key: { privateKey}");
+
+            Console.WriteLine(PrivateKeyAccount.GenerateSeed());
         }
     }
 }

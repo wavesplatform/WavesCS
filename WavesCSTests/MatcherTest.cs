@@ -69,13 +69,16 @@ namespace WavesCSTests
         
         [TestMethod]
         public void TestOrders()
-        {                        
-            var matcher = new Matcher("https://testnet2.wavesnodes.com");
+        {
+            var matcher = new Matcher("https://testnode2.wavesnodes.com");
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
-            
-            matcher.PlaceOrder(Accounts.Carol, OrderSide.Sell, Assets.WAVES, WBTC, myPrice, 0.5m, DateTime.UtcNow.AddHours(1));
+
+            Order order1 = new Order("id", OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow, 0.1m, OrderStatus.Accepted, Assets.WAVES, WBTC, Accounts.Carol.PublicKey, "CRxqEuxhdZBEHX42MU4FfyJxuHmbDBTaHMhM3Uki7pLw".FromBase58(), DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol);
+
+            matcher.PlaceOrder(Accounts.Carol, order1);
+            // matcher.PlaceOrder(Accounts.Carol, OrderSide.Sell, Assets.WAVES, WBTC, myPrice, 0.5m, DateTime.UtcNow.AddHours(1));
 
             Thread.Sleep(3000);
             

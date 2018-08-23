@@ -8,9 +8,9 @@ namespace WavesCSTests
     [TestClass]
     public class Accounts
     {
-        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("14DkNYr9gneTW1nrXDPHfaZ8XbghBNHd6cYVWu9E5bxo", AddressEncoding.TestNet);
-        public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromPrivateKey("82WnjzpabwUXDFasptzVUvqmCfthCHerZ8f3sVeVwuxz", AddressEncoding.TestNet);       
-        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("truth affair hand pave loyal snack stem blanket slot mansion happy clock random burger sing", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromPrivateKey("G8awYgVXwSTHeKxmNCfMCeH7hubMKmhJSWyZP6qBNx7w", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromPrivateKey("BpU9bhdySk7sbmkTxzUXVYHKiZSZv9miAMmZAbnxarHg", AddressEncoding.TestNet);       
+        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("belts intact sand spot demise rely extra suggest river pretty disease large exchange ceiling inquiry", AddressEncoding.TestNet);
             
         [TestMethod]
         public void TestBalance()
