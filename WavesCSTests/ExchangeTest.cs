@@ -36,7 +36,6 @@ namespace WavesCSTests
                                      0.005m,
                                      Accounts.Alice);
 
-
             Order order2 = new Order(OrderSide.Buy, amount, price,
                                      DateTime.UtcNow, OrderStatus.Accepted,
                                      asset1, asset2,
