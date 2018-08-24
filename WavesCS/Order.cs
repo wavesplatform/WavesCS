@@ -121,15 +121,10 @@ namespace WavesCS
         {
             return new Dictionary<string, object>
             {
-                // {"id", Id},
                 {"amount", AmountAsset.AmountToLong(Amount)},
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price)},
                 {"timestamp", Timestamp.ToLong()},
                 {"expiration", Expiration.ToLong()},
-                // {"filled", Filled},
-                // {"status", Status.ToString() },
-                // {"amountAsset", AmountAsset.Id},
-                // {"priceAsset", PriceAsset.Id},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"matcherPublicKey", MatcherPublicKey.ToBase58()},
                 {"matcherFee", Assets.WAVES.AmountToLong(MatcherFee)},
