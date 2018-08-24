@@ -36,9 +36,9 @@ namespace WavesCS
 
         public PrivateKeyAccount Sender { get; }
 
-        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp, decimal filled, OrderStatus status,
+        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp, OrderStatus status,
             Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
-            decimal matcherFee, PrivateKeyAccount sender, string id = "")
+            decimal matcherFee, PrivateKeyAccount sender, string id = "", decimal filled = 1m)
         {
             SenderPublicKey = senderPublicKey;
             MatcherPublicKey = matcherPublicKey;
@@ -84,7 +84,6 @@ namespace WavesCS
                 amountAsset.LongToAmount(json.GetLong("amount")),
                 Asset.LongToPrice(amountAsset, priceAsset, json.GetLong("price")),
                 json.GetDate("timestamp"),
-                filled,
                 status,
                 amountAsset,
                 priceAsset,
@@ -92,7 +91,7 @@ namespace WavesCS
                 matcherPublicKey.FromBase58(),
                 expiration,
                 matcherFee,
-                sender, id);
+                sender, id, filled);
         }
 
         public byte[] GetBytes()

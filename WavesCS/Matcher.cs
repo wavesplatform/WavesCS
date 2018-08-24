@@ -25,8 +25,10 @@ namespace WavesCS
 
         public string PlaceOrder(PrivateKeyAccount sender, Order order)
         {
-            var json = MakeOrder(sender, order);
+            var bytes = order.GetBytes();
+            order.Signature = sender.Sign(bytes);
 
+            var json = order.GetJson();
             return Http.Post($"{_host}/matcher/orderbook", json);
         }
 
@@ -91,7 +93,7 @@ namespace WavesCS
                 {"Signature", signature.ToBase58() }
             };
         }
-        
+
         public static DictionaryObject MakeOrderCancelRequest(PrivateKeyAccount sender, string orderId)
         {
             var stream = new MemoryStream();
@@ -106,14 +108,5 @@ namespace WavesCS
                 {"signature", signature.ToBase58()}
             };
         }
-
-        public static DictionaryObject MakeOrder(PrivateKeyAccount sender, Order order)
-        {
-            var bytes = order.GetBytes();
-            order.Signature = sender.Sign(bytes);
-
-            return order.GetJson();
-        }
-
     }
 }

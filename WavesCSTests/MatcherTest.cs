@@ -75,11 +75,9 @@ namespace WavesCSTests
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
 
-            Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow, 0.1m, OrderStatus.Accepted, Assets.WAVES, WBTC, Accounts.Carol.PublicKey, "CRxqEuxhdZBEHX42MU4FfyJxuHmbDBTaHMhM3Uki7pLw".FromBase58(), DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol);
+            Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow, OrderStatus.Accepted, Assets.WAVES, WBTC, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(), DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol);
 
             matcher.PlaceOrder(Accounts.Carol, order1);
-            // matcher.PlaceOrder(Accounts.Carol, OrderSide.Sell, Assets.WAVES, WBTC, myPrice, 0.5m, DateTime.UtcNow.AddHours(1));
-
             Thread.Sleep(3000);
             
             var orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
