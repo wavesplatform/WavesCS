@@ -22,55 +22,52 @@ namespace WavesCSTests
         {
             var node = new Node(Node.TestNetHost);
 
-            var account1 = Accounts.Alice;
-            var matcherAccount = Accounts.Bob;
-
-            byte[] senderPublicKey = account1.PublicKey;
-            byte[] matcherPublicKey = matcherAccount.PublicKey;
-
             var asset1 = Assets.WAVES;
             var asset2 = Assets.GetById("FUMBLu8GVgegKf8WYzahTUaiBqxfVsXoxyMrv99vKSeC", node);
 
-            var ts = 1535043887572.ToDate(); //DateTime.Now;
             var price = Asset.LongToPrice(asset1, asset2, 176L);
+            decimal amount = 1m;
 
-            decimal amount1 = asset1.LongToAmount(100000000L);
-            DateTime expiration1 = (ts.ToLong() + 3000).ToDate();
-            decimal matcherFee1 = Assets.WAVES.LongToAmount(300001L);
-
-            Order order1 = new Order(OrderSide.Sell, amount1, price,
-                                     ts, 0.1m, OrderStatus.Accepted,
+            Order order1 = new Order(OrderSide.Sell, amount, price,
+                                     DateTime.UtcNow, OrderStatus.Accepted,
                                      asset1, asset2,
-                                     senderPublicKey, matcherPublicKey,
-                                     expiration1, matcherFee1,
-                                     account1);
-            
-            decimal amount2 = asset1.LongToAmount(100000000L);
-            DateTime expiration2 = (ts.ToLong() + 3001).ToDate();
-            decimal matcherFee2 = Assets.WAVES.LongToAmount(300002L);
+                                     Accounts.Alice.PublicKey, Accounts.Carol.PublicKey,
+                                     DateTime.UtcNow.AddHours(1),
+                                     0.005m,
+                                     Accounts.Alice);
 
-            Order order2 = new Order(OrderSide.Buy, amount2, price,
-                                     ts, 0.1m, OrderStatus.Accepted,
+
+            Order order2 = new Order(OrderSide.Buy, amount, price,
+                                     DateTime.UtcNow, OrderStatus.Accepted,
                                      asset1, asset2,
-                                     senderPublicKey, matcherPublicKey,
-                                     expiration2, matcherFee2,
-                                     account1);
+                                     Accounts.Bob.PublicKey, Accounts.Carol.PublicKey,
+                                     DateTime.UtcNow.AddHours(1),
+                                     0.005m,
+                                     Accounts.Bob);
 
-            var amount = asset1.LongToAmount(100000000L);
-            var buyMatcherFee = Assets.WAVES.LongToAmount(300002L);
-            var sellMatcherFee = Assets.WAVES.LongToAmount(300001L);
-            var fee = Assets.WAVES.LongToAmount(600003L);
-            var timestamp = (ts.ToLong() + 1).ToDate();
-
-            var exchangeTx = new ExchangeTransaction(matcherPublicKey, fee,
-                                                     buyMatcherFee, sellMatcherFee,
+            var exchangeTx = new ExchangeTransaction(Accounts.Carol.PublicKey,
+                                                     0.004m,
+                                                     0.004m, 0.004m,
                                                      asset1, asset2,
                                                      order2, order1,
-                                                     amount, price, timestamp);
-            exchangeTx.Sign(matcherAccount);
+                                                     amount, price,
+                                                     DateTime.UtcNow.AddSeconds(10));
 
-            var response = node.Broadcast(exchangeTx.GetJson());
-            Console.WriteLine(response);
+            var matcher = new Matcher("https://testnet2.wavesnodes.com");
+            var aliceBalanceBefore = matcher.GetTradableBalance(Accounts.Alice.Address, asset1, asset2)[asset2];
+            var bobBalanceBefore = matcher.GetTradableBalance(Accounts.Bob.Address, asset1, asset2)[asset2];
+
+            exchangeTx.Sign(Accounts.Carol);
+            node.Broadcast(exchangeTx.GetJson());
+
+            Thread.Sleep(10000);
+
+            var aliceBalanceAfter = matcher.GetTradableBalance(Accounts.Alice.Address, asset1, asset2)[asset2];
+            var bobBalanceAfter = matcher.GetTradableBalance(Accounts.Bob.Address, asset1, asset2)[asset2];
+
+            Assert.IsTrue(aliceBalanceBefore < aliceBalanceAfter);
+            Assert.IsTrue(bobBalanceBefore > bobBalanceAfter);
+            Assert.AreEqual(aliceBalanceBefore + bobBalanceBefore, aliceBalanceAfter + bobBalanceAfter);
         }
     }
 }
