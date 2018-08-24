@@ -116,7 +116,6 @@ namespace WavesCS
             }
         }
 
-
         public Dictionary<string, object> GetJson()
         {
             return new Dictionary<string, object>

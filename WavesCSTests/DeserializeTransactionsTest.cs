@@ -220,17 +220,17 @@ namespace WavesCSTests
         public void TestSetScriptTransactionDeserialize()
         {
             var node = new Node("https://testnode2.wavesnodes.com/");
-            var tx = node.GetTransactionById("7XcsgCeHV1jKYGdpYHTgAMijz5TdLfKZMv2u2oe1EuXT");
+            var tx = node.GetTransactionById("JCMwsfUoBgR8BAiNbR1EZ71SwbF2zVUfQMQ5bvrUrjJw");
 
             Assert.IsInstanceOfType(tx, typeof(SetScriptTransaction));
 
             var setScriptTx = (SetScriptTransaction)tx;
-            Assert.AreEqual(setScriptTx.Sender, "3MwbQnJ65JZjY3tNdmj2ifoweR1HAoqUSVx");
-            Assert.AreEqual(setScriptTx.SenderPublicKey.ToBase58(), "AALTKFwrtTD8yze6QCCKgCyMGTY4pWZFM16AW4oSPpNB");
-            Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(500000));
-            Assert.AreEqual(setScriptTx.Timestamp.ToLong(), 1534514481584);
-            Assert.AreEqual(setScriptTx.Proofs[0].ToBase58(), "2ex1A8j5P9hTjB25HipFC8yPoDcGhwnagS5RzgAKjpyB3qgRR7Xc5MHFHEiBbeG32LijaRucAZHYzbE2uWs878Pi");
-            Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAALYWxpY2VTaWduZWQJAAH0AAAAAwgFAAAAAnR4AAAACWJvZHlCeXRlcwkAAZEAAAACCAUAAAACdHgAAAAGcHJvb2ZzAAAAAAAAAAAAAQAAACAyuczjMUkCXNyulQ5XMJoscp6PpQdKiwOVTUaNdinzewQAAAAJYm9iU2lnbmVkCQAB9AAAAAMIBQAAAAJ0eAAAAAlib2R5Qnl0ZXMJAAGRAAAAAggFAAAAAnR4AAAABnByb29mcwAAAAAAAAAAAQEAAAAg8vnnzoTlg42VE3HxgTtzt0sm8go1mP98KmEv2vvB31QDBQAAAAthbGljZVNpZ25lZAUAAAAJYm9iU2lnbmVkB7Ewcq0=");
+            Assert.AreEqual(setScriptTx.Sender, "3N7YRHRFYnWfXTaZAzJH4TxNJtbA9iLfVNt");
+            Assert.AreEqual(setScriptTx.SenderPublicKey.ToBase58(), "DKX1QN456z6LmnUXPzW2WKbWKP96ziHmzfCqD94GqZoj");
+            Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(2000000));
+            Assert.AreEqual(setScriptTx.Timestamp.ToLong(), 1535102412158);
+            Assert.AreEqual(setScriptTx.Proofs[0].ToBase58(), "fdm7mTNBpD7uoiEDdYTV8w52r48V6BrdfDFFP188vWek3Wxm4pD6kKcuN84WuHALkyKd4L8cBitTk75hbGSikzz");
+            Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAALYWxpY2VTaWduZWQJAAH0AAAAAwgFAAAAAnR4AAAACWJvZHlCeXRlcwkAAZEAAAACCAUAAAACdHgAAAAGcHJvb2ZzAAAAAAAAAAAAAQAAACA7y0ER+s9oRx1iHyAgiwQa4QWzXjRQA3xpHCiUhbDuXQQAAAAJYm9iU2lnbmVkCQAB9AAAAAMIBQAAAAJ0eAAAAAlib2R5Qnl0ZXMJAAGRAAAAAggFAAAAAnR4AAAABnByb29mcwAAAAAAAAAAAQEAAAAgGam3+HRDO+QAMXCqet9Ft60Y/x00lxImlBZ6hbvnhk0DBQAAAAthbGljZVNpZ25lZAUAAAAJYm9iU2lnbmVkB5fCpHI=");
         }
 
         [TestMethod]
