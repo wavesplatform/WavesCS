@@ -33,7 +33,7 @@ The library utilizes classes to represent various Waves data structures and enco
 
 
 #### Code Example
-Code examples are in [WavesCSTests](https://github.com/wavesplatform/WavesCS/tree/master/WavesCSTests) project.
+Code examples are in [WavesCSTests](https://github.com/wavesplatform/WavesCS/tree/master/WavesCSTests) project and [Examples](Examples.md) page.
 
 ### Source code
 [WavesCS Github repository](https://github.com/wavesplatform/WavesCS)
