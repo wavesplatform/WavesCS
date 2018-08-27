@@ -1,4 +1,4 @@
-### Examples of getting transactions of an address
+### Examples of getting transactions
 
 Get the last transactions of a certain address:
 ```C#
