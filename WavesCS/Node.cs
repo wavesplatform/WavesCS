@@ -110,6 +110,45 @@ namespace WavesCS
                        .ToArray();
         }
 
+        public Transaction[] GetTransactions(string address, TransactionType type, int limit = 100)
+        {
+            return GetTransactionsByAddress(address, limit)
+                       .Where(tx => (TransactionType)tx.GetInt("type") == type)
+                       .Select(Transaction.FromJson)
+                       .ToArray();
+        }
+
+        public TransactionType TransactionTypeByTypeName(string className)
+        {
+            switch (className)
+            {
+                case "IssueTransaction": return TransactionType.Issue;
+                case "TransferTransaction": return TransactionType.Transfer;
+                case "ReissueTransaction": return TransactionType.Reissue;
+                case "BurnTransaction": return TransactionType.Burn;
+                case "ExchangeTransaction": return TransactionType.Exchange;
+                case "LeaseTransaction": return TransactionType.Lease;
+                case "LeaseCancelTransaction": return TransactionType.LeaseCancel;
+                case "AliasTransaction": return TransactionType.Alias;
+                case "MassTransferTransaction": return TransactionType.MassTransfer;
+                case "DataTransaction": return TransactionType.DataTx;
+                case "SetScriptTransaction": return TransactionType.SetScript;
+                case "SponsoredFeeTransaction": return TransactionType.SponsoredFee;
+                default: throw new Exception("Unknown transaction type");
+            }
+        }
+
+
+        public T GetTransactions<T>(string address, int limit = 100) where T: Transaction
+        {
+            return GetTransactionsByAddress(address, limit)
+                .Where(tx => (TransactionType)tx.GetInt("type") == TransactionTypeByTypeName(typeof(T).Name))
+                       .Select(Transaction.FromJson)
+                       .Select(tx => (T)tx)
+                       .ToArray<T>();
+        }
+
+
         public Transaction GetTransactionById(string transactionId)
         {
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
