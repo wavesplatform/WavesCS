@@ -16,7 +16,7 @@ namespace WavesCSTests
         public void TestGetTransactions()
         {
            
-            Node node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetHost);
 
             var limit = 100;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
@@ -219,18 +219,18 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetScriptTransactionDeserialize()
         {
-            var node = new Node(Node.TestNetHost);
-            var tx = node.GetTransactionById("7XcsgCeHV1jKYGdpYHTgAMijz5TdLfKZMv2u2oe1EuXT");
+            var node = new Node("https://testnode2.wavesnodes.com/");
+            var tx = node.GetTransactionById("JCMwsfUoBgR8BAiNbR1EZ71SwbF2zVUfQMQ5bvrUrjJw");
 
             Assert.IsInstanceOfType(tx, typeof(SetScriptTransaction));
 
             var setScriptTx = (SetScriptTransaction)tx;
-            Assert.AreEqual(setScriptTx.Sender, "3MwbQnJ65JZjY3tNdmj2ifoweR1HAoqUSVx");
-            Assert.AreEqual(setScriptTx.SenderPublicKey.ToBase58(), "AALTKFwrtTD8yze6QCCKgCyMGTY4pWZFM16AW4oSPpNB");
-            Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(500000));
-            Assert.AreEqual(setScriptTx.Timestamp.ToLong(), 1534514481584);
-            Assert.AreEqual(setScriptTx.Proofs[0].ToBase58(), "2ex1A8j5P9hTjB25HipFC8yPoDcGhwnagS5RzgAKjpyB3qgRR7Xc5MHFHEiBbeG32LijaRucAZHYzbE2uWs878Pi");
-            Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAALYWxpY2VTaWduZWQJAAH0AAAAAwgFAAAAAnR4AAAACWJvZHlCeXRlcwkAAZEAAAACCAUAAAACdHgAAAAGcHJvb2ZzAAAAAAAAAAAAAQAAACAyuczjMUkCXNyulQ5XMJoscp6PpQdKiwOVTUaNdinzewQAAAAJYm9iU2lnbmVkCQAB9AAAAAMIBQAAAAJ0eAAAAAlib2R5Qnl0ZXMJAAGRAAAAAggFAAAAAnR4AAAABnByb29mcwAAAAAAAAAAAQEAAAAg8vnnzoTlg42VE3HxgTtzt0sm8go1mP98KmEv2vvB31QDBQAAAAthbGljZVNpZ25lZAUAAAAJYm9iU2lnbmVkB7Ewcq0=");
+            Assert.AreEqual(setScriptTx.Sender, "3N7YRHRFYnWfXTaZAzJH4TxNJtbA9iLfVNt");
+            Assert.AreEqual(setScriptTx.SenderPublicKey.ToBase58(), "DKX1QN456z6LmnUXPzW2WKbWKP96ziHmzfCqD94GqZoj");
+            Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(2000000));
+            Assert.AreEqual(setScriptTx.Timestamp.ToLong(), 1535102412158);
+            Assert.AreEqual(setScriptTx.Proofs[0].ToBase58(), "fdm7mTNBpD7uoiEDdYTV8w52r48V6BrdfDFFP188vWek3Wxm4pD6kKcuN84WuHALkyKd4L8cBitTk75hbGSikzz");
+            Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAALYWxpY2VTaWduZWQJAAH0AAAAAwgFAAAAAnR4AAAACWJvZHlCeXRlcwkAAZEAAAACCAUAAAACdHgAAAAGcHJvb2ZzAAAAAAAAAAAAAQAAACA7y0ER+s9oRx1iHyAgiwQa4QWzXjRQA3xpHCiUhbDuXQQAAAAJYm9iU2lnbmVkCQAB9AAAAAMIBQAAAAJ0eAAAAAlib2R5Qnl0ZXMJAAGRAAAAAggFAAAAAnR4AAAABnByb29mcwAAAAAAAAAAAQEAAAAgGam3+HRDO+QAMXCqet9Ft60Y/x00lxImlBZ6hbvnhk0DBQAAAAthbGljZVNpZ25lZAUAAAAJYm9iU2lnbmVkB5fCpHI=");
         }
 
         [TestMethod]
@@ -272,22 +272,30 @@ namespace WavesCSTests
             var amountAsset = exchangeTx.Order1.AmountAsset;
 
             Assert.AreEqual(exchangeTx.Order1.Id, "9JoHuni4tyU4qV7xrK1DcRn9U6RVsdiJh94nqvCBzvT5");
+            Assert.AreEqual(exchangeTx.Order1.SenderPublicKey.ToBase58(), "6gs6QPtujkQ6SbagvHMzXyGMjtS2UrseATxCnn84TDFC");
+            Assert.AreEqual(exchangeTx.Order1.MatcherPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
             Assert.AreEqual(exchangeTx.Order1.AmountAsset.Id, "4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
             Assert.AreEqual(exchangeTx.Order1.PriceAsset, Assets.WAVES);
             Assert.AreEqual(exchangeTx.Order1.Side, OrderSide.Buy);
             Assert.AreEqual(exchangeTx.Order1.Price, Asset.LongToPrice(amountAsset, priceAsset, 3920710000000));
             Assert.AreEqual(exchangeTx.Order1.Amount, exchangeTx.Order1.AmountAsset.LongToAmount(38028));
             Assert.AreEqual(exchangeTx.Order1.Timestamp.ToLong(), 1534759534978);
+            Assert.AreEqual(exchangeTx.Order1.Expiration.ToLong(), 1534845934978);
+            Assert.AreEqual(exchangeTx.Order1.MatcherFee, Assets.WAVES.LongToAmount(300000));
 
             Assert.AreEqual(exchangeTx.Order2.Id, "985YULuysPMwJXSH8JzcvTJ1VBezRuSDXPcwG566nmQz");
+            Assert.AreEqual(exchangeTx.Order2.SenderPublicKey.ToBase58(), "FYdPsmUnT8DoMEDCrUYfT1WGExfs48nn7EGuX5HozV3T");
+            Assert.AreEqual(exchangeTx.Order2.MatcherPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
             Assert.AreEqual(exchangeTx.Order2.AmountAsset.Id, "4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
             Assert.AreEqual(exchangeTx.Order2.PriceAsset, Assets.WAVES);
             Assert.AreEqual(exchangeTx.Order2.Side, OrderSide.Sell);
             Assert.AreEqual(exchangeTx.Order2.Price, Asset.LongToPrice(amountAsset, priceAsset, 3920710000000));
             Assert.AreEqual(exchangeTx.Order2.Amount, amountAsset.LongToAmount(500000));
             Assert.AreEqual(exchangeTx.Order2.Timestamp.ToLong(), 1534681075225);
+            Assert.AreEqual(exchangeTx.Order2.Expiration.ToLong(), 1537272775177);
+            Assert.AreEqual(exchangeTx.Order2.MatcherFee, Assets.WAVES.LongToAmount(300000));
 
-            Assert.AreEqual(exchangeTx.Price, priceAsset.LongToAmount(3920710000000));
+            Assert.AreEqual(exchangeTx.Price, Asset.LongToPrice(amountAsset, priceAsset, 3920710000000));
             Assert.AreEqual(exchangeTx.Amount, amountAsset.LongToAmount(32986));
             Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(260224));
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
