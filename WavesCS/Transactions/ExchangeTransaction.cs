@@ -77,16 +77,17 @@ namespace WavesCS
 
                 writer.Write(TransactionType.Exchange);
 
-                var buyOrderBytes = buyOrder.GetBytes().Concat(buyOrder.Signature).ToArray();
-
-                var sellOrderBytes = sellOrder.GetBytes().Concat(sellOrder.Signature).ToArray();
+                var buyOrderBytes = buyOrder.GetBytes();
+                var sellOrderBytes = sellOrder.GetBytes();
 
                 writer.WriteShort(0);
-                writer.WriteShort((short)buyOrderBytes.Length);
+                writer.WriteShort((short)buyOrderBytes.Length + buyOrder.Signature.Length);
                 writer.WriteShort(0);
-                writer.WriteShort((short)sellOrderBytes.Length);
-                writer.Write(buyOrderBytes);
-                writer.Write(sellOrderBytes);
+                writer.WriteShort((short)sellOrderBytes.Length + buyOrder.Signature.Length);
+                writer.Write(buyOrder.GetBytes());
+                writer.Write(buyOrder.Signature);
+                writer.Write(sellOrder.GetBytes());
+                writer.Write(sellOrder.Signature);
                 writer.WriteLong(Asset.PriceToLong(AmountAsset, PriceAsset, Price));
                 writer.WriteLong(AmountAsset.AmountToLong(Amount));
                 writer.WriteLong(Assets.WAVES.AmountToLong(BuyMatcherFee));
