@@ -9,7 +9,7 @@ namespace WavesCS
 {
     public class Node
     {
-        public const string TestNetHost = "https://testnode1.wavesnodes.com";
+        public const string TestNetHost = "https://testnode2.wavesnodes.com";
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
         private readonly string _host;

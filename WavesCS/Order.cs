@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace WavesCS
 {
@@ -20,24 +22,38 @@ namespace WavesCS
         public decimal Amount { get; }
         public decimal Price { get; }
         public DateTime Timestamp { get; }
+        public DateTime Expiration { get; set; }
         public decimal Filled { get; }
         public OrderStatus Status { get; }
         public Asset AmountAsset { get; }
         public Asset PriceAsset { get; }
+        public byte[] SenderPublicKey { get; }
+        public byte[] MatcherPublicKey { get; }
 
-        public Order(
-            string id, OrderSide side, decimal amount, decimal price, DateTime timestamp, decimal filled, OrderStatus status,
-            Asset amountAsset, Asset priceAsset)
+        public decimal MatcherFee { get; }
+
+        public byte[] Signature { get; set; }
+
+        public PrivateKeyAccount Sender { get; }
+
+        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp, OrderStatus status,
+            Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
+            decimal matcherFee, PrivateKeyAccount sender, string id = "", decimal filled = 1m)
         {
+            SenderPublicKey = senderPublicKey;
+            MatcherPublicKey = matcherPublicKey;
             Id = id;
             Side = side;
             Amount = amount;
             Price = price;
             Timestamp = timestamp;
+            Expiration = expiration;
             Filled = filled;
             Status = status;
             AmountAsset = amountAsset;
             PriceAsset = priceAsset;
+            MatcherFee = matcherFee;
+            Sender = sender;
         }
 
         public static Order CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
@@ -54,16 +70,81 @@ namespace WavesCS
 
             if (json.ContainsKey("status"))
                 status = (OrderStatus) Enum.Parse(typeof(OrderStatus), json.GetString("status"));
+
+            var senderPublicKey = json.ContainsKey("senderPublicKey") ? json.GetString("senderPublicKey") : "";
+            var matcherPublicKey = json.ContainsKey("matcherPublicKey") ? json.GetString("matcherPublicKey") : "";
+            var expiration = json.ContainsKey("expiration") ? json.GetDate("expiration") : json.GetDate("timestamp");
+            var matcherFee = json.ContainsKey("matcherFee") ? Assets.WAVES.LongToAmount(json.GetLong("matcherFee")) : 1;
+            PrivateKeyAccount sender = null;
+
+            var id = json.ContainsKey("id") ? json.GetString("id") : "";
+
             return new Order(
-                json.GetString("id"),
                 side,
                 amountAsset.LongToAmount(json.GetLong("amount")),
                 Asset.LongToPrice(amountAsset, priceAsset, json.GetLong("price")),
                 json.GetDate("timestamp"),
-                filled,
                 status,
                 amountAsset,
-                priceAsset);
+                priceAsset,
+                senderPublicKey.FromBase58(),
+                matcherPublicKey.FromBase58(),
+                expiration,
+                matcherFee,
+                sender, id, filled);
+        }
+
+        public byte[] GetBytes()
+        {
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(SenderPublicKey);
+                writer.Write(MatcherPublicKey);
+                writer.WriteAsset(AmountAsset.Id);
+                writer.WriteAsset(PriceAsset.Id);
+                writer.Write(Side == OrderSide.Buy ? (byte)0x0 : (byte)0x1);
+                writer.WriteLong(Asset.PriceToLong(AmountAsset, PriceAsset, Price));
+                writer.WriteLong(AmountAsset.AmountToLong(Amount));
+                writer.WriteLong(Timestamp.ToLong());
+                writer.WriteLong(Expiration.ToLong());
+                writer.WriteLong(Assets.WAVES.AmountToLong(MatcherFee));
+
+                Signature = Sender.Sign(stream);
+
+                return stream.ToArray();
+            }
+        }
+
+        public Dictionary<string, object> GetJson()
+        {
+            return new Dictionary<string, object>
+            {
+                {"amount", AmountAsset.AmountToLong(Amount)},
+                {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price)},
+                {"timestamp", Timestamp.ToLong()},
+                {"expiration", Expiration.ToLong()},
+                {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"matcherPublicKey", MatcherPublicKey.ToBase58()},
+                {"matcherFee", Assets.WAVES.AmountToLong(MatcherFee)},
+                {"assetPair", new Dictionary<string, object>
+                    {
+                        {"amountAsset", AmountAsset.IdOrNull},
+                        {"priceAsset", PriceAsset.IdOrNull}
+                    }
+                },
+                {"orderType", Side.ToString().ToLower()},
+                {"signature", Signature.ToBase58()}
+            };
+        }
+    }
+
+    public static class OrderExtensons
+    {
+        public static Order Sign(this Order order, PrivateKeyAccount account)
+        {
+            order.Signature = account.Sign(order.GetBytes());
+            return order;
         }
     }
 }

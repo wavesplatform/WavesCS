@@ -12,7 +12,7 @@ namespace WavesCS
         
         public readonly byte Version = 1;
 
-        public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.005m) : base(senderPublicKey)
+        public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.02m) : base(senderPublicKey)
         {
             Script = script;
             ChainId = chainId;
@@ -60,7 +60,7 @@ namespace WavesCS
                 {"type", TransactionType.SetScript},
                 {"version", Version},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"script", Script == null ? null : Script.ToBase64()},
+                {"script", Script?.ToBase64()},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}
             };
