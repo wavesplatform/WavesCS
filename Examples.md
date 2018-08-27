@@ -1,3 +1,5 @@
+#### Examples of getting transactions of an address
+
 Get the last transactions of a certain address:
 ```C#
     var node = new Node(Node.MainNetHost);
