@@ -110,14 +110,6 @@ namespace WavesCS
                        .ToArray();
         }
 
-        public Transaction[] GetTransactions(string address, TransactionType type, int limit = 100)
-        {
-            return GetTransactionsByAddress(address, limit)
-                       .Where(tx => (TransactionType)tx.GetInt("type") == type)
-                       .Select(Transaction.FromJson)
-                       .ToArray();
-        }
-
         public TransactionType TransactionTypeByTypeName(string className)
         {
             switch (className)
@@ -128,7 +120,7 @@ namespace WavesCS
                 case "BurnTransaction": return TransactionType.Burn;
                 case "ExchangeTransaction": return TransactionType.Exchange;
                 case "LeaseTransaction": return TransactionType.Lease;
-                case "LeaseCancelTransaction": return TransactionType.LeaseCancel;
+                case "CancelLeasingTransaction": return TransactionType.LeaseCancel;
                 case "AliasTransaction": return TransactionType.Alias;
                 case "MassTransferTransaction": return TransactionType.MassTransfer;
                 case "DataTransaction": return TransactionType.DataTx;
@@ -138,8 +130,7 @@ namespace WavesCS
             }
         }
 
-
-        public T GetTransactions<T>(string address, int limit = 100) where T: Transaction
+        public T[] GetTransactions<T>(string address, int limit = 100) where T: Transaction
         {
             return GetTransactionsByAddress(address, limit)
                 .Where(tx => (TransactionType)tx.GetInt("type") == TransactionTypeByTypeName(typeof(T).Name))
