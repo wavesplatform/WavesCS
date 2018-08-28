@@ -26,6 +26,52 @@ namespace WavesCSTests
         }
 
         [TestMethod]
+        public void TestGetTransactionsOfType()
+        {
+
+            var node = new Node(Node.MainNetHost);
+
+            var limit = 1000;
+            var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
+
+            var issueTransactions = node.GetTransactions<IssueTransaction>(address, limit);
+            Assert.AreEqual(issueTransactions.Count(), issueTransactions.OfType<IssueTransaction>().Count());
+
+            var transferTransactions = node.GetTransactions<TransferTransaction>(address, limit);
+            Assert.AreEqual(transferTransactions.Count(), transferTransactions.OfType<TransferTransaction>().Count());
+
+            var reissueTransactions = node.GetTransactions<ReissueTransaction>(address, limit);
+            Assert.AreEqual(reissueTransactions.Count(), reissueTransactions.OfType<ReissueTransaction>().Count());
+
+            var burnTransactions = node.GetTransactions<BurnTransaction>(address, limit);
+            Assert.AreEqual(burnTransactions.Count(), burnTransactions.OfType<BurnTransaction>().Count());
+
+            var exchangeTransactions = node.GetTransactions<ExchangeTransaction>(address, limit);
+            Assert.AreEqual(exchangeTransactions.Count(), exchangeTransactions.OfType<ExchangeTransaction>().Count());
+
+            var leaseTransactions = node.GetTransactions<LeaseTransaction>(address, limit);
+            Assert.AreEqual(leaseTransactions.Count(), leaseTransactions.OfType<LeaseTransaction>().Count());
+
+            var leaseCancelTransactions = node.GetTransactions<CancelLeasingTransaction>(address, limit);
+            Assert.AreEqual(leaseCancelTransactions.Count(), leaseCancelTransactions.OfType<CancelLeasingTransaction>().Count());
+
+            var aliasTransactions = node.GetTransactions<AliasTransaction>(address, limit);
+            Assert.AreEqual(aliasTransactions.Count(), aliasTransactions.OfType<AliasTransaction>().Count());
+
+            var massTransferTransactions = node.GetTransactions<MassTransferTransaction>(address, limit);
+            Assert.AreEqual(massTransferTransactions.Count(), massTransferTransactions.OfType<MassTransferTransaction>().Count());
+
+            var dataTransactions = node.GetTransactions<DataTransaction>(address, limit);
+            Assert.AreEqual(dataTransactions.Count(), dataTransactions.OfType<DataTransaction>().Count());
+
+            var setScriptTransactions = node.GetTransactions<SetScriptTransaction>(address, limit);
+            Assert.AreEqual(setScriptTransactions.Count(), setScriptTransactions.OfType<SetScriptTransaction>().Count());
+
+            var sponsoredFeeTransactions = node.GetTransactions<SponsoredFeeTransaction>(address, limit);
+            Assert.AreEqual(sponsoredFeeTransactions.Count(), sponsoredFeeTransactions.OfType<SponsoredFeeTransaction>().Count());
+        }
+
+        [TestMethod]
         public void TestIssueTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
