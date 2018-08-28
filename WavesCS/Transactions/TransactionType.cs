@@ -1,4 +1,6 @@
-﻿namespace WavesCS
+﻿using System;
+
+namespace WavesCS
 {
     public enum TransactionType : byte
     {
