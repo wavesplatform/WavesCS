@@ -128,15 +128,15 @@ namespace WavesCS
             }
         }
 
-        public T[] GetTransactions<T>(string address, int limit = 100) where T: Transaction
+        public T[] GetTransactions<T>(string address, int limit = 100) where T : Transaction
         {
             var typeId = TransactionTypeId(typeof(T));
 
             return GetTransactionsByAddress(address, limit)
                 .Where(tx => (TransactionType)tx.GetInt("type") == typeId)
-                       .Select(Transaction.FromJson)
-                       .Select(tx => (T)tx)
-                       .ToArray<T>();
+                .Select(Transaction.FromJson)
+                .Cast<T>()
+                .ToArray();
         }
 
 
