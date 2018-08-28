@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics.Contracts;
 using System.Dynamic;
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
@@ -110,30 +111,32 @@ namespace WavesCS
                        .ToArray();
         }
 
-        public TransactionType TransactionTypeByTypeName(string className)
+        public TransactionType TransactionTypeId(Type transactionType)
         {
-            switch (className)
+            switch (transactionType.Name)
             {
-                case "IssueTransaction": return TransactionType.Issue;
-                case "TransferTransaction": return TransactionType.Transfer;
-                case "ReissueTransaction": return TransactionType.Reissue;
-                case "BurnTransaction": return TransactionType.Burn;
-                case "ExchangeTransaction": return TransactionType.Exchange;
-                case "LeaseTransaction": return TransactionType.Lease;
-                case "CancelLeasingTransaction": return TransactionType.LeaseCancel;
-                case "AliasTransaction": return TransactionType.Alias;
-                case "MassTransferTransaction": return TransactionType.MassTransfer;
-                case "DataTransaction": return TransactionType.DataTx;
-                case "SetScriptTransaction": return TransactionType.SetScript;
-                case "SponsoredFeeTransaction": return TransactionType.SponsoredFee;
+                case nameof(IssueTransaction): return TransactionType.Issue;
+                case nameof(TransferTransaction): return TransactionType.Transfer;
+                case nameof(ReissueTransaction): return TransactionType.Reissue;
+                case nameof(BurnTransaction): return TransactionType.Burn;
+                case nameof(ExchangeTransaction): return TransactionType.Exchange;
+                case nameof(LeaseTransaction): return TransactionType.Lease;
+                case nameof(CancelLeasingTransaction): return TransactionType.LeaseCancel;
+                case nameof(AliasTransaction): return TransactionType.Alias;
+                case nameof(MassTransferTransaction): return TransactionType.MassTransfer;
+                case nameof(DataTransaction): return TransactionType.DataTx;
+                case nameof(SetScriptTransaction): return TransactionType.SetScript;
+                case nameof(SponsoredFeeTransaction): return TransactionType.SponsoredFee;
                 default: throw new Exception("Unknown transaction type");
             }
         }
 
         public T[] GetTransactions<T>(string address, int limit = 100) where T: Transaction
         {
+            var typeId = TransactionTypeId(typeof(T));
+
             return GetTransactionsByAddress(address, limit)
-                .Where(tx => (TransactionType)tx.GetInt("type") == TransactionTypeByTypeName(typeof(T).Name))
+                .Where(tx => (TransactionType)tx.GetInt("type") == typeId)
                        .Select(Transaction.FromJson)
                        .Select(tx => (T)tx)
                        .ToArray<T>();
