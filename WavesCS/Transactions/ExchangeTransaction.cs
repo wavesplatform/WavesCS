@@ -19,14 +19,14 @@ namespace WavesCS
         public Asset AmountAsset;
         public Asset PriceAsset;
 
-        public Order Order1;
-        public Order Order2;
+        public Order BuyOrder;
+        public Order SellOrder;
 
         public ExchangeTransaction(byte[] senderPublicKey,
                                    decimal fee, decimal buyMatcherFee,
                                    decimal sellMatcherFee, Asset amountAsset,
                                    Asset priceAsset,
-                                   Order order1, Order order2,
+                                   Order buyOrder, Order sellOrder,
                                    decimal amount, decimal price, DateTime timestamp) : base(senderPublicKey)
         {
             Fee = fee;
@@ -37,8 +37,8 @@ namespace WavesCS
             AmountAsset = amountAsset;
             PriceAsset = priceAsset;
 
-            Order1 = order1;
-            Order2 = order2;
+            BuyOrder = buyOrder;
+            SellOrder = sellOrder;
 
             Amount = amount;
             Price = price;
@@ -55,8 +55,8 @@ namespace WavesCS
             AmountAsset = Assets.GetById((tx.GetValue("order1.assetPair.amountAsset") ?? Assets.WAVES.Id).ToString());
             PriceAsset = Assets.GetById((tx.GetValue("order1.assetPair.priceAsset") ?? Assets.WAVES.Id).ToString());
 
-            Order1 = Order.CreateFromJson(tx.GetObject("order1"), AmountAsset, PriceAsset);
-            Order2 = Order.CreateFromJson(tx.GetObject("order2"), AmountAsset, PriceAsset);
+            BuyOrder = Order.CreateFromJson(tx.GetObject("order1"), AmountAsset, PriceAsset);
+            SellOrder = Order.CreateFromJson(tx.GetObject("order2"), AmountAsset, PriceAsset);
 
             Amount = AmountAsset.LongToAmount(tx.GetLong("amount"));
             Price = Asset.LongToPrice(AmountAsset, PriceAsset, tx.GetLong("price"));
@@ -67,28 +67,19 @@ namespace WavesCS
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
-                var buyOrder = Order1;
-                var sellOrder = Order2;
-
-                if (Order1.Side == OrderSide.Sell)
-                {
-                    buyOrder = Order2;
-                    sellOrder = Order1;
-                }
-
                 writer.Write(TransactionType.Exchange);
 
-                var buyOrderBytes = buyOrder.GetBytes();
-                var sellOrderBytes = sellOrder.GetBytes();
+                var buyOrderBytes = BuyOrder.GetBytes();
+                var sellOrderBytes = SellOrder.GetBytes();
 
                 writer.WriteShort(0);
-                writer.WriteShort((short)buyOrderBytes.Length + buyOrder.Signature.Length);
+                writer.WriteShort((short)buyOrderBytes.Length + BuyOrder.Signature.Length);
                 writer.WriteShort(0);
-                writer.WriteShort((short)sellOrderBytes.Length + buyOrder.Signature.Length);
-                writer.Write(buyOrder.GetBytes());
-                writer.Write(buyOrder.Signature);
-                writer.Write(sellOrder.GetBytes());
-                writer.Write(sellOrder.Signature);
+                writer.WriteShort((short)sellOrderBytes.Length + BuyOrder.Signature.Length);
+                writer.Write(BuyOrder.GetBytes());
+                writer.Write(BuyOrder.Signature);
+                writer.Write(SellOrder.GetBytes());
+                writer.Write(SellOrder.Signature);
                 writer.WriteLong(Asset.PriceToLong(AmountAsset, PriceAsset, Price));
                 writer.WriteLong(AmountAsset.AmountToLong(Amount));
                 writer.WriteLong(Assets.WAVES.AmountToLong(BuyMatcherFee));
@@ -107,8 +98,8 @@ namespace WavesCS
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
-                {"order1", Order1.GetJson()},
-                {"order2", Order2.GetJson()},
+                {"order1", BuyOrder.GetJson()},
+                {"order2", SellOrder.GetJson()},
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price) },
                 {"amount", AmountAsset.AmountToLong(Amount) },
                 {"buyMatcherFee", Assets.WAVES.AmountToLong(BuyMatcherFee)},
