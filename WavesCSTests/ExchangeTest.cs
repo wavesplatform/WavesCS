@@ -28,7 +28,7 @@ namespace WavesCSTests
             var price = Asset.LongToPrice(asset1, asset2, 176L);
             decimal amount = 1m;
 
-            Order order1 = new Order(OrderSide.Sell, amount, price,
+            Order sellOrder = new Order(OrderSide.Sell, amount, price,
                                      DateTime.UtcNow, OrderStatus.Accepted,
                                      asset1, asset2,
                                      Accounts.Alice.PublicKey, Accounts.Carol.PublicKey,
@@ -36,7 +36,7 @@ namespace WavesCSTests
                                      0.005m,
                                      Accounts.Alice);
 
-            Order order2 = new Order(OrderSide.Buy, amount, price,
+            Order buyOrder = new Order(OrderSide.Buy, amount, price,
                                      DateTime.UtcNow, OrderStatus.Accepted,
                                      asset1, asset2,
                                      Accounts.Bob.PublicKey, Accounts.Carol.PublicKey,
@@ -48,7 +48,7 @@ namespace WavesCSTests
                                                      0.004m,
                                                      0.004m, 0.004m,
                                                      asset1, asset2,
-                                                     order2, order1,
+                                                     buyOrder, sellOrder,
                                                      amount, price,
                                                      DateTime.UtcNow.AddSeconds(10));
 
