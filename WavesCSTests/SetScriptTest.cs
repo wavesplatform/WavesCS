@@ -26,7 +26,7 @@ namespace WavesCSTests
             
             Console.WriteLine("Compiled script: {0}", compiledScript);
        
-            var setScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, compiledScript, 'T');            
+            var setScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, compiledScript, 'T', 0.014m);            
             setScriptTx.Sign(Accounts.Carol);
             node.Broadcast(setScriptTx.GetJsonWithSignature());
 
@@ -38,7 +38,7 @@ namespace WavesCSTests
             Assert.IsTrue(scriptInfo.GetInt("complexity") > 0);
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);
             
-            var cleanScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, null, 'T');                        
+            var cleanScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, null, 'T', 0.014m);                        
             node.Broadcast(cleanScriptTx.GetJsonWithSignature());
             
             Thread.Sleep(10000);
@@ -75,7 +75,7 @@ namespace WavesCSTests
             
             Assert.IsTrue(node.GetBalance(multiAccount.Address) == 0.1m);
             
-            var setScriptTx = new SetScriptTransaction(multiAccount.PublicKey, compiledScript, 'T');            
+            var setScriptTx = new SetScriptTransaction(multiAccount.PublicKey, compiledScript, 'T', 0.01m);            
             setScriptTx.Sign(multiAccount);
             node.Broadcast(setScriptTx.GetJsonWithSignature());
 

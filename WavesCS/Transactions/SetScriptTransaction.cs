@@ -12,7 +12,7 @@ namespace WavesCS
         
         public readonly byte Version = 1;
 
-        public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.005m) : base(senderPublicKey)
+        public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.01m) : base(senderPublicKey)
         {
             Script = script;
             ChainId = chainId;
