@@ -13,7 +13,7 @@ namespace WavesCS
         public Asset FeeAsset { get; }
         public byte[] Attachment { get; }
 
-        public static byte Version = 1;
+        public static byte Version = 2;
 
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, string attachment) : 
@@ -66,7 +66,7 @@ namespace WavesCS
             using(var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Transfer);
-                if (Version == 2)
+                if (Version > 1)
                     writer.Write(Version);
                 writer.Write(SenderPublicKey);
                 writer.WriteAsset(Asset.Id);
@@ -102,7 +102,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return Version == 2;
+            return Version > 1;
         }
     }
 }

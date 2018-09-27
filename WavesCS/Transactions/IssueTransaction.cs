@@ -14,8 +14,12 @@ namespace WavesCS
         public decimal Fee { get; }
         public Asset Asset { get; }
 
+        public static byte Version = 2;
+        public char ChainId { get; }
+        public byte[] Script { get; }
+
         public IssueTransaction(byte[] senderPublicKey,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m) : base(senderPublicKey)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m, byte[] script = null, char chainId = 'T') : base(senderPublicKey)
         {
             Name = name ?? "";
             Description = description ?? "";
@@ -24,6 +28,8 @@ namespace WavesCS
             Reissuable = reissuable;
             Fee = fee;
             Asset = new Asset("", "", Decimals);
+            Script = script;
+            ChainId = chainId;
         }
 
         public IssueTransaction(Dictionary<string, object> tx): base(tx)
@@ -42,7 +48,14 @@ namespace WavesCS
             var asset = new Asset("", "", Decimals);             
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
+
             writer.Write(TransactionType.Issue);
+
+            if (Version > 1) {
+                writer.Write(Version);
+                writer.Write((byte)ChainId);
+            }
+
             writer.Write(SenderPublicKey);
             writer.WriteShort(Name.Length);
             writer.Write(Encoding.ASCII.GetBytes(Name));
@@ -53,28 +66,46 @@ namespace WavesCS
             writer.Write((byte) (Reissuable ? 1 : 0));
             writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
             writer.WriteLong(Timestamp.ToLong());
+
+            if (Version > 1)
+            {
+                if (Script == null)
+                {
+                    writer.Write((byte)0);
+                }
+                else
+                {
+                    writer.Write((byte)1);
+                    writer.WriteShort(Script.Length);
+                    writer.Write(Script);
+                }
+            }
             return stream.ToArray();
         }
 
         public override Dictionary<string, object> GetJson()
         {
-            return new Dictionary<string, object>
+            var result = new Dictionary<string, object>
             {
                 {"type", TransactionType.Issue},
-                {"senderPublicKey", Base58.Encode(SenderPublicKey)},                
+                {"senderPublicKey", Base58.Encode(SenderPublicKey)},
                 {"name", Name},
                 {"description", Description},
                 {"quantity", Asset.AmountToLong(Quantity)},
                 {"decimals", Decimals},
                 {"reissuable", Reissuable},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
-                {"timestamp", Timestamp.ToLong()}
+                {"timestamp", Timestamp.ToLong()},
+                {"script", Script?.ToBase64()}
             };
+            if (Version > 1)
+                result.Add("version", Version);
+            return result;
         }
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version > 1;
         }        
     }
 }

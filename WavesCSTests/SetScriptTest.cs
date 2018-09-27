@@ -63,7 +63,7 @@ namespace WavesCSTests
                 let bobSigned   = sigVerify(tx.bodyBytes, tx.proofs[1], base58'{Accounts.Bob.PublicKey.ToBase58()}')
                 aliceSigned && bobSigned";
 
-            Console.WriteLine($"Scrit: {script}");
+            Console.WriteLine($"Script: {script}");
 
             var compiledScript = node.CompileScript(script);
 
