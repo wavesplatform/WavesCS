@@ -25,3 +25,4 @@
     <EmbeddedResource Include="Resources\SeedWords.txt" />
   </ItemGroup>
 </Project>
+

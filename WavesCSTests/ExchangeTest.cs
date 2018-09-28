@@ -34,7 +34,9 @@ namespace WavesCSTests
                                      Accounts.Alice.PublicKey, Accounts.Carol.PublicKey,
                                      DateTime.UtcNow.AddHours(1),
                                      0.005m,
-                                     Accounts.Alice);
+                                        Accounts.Alice.Address);
+
+            sellOrder.Sign(Accounts.Alice);
 
             Order buyOrder = new Order(OrderSide.Buy, amount, price,
                                      DateTime.UtcNow, OrderStatus.Accepted,
@@ -42,7 +44,9 @@ namespace WavesCSTests
                                      Accounts.Bob.PublicKey, Accounts.Carol.PublicKey,
                                      DateTime.UtcNow.AddHours(1),
                                      0.005m,
-                                     Accounts.Bob);
+                                     Accounts.Bob.Address);
+
+            buyOrder.Sign(Accounts.Bob);
 
             var exchangeTx = new ExchangeTransaction(Accounts.Carol.PublicKey,
                                                      0.004m,
