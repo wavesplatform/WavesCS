@@ -76,9 +76,9 @@ namespace WavesCS
                 writer.WriteShort((short)buyOrderBytes.Length + BuyOrder.Signature.Length);
                 writer.WriteShort(0);
                 writer.WriteShort((short)sellOrderBytes.Length + BuyOrder.Signature.Length);
-                writer.Write(BuyOrder.GetBytes());
+                writer.Write(buyOrderBytes);
                 writer.Write(BuyOrder.Signature);
-                writer.Write(SellOrder.GetBytes());
+                writer.Write(sellOrderBytes);
                 writer.Write(SellOrder.Signature);
                 writer.WriteLong(Asset.PriceToLong(AmountAsset, PriceAsset, Price));
                 writer.WriteLong(AmountAsset.AmountToLong(Amount));
