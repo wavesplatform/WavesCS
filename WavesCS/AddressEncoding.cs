@@ -7,7 +7,7 @@ namespace WavesCS
     public static class AddressEncoding
     {
         public static char MainNet = 'W';
-        public static char TestNet = 'T'; // 'S'
+        public static char TestNet = 'T';
 
         private static readonly IHash Keccak256 = HashFactory.Crypto.SHA3.CreateKeccak256();
 
