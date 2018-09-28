@@ -7,7 +7,7 @@ namespace WavesCS
 {
     public class Node
     {
-        public const string TestNetHost = "https://testnodes.wavesnodes.com"; // "http://localhost:6869"
+        public const string TestNetHost = "https://testnodes.wavesnodes.com";git 
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
         private readonly string _host;
