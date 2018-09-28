@@ -1,29 +1,37 @@
 ﻿using System.Linq;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
 
 namespace WavesCSTests
 {
     [TestClass]
     public class DeserializeTransactionsTest
     {
+
+        [TestInitialize]
+        public void Init()
+        {
+            Http.Tracing = true;
+        }
+
+
         [TestMethod]
         public void TestGetTransactions()
         {
-           
             var node = new Node(Node.MainNetHost);
 
             var limit = 100;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
             var transactions = node.GetTransactions(address, limit);
-            
+            Thread.Sleep(1000);
+
             Assert.AreEqual(transactions.Count(), limit);
         }
 
         [TestMethod]
         public void TestGetTransactionsOfType()
         {
-
             var node = new Node(Node.MainNetHost);
 
             var limit = 1000;
