@@ -24,8 +24,8 @@ namespace WavesCSTests
 
             Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
             
-            
             Console.Write(new Node().GetBalance(Accounts.Carol.Address));
+            Thread.Sleep(3000);
         }        
         
         [TestMethod]
@@ -75,11 +75,13 @@ namespace WavesCSTests
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
 
-            Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow, OrderStatus.Accepted, Assets.WAVES, WBTC, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(), DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol);
+            Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow, OrderStatus.Accepted,
+                                     Assets.WAVES, WBTC, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
+                                     DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol.Address);
 
             matcher.PlaceOrder(Accounts.Carol, order1);
             Thread.Sleep(3000);
-            
+
             var orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
 
             var lastOrder = orders.OrderBy(o => o.Timestamp).Last();

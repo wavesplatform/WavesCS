@@ -34,11 +34,11 @@ namespace WavesCS
 
         public byte[] Signature { get; set; }
 
-        public PrivateKeyAccount Sender { get; }
+        public string Sender { get; }
 
         public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp, OrderStatus status,
             Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
-            decimal matcherFee, PrivateKeyAccount sender, string id = "", decimal filled = 1m)
+            decimal matcherFee, string sender, string id = "", decimal filled = 1m)
         {
             SenderPublicKey = senderPublicKey;
             MatcherPublicKey = matcherPublicKey;
@@ -75,7 +75,7 @@ namespace WavesCS
             var matcherPublicKey = json.ContainsKey("matcherPublicKey") ? json.GetString("matcherPublicKey") : "";
             var expiration = json.ContainsKey("expiration") ? json.GetDate("expiration") : json.GetDate("timestamp");
             var matcherFee = json.ContainsKey("matcherFee") ? Assets.WAVES.LongToAmount(json.GetLong("matcherFee")) : 1;
-            PrivateKeyAccount sender = null;
+            string sender = json.ContainsKey("sender") ? json.GetString("sender") : null;
 
             var id = json.ContainsKey("id") ? json.GetString("id") : "";
 
@@ -109,8 +109,6 @@ namespace WavesCS
                 writer.WriteLong(Timestamp.ToLong());
                 writer.WriteLong(Expiration.ToLong());
                 writer.WriteLong(Assets.WAVES.AmountToLong(MatcherFee));
-
-                Signature = Sender.Sign(stream);
 
                 return stream.ToArray();
             }
