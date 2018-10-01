@@ -31,6 +31,29 @@ namespace WavesCSTests
         [TestMethod]
         public void TestOrderBook()
         {
+            var node = new Node();
+
+            var amountAsset = Assets.GetById("GqZyuaAirFmUyttcWjsto2nApePmTS4B4TFmjHeARB7U");
+            var priceAsset = Assets.GetById("5LbJW8UDVusy6kaPAkcmL2pDhpnv66KUhVrRhp6cRTvE");
+
+            var amount = amountAsset.LongToAmount(1867286L);
+            var price = Asset.LongToPrice(amountAsset, priceAsset, 5928443L);
+
+            Order order = new Order(OrderSide.Buy, amount, price, 1491684293053L.ToDate(),
+                                    amountAsset,
+                                    priceAsset,
+                                    "HtGMDsxztk2QUU9d8Pdcta71XToTrkQp7iSLWpVewz9Z".FromBase58(),
+                                    "4XcmGjtuK2nmQoK7UWPFKu4ykJyg3DMFuDbNbVHrKqjT".FromBase58(),
+                                    1494276293053L.ToDate(),
+                                    1000000m, "3Mt3yYzfsGFVcVFsPRKdoHFu5QJm7hkBeF4");
+
+
+
+            Assert.AreEqual("HWMWyiiVNDArDodWX8yYjtLhhHXQoBFKMqeXfAibL9xF", order.GenerateId());
+
+            return;
+
+
             var matcher = new Matcher("https://matcher.wavesnodes.com");            
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, Assets.BTC);
@@ -75,7 +98,7 @@ namespace WavesCSTests
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
 
-            Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow, OrderStatus.Accepted,
+            Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow,
                                      Assets.WAVES, WBTC, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
                                      DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol.Address);
 

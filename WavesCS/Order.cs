@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using HashLib;
+using Blake2Sharp;
+using System.Linq;
+
 namespace WavesCS
 {
 
@@ -36,9 +40,9 @@ namespace WavesCS
 
         public string Sender { get; }
 
-        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp, OrderStatus status,
+        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp,
             Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
-            decimal matcherFee, string sender, string id = "", decimal filled = 1m)
+            decimal matcherFee, string sender, OrderStatus status = OrderStatus.Accepted, string id = "", decimal filled = 1m)
         {
             SenderPublicKey = senderPublicKey;
             MatcherPublicKey = matcherPublicKey;
@@ -84,14 +88,14 @@ namespace WavesCS
                 amountAsset.LongToAmount(json.GetLong("amount")),
                 Asset.LongToPrice(amountAsset, priceAsset, json.GetLong("price")),
                 json.GetDate("timestamp"),
-                status,
                 amountAsset,
                 priceAsset,
                 senderPublicKey.FromBase58(),
                 matcherPublicKey.FromBase58(),
                 expiration,
                 matcherFee,
-                sender, id, filled);
+                sender,
+                status, id, filled);
         }
 
         public byte[] GetBytes()
@@ -143,6 +147,12 @@ namespace WavesCS
         {
             order.Signature = account.Sign(order.GetBytes());
             return order;
+        }
+
+        public static string GenerateId(this Order order)
+        {
+            var bodyBytes = order.GetBytes();
+            return AddressEncoding.FastHash(bodyBytes).ToBase58();
         }
     }
 }
