@@ -42,7 +42,7 @@ namespace WavesCS
                 else
                 {
                     writer.Write((byte) 1);
-                    writer.WriteShort(Script.Length);
+                    writer.WriteShort((short)Script.Length);
                     writer.Write(Script);
                 }
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));

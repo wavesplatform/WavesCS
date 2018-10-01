@@ -60,25 +60,41 @@ namespace WavesCS
                 Attachment = new byte[0];
         }
 
+        public void WriteBytes(BinaryWriter writer)
+        {
+            writer.Write(SenderPublicKey);
+            writer.WriteAsset(Asset.Id);
+            writer.WriteAsset(FeeAsset.Id);
+            writer.WriteLong(Timestamp.ToLong());
+            writer.WriteLong(Asset.AmountToLong(Amount));
+            writer.WriteLong(FeeAsset.AmountToLong(Fee));
+            writer.Write(Recipient.FromBase58());
+            writer.WriteShort(Attachment.Length);
+            writer.Write(Attachment);
+        }
+
         public override byte[] GetBody()
-        {                        
-            using(var stream = new MemoryStream())
-            using(var writer = new BinaryWriter(stream))
-            {
-                writer.Write(TransactionType.Transfer);
-                if (Version > 1)
-                    writer.Write(Version);
-                writer.Write(SenderPublicKey);
-                writer.WriteAsset(Asset.Id);
-                writer.WriteAsset(FeeAsset.Id);
-                writer.WriteLong(Timestamp.ToLong());
-                writer.WriteLong(Asset.AmountToLong(Amount));
-                writer.WriteLong(FeeAsset.AmountToLong(Fee));
-                writer.Write(Recipient.FromBase58());
-                writer.WriteShort(Attachment.Length);
-                writer.Write(Attachment);
-                return stream.ToArray();
-            }
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(TransactionType.Transfer);
+
+            if (Version > 1)
+                writer.Write(Version);
+
+            WriteBytes(writer);
+            return stream.ToArray();
+        }
+
+        public byte[] GetIdBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(TransactionType.Transfer);
+            WriteBytes(writer);
+            return stream.ToArray();
         }
 
         public override Dictionary<string, object> GetJson()

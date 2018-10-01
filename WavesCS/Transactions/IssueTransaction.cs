@@ -43,9 +43,37 @@ namespace WavesCS
             Asset = Assets.GetById(tx.GetString("assetId"));
         }
 
+        public void WriteType(BinaryWriter writer)
+        {
+            writer.Write(TransactionType.Transfer);
+        }
+
+        public void WriteVersion(BinaryWriter writer)
+        {
+            if (Version > 1)
+                writer.Write(Version);
+        }
+
+
+        public void WriteBytes(BinaryWriter writer)
+        {
+            var asset = new Asset("", "", Decimals);
+
+            writer.Write(SenderPublicKey);
+            writer.WriteShort(Name.Length);
+            writer.Write(Encoding.ASCII.GetBytes(Name));
+            writer.WriteShort(Description.Length);
+            writer.Write(Encoding.ASCII.GetBytes(Description));
+            writer.WriteLong(asset.AmountToLong(Quantity));
+            writer.Write(Decimals);
+            writer.Write((byte)(Reissuable ? 1 : 0));
+            writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
+            writer.WriteLong(Timestamp.ToLong());
+        }
+
+
         public override byte[] GetBody()
         {
-            var asset = new Asset("", "", Decimals);             
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
 
@@ -56,23 +84,12 @@ namespace WavesCS
                 writer.Write((byte)ChainId);
             }
 
-            writer.Write(SenderPublicKey);
-            writer.WriteShort(Name.Length);
-            writer.Write(Encoding.ASCII.GetBytes(Name));
-            writer.WriteShort(Description.Length);
-            writer.Write(Encoding.ASCII.GetBytes(Description));            
-            writer.WriteLong(asset.AmountToLong(Quantity));
-            writer.Write(Decimals);
-            writer.Write((byte) (Reissuable ? 1 : 0));
-            writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
-            writer.WriteLong(Timestamp.ToLong());
+            WriteBytes(writer);
 
             if (Version > 1)
             {
                 if (Script == null)
-                {
                     writer.Write((byte)0);
-                }
                 else
                 {
                     writer.Write((byte)1);
@@ -80,8 +97,22 @@ namespace WavesCS
                     writer.Write(Script);
                 }
             }
+
             return stream.ToArray();
         }
+
+        public byte[] GetIdBytes()
+        {
+            var asset = new Asset("", "", Decimals);
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(TransactionType.Issue);
+            WriteBytes(writer);
+
+            return stream.ToArray();
+        }
+
 
         public override Dictionary<string, object> GetJson()
         {

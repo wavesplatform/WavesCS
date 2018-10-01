@@ -42,6 +42,20 @@ namespace WavesCS
             }
         }
 
+        public byte[] GetIdBytes()
+        {
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(TransactionType.Alias);
+                writer.Write((byte)0x02);
+                writer.Write((byte)Scheme);
+                writer.WriteShort(Alias.Length);
+                writer.Write(Encoding.ASCII.GetBytes(Alias));
+                return stream.ToArray();
+            }
+        }
+
         public override Dictionary<string, object> GetJson()
         {
             return new Dictionary<string, object>
