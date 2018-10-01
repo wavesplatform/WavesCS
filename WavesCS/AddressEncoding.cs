@@ -25,6 +25,12 @@ namespace WavesCS
             return Hash(blake2B, 0, blake2B.Length, Keccak256);
         }
 
+        public static byte[] FastHash(byte[] message)
+        {
+            var blakeConfig = new Blake2BConfig { OutputSizeInBits = 256 };
+            return Blake2B.ComputeHash(message, blakeConfig);
+        }
+
         public static string GetAddressFromPublicKey(byte[] publicKey, char scheme)
         {
             var stream = new MemoryStream(26);
