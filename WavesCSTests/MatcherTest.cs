@@ -26,8 +26,8 @@ namespace WavesCSTests
             
             Console.Write(new Node().GetBalance(Accounts.Carol.Address));
             Thread.Sleep(3000);
-        }        
-        
+        }
+
         [TestMethod]
         public void TestOrderBook()
         {

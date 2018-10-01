@@ -22,6 +22,7 @@ namespace WavesCS
         {
             Alias = tx.GetString("alias");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            Scheme = 'W';
         }
 
         public override byte[] GetBody()
@@ -51,7 +52,7 @@ namespace WavesCS
                 writer.Write((byte)0x02);
                 writer.Write((byte)Scheme);
                 writer.WriteShort(Alias.Length);
-                writer.Write(Encoding.ASCII.GetBytes(Alias));
+                writer.Write(Encoding.UTF8.GetBytes(Alias));
                 return stream.ToArray();
             }
         }
