@@ -42,6 +42,6 @@ namespace WavesCS
             var checksum = SecureHash(stream.ToArray(), 0, 22);
             writer.Write(checksum, 0, 4);
             return Base58.Encode(stream.ToArray());
-        }        
+        }
     }
 }

@@ -29,22 +29,22 @@ namespace WavesCSTests
             decimal amount = 1m;
 
             Order sellOrder = new Order(OrderSide.Sell, amount, price,
-                                     DateTime.UtcNow,
-                                     asset1, asset2,
-                                     Accounts.Alice.PublicKey, Accounts.Carol.PublicKey,
-                                     DateTime.UtcNow.AddHours(1),
-                                     0.005m,
+                                        DateTime.UtcNow,
+                                        asset1, asset2,
+                                        Accounts.Alice.PublicKey, Accounts.Carol.PublicKey,
+                                        DateTime.UtcNow.AddHours(1),
+                                        0.005m,
                                         Accounts.Alice.Address);
 
             sellOrder.Sign(Accounts.Alice);
 
             Order buyOrder = new Order(OrderSide.Buy, amount, price,
-                                     DateTime.UtcNow,
-                                     asset1, asset2,
-                                     Accounts.Bob.PublicKey, Accounts.Carol.PublicKey,
-                                     DateTime.UtcNow.AddHours(1),
-                                     0.005m,
-                                     Accounts.Bob.Address);
+                                       DateTime.UtcNow,
+                                       asset1, asset2,
+                                       Accounts.Bob.PublicKey, Accounts.Carol.PublicKey,
+                                       DateTime.UtcNow.AddHours(1),
+                                       0.005m,
+                                       Accounts.Bob.Address);
 
             buyOrder.Sign(Accounts.Bob);
 

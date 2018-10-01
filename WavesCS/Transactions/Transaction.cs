@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
@@ -95,6 +96,22 @@ namespace WavesCS
         {
             transaction.Proofs[proofIndex] = account.Sign(transaction.GetBody());
             return transaction;
+        }
+
+        public static string GenerateId<T>(this T transaction) where T : Transaction
+        {
+            var bodyBytes = new byte[0];
+
+            if (transaction is TransferTransaction)
+                bodyBytes = ((TransferTransaction)(Transaction)transaction).GetIdBytes();
+            else if(transaction is IssueTransaction)
+                bodyBytes = ((IssueTransaction)(Transaction)transaction).GetIdBytes();
+            else if (transaction is AliasTransaction)
+                bodyBytes = ((AliasTransaction)(Transaction)transaction).GetIdBytes();
+            else
+                bodyBytes = transaction.GetBody();
+
+            return AddressEncoding.FastHash(bodyBytes).ToBase58();
         }
     }
 }
