@@ -22,7 +22,8 @@ namespace WavesCS
         public SetScriptTransaction(Dictionary<string, object> tx) : base(tx)
         {
             Script = tx.GetString("script").FromBase64();
-            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee")); 
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            ChainId = 'W';
         }
 
         public override byte[] GetBody()
@@ -49,8 +50,7 @@ namespace WavesCS
                 writer.WriteLong(Timestamp.ToLong());                                               
 
                 return stream.ToArray();
-            }            
-    
+            }
         }
 
         public override Dictionary<string, object> GetJson()

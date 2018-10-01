@@ -56,7 +56,7 @@ namespace WavesCSTests
                                                      amount, price,
                                                      DateTime.UtcNow.AddSeconds(10));
 
-            var matcher = new Matcher("https://testnet2.wavesnodes.com");
+            var matcher = new Matcher("https://testnodes.wavesnodes.com");
             var aliceBalanceBefore = matcher.GetTradableBalance(Accounts.Alice.Address, asset1, asset2)[asset2];
             var bobBalanceBefore = matcher.GetTradableBalance(Accounts.Bob.Address, asset1, asset2)[asset2];
 
