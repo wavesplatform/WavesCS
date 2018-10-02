@@ -15,7 +15,6 @@ namespace WavesCSTests
             Http.Tracing = true;
         }
 
-
         [TestMethod]
         public void TestGetTransactions()
         {

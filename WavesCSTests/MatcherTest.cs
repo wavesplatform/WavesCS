@@ -24,7 +24,7 @@ namespace WavesCSTests
 
             Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
             
-            Console.Write(new Node().GetBalance(Accounts.Carol.Address));
+            Console.WriteLine(new Node().GetBalance(Accounts.Carol.Address));
             Thread.Sleep(3000);
         }
 
@@ -55,7 +55,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestTradableBalance()
         {
-            var matcher = new Matcher("https://testnodes.wavesnodes.com");
+            var matcher = new Matcher("https://testnode1.wavesnodes.com");
 
             var balance = matcher.GetTradableBalance(Accounts.Carol.Address, Assets.WAVES, WBTC);
 
@@ -70,7 +70,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestOrders()
         {
-            var matcher = new Matcher("https://testnodes.wavesnodes.com");
+            var matcher = new Matcher("https://testnode1.wavesnodes.com");
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
