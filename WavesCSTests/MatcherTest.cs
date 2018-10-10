@@ -55,7 +55,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestTradableBalance()
         {
-            var matcher = new Matcher("https://testnet2.wavesnodes.com");
+            var matcher = new Matcher("https://testnet1.wavesnodes.com");
 
             var balance = matcher.GetTradableBalance(Accounts.Carol.Address, Assets.WAVES, WBTC);
 
@@ -70,7 +70,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestOrders()
         {
-            var matcher = new Matcher("https://testnode2.wavesnodes.com");
+            var matcher = new Matcher("https://testnode1.wavesnodes.com");
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;

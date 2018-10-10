@@ -23,7 +23,7 @@ namespace WavesCSTests
             var node = new Node(Node.TestNetHost);
 
             var asset1 = Assets.WAVES;
-            var asset2 = Assets.GetById("FUMBLu8GVgegKf8WYzahTUaiBqxfVsXoxyMrv99vKSeC", node);
+            var asset2 = Assets.GetById("3yq5Y6mVjAMMGX45JoHd5dzPnSFcMxiKQRyMFJ1R5v9D", node);
 
             var price = Asset.LongToPrice(asset1, asset2, 176L);
             decimal amount = 1m;
@@ -56,7 +56,7 @@ namespace WavesCSTests
                                                      amount, price,
                                                      DateTime.UtcNow.AddSeconds(10));
 
-            var matcher = new Matcher("https://testnet2.wavesnodes.com");
+            var matcher = new Matcher("https://testnet1.wavesnodes.com");
             var aliceBalanceBefore = matcher.GetTradableBalance(Accounts.Alice.Address, asset1, asset2)[asset2];
             var bobBalanceBefore = matcher.GetTradableBalance(Accounts.Bob.Address, asset1, asset2)[asset2];
 
