@@ -15,7 +15,6 @@ namespace WavesCSTests
             Http.Tracing = true;
         }
 
-
         [TestMethod]
         public void TestGetTransactions()
         {
@@ -34,7 +33,7 @@ namespace WavesCSTests
         {
             var node = new Node(Node.MainNetHost);
 
-            var limit = 1000;
+            var limit = 10;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
 
             var issueTransactions = node.GetTransactions<IssueTransaction>(address, limit);
@@ -78,9 +77,12 @@ namespace WavesCSTests
         public void TestIssueTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
+
+            var transactionId = "37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(IssueTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var issueTx = (IssueTransaction)tx;
             Assert.AreEqual(issueTx.Sender, "3PKhW99rBCeQFurBibu7KMjYLf7GTRudYj7");
@@ -100,9 +102,12 @@ namespace WavesCSTests
         public void TestTransferTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("9jpwy6aYJRFnFWoArQxLywMSF8GRGyW42JT1KzHJD9sL");
+
+            var transactionId = "9jpwy6aYJRFnFWoArQxLywMSF8GRGyW42JT1KzHJD9sL";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(TransferTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var transferTx = (TransferTransaction)tx;
             Assert.AreEqual(transferTx.Sender, "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ");
@@ -123,9 +128,12 @@ namespace WavesCSTests
         public void TestReissueTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("HqtDBXsbz3ztNHheF3DstVKhsEYf3rtA31tPa784hiyx");
+
+            var transactionId = "HqtDBXsbz3ztNHheF3DstVKhsEYf3rtA31tPa784hiyx";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(ReissueTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var reissueTx = (ReissueTransaction)tx;
             Assert.AreEqual(reissueTx.Sender, "3PKhW99rBCeQFurBibu7KMjYLf7GTRudYj7");
@@ -145,9 +153,12 @@ namespace WavesCSTests
         public void TestBurnTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("HXhyvS9f5oQ18QAEeyRg6E9FHvAnLVWGSTGMyamgMe4n");
+
+            var transactionId = "HXhyvS9f5oQ18QAEeyRg6E9FHvAnLVWGSTGMyamgMe4n";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(BurnTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var burnTx = (BurnTransaction)tx;
             Assert.AreEqual(burnTx.Sender, "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ");
@@ -165,9 +176,12 @@ namespace WavesCSTests
         public void TestLeaseTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("8feDmqySpSLJxfPYmnKCb99jf2g7oFGEY5Lu8DofqBCU");
+
+            var transactionId = "8feDmqySpSLJxfPYmnKCb99jf2g7oFGEY5Lu8DofqBCU";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(LeaseTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var leaseTx = (LeaseTransaction)tx;
             Assert.AreEqual(leaseTx.Sender, "3PNHKfDxU6PML1yHhU55gBn5jWkMvqFPYPP");
@@ -184,9 +198,12 @@ namespace WavesCSTests
         public void TestCancelLeasingTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("8LkSyfgyuekjCherhjmhKR1gbYKJPAhfKSYLetSN93YW");
+
+            var transactionId = "8LkSyfgyuekjCherhjmhKR1gbYKJPAhfKSYLetSN93YW";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(CancelLeasingTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var cancelLeaseTx = (CancelLeasingTransaction)tx;
             Assert.AreEqual(cancelLeaseTx.Sender, "3PL3HscfDpAd6LFYYGcNKeUPg25tkpS4qeq");
@@ -201,9 +218,12 @@ namespace WavesCSTests
         public void TestAliasTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("5JeRnELGEsT1bTZgbNETeJ6rVqhRvrbpMz82nh3qynpH");
+
+            var transactionId = "5JeRnELGEsT1bTZgbNETeJ6rVqhRvrbpMz82nh3qynpH";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(AliasTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var aliasIx = (AliasTransaction)tx;
             Assert.AreEqual(aliasIx.Sender, "3PPk7HZgyHqiQhpAgfGBjYnwHZ77D2kx5bL");
@@ -218,9 +238,12 @@ namespace WavesCSTests
         public void TestMassTransferTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("EKPLV5vjsa2T8ijpjNNumikDrM1r6Yi6MXpNsbsdPM8i");
+
+            var transactionId = "EKPLV5vjsa2T8ijpjNNumikDrM1r6Yi6MXpNsbsdPM8i";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(MassTransferTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var massTransferTx = (MassTransferTransaction)tx;
             Assert.AreEqual(massTransferTx.Sender, "3P5CcDGigUuiHUaAstEj6Yv25xdnP4UQz1F");
@@ -244,9 +267,12 @@ namespace WavesCSTests
         public void TestDataTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("BDBZWsarzShKoqmYUUiuFYZ3zewjvap6Laa7ctEutaP6");
+
+            var transactionId = "BDBZWsarzShKoqmYUUiuFYZ3zewjvap6Laa7ctEutaP6";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(DataTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var dataTx = (DataTransaction)tx;
             Assert.AreEqual(dataTx.Sender, "3PCAB4sHXgvtu5NPoen6EXR5yaNbvsEA8Fj");
@@ -268,27 +294,33 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetScriptTransactionDeserialize()
         {
-            var node = new Node("https://testnode2.wavesnodes.com/");
-            var tx = node.GetTransactionById("JCMwsfUoBgR8BAiNbR1EZ71SwbF2zVUfQMQ5bvrUrjJw");
+            var node = new Node(Node.MainNetHost);
+
+            var transactionId = "8Nwjd2tcQWff3S9WAhBa7vLRNpNnigWqrTbahvyfMVrU";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(SetScriptTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var setScriptTx = (SetScriptTransaction)tx;
-            Assert.AreEqual(setScriptTx.Sender, "3N7YRHRFYnWfXTaZAzJH4TxNJtbA9iLfVNt");
-            Assert.AreEqual(setScriptTx.SenderPublicKey.ToBase58(), "DKX1QN456z6LmnUXPzW2WKbWKP96ziHmzfCqD94GqZoj");
-            Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(2000000));
-            Assert.AreEqual(setScriptTx.Timestamp.ToLong(), 1535102412158);
-            Assert.AreEqual(setScriptTx.Proofs[0].ToBase58(), "fdm7mTNBpD7uoiEDdYTV8w52r48V6BrdfDFFP188vWek3Wxm4pD6kKcuN84WuHALkyKd4L8cBitTk75hbGSikzz");
-            Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAALYWxpY2VTaWduZWQJAAH0AAAAAwgFAAAAAnR4AAAACWJvZHlCeXRlcwkAAZEAAAACCAUAAAACdHgAAAAGcHJvb2ZzAAAAAAAAAAAAAQAAACA7y0ER+s9oRx1iHyAgiwQa4QWzXjRQA3xpHCiUhbDuXQQAAAAJYm9iU2lnbmVkCQAB9AAAAAMIBQAAAAJ0eAAAAAlib2R5Qnl0ZXMJAAGRAAAAAggFAAAAAnR4AAAABnByb29mcwAAAAAAAAAAAQEAAAAgGam3+HRDO+QAMXCqet9Ft60Y/x00lxImlBZ6hbvnhk0DBQAAAAthbGljZVNpZ25lZAUAAAAJYm9iU2lnbmVkB5fCpHI=");
+            Assert.AreEqual(setScriptTx.Sender, "3PBSduYkK7GQxVFWkKWMq8GQkVdAGX71hTx");
+            Assert.AreEqual(setScriptTx.SenderPublicKey.ToBase58(), "3LZmDK7vuSBsDmFLxJ4qihZynUz8JF9e88dNu5fsus5p");
+            Assert.AreEqual(setScriptTx.Fee, Assets.WAVES.LongToAmount(2082496));
+            Assert.AreEqual(setScriptTx.Timestamp.ToLong(), 1537973512182);
+            Assert.AreEqual(setScriptTx.Proofs[0].ToBase58(), "V45jPG1nuEnwaYb9jTKQCJpRskJQvtkBcnZ45WjZUbVdNTi1KijVikJkDfMNcEdSBF8oGDYZiWpVTdLSn76mV57");
+            Assert.AreEqual(setScriptTx.Script.ToBase64(), "base64:AQQAAAAEaW5hbAIAAAAESW5hbAQAAAAFZWxlbmECAAAAB0xlbnVza2EEAAAABGxvdmUCAAAAC0luYWxMZW51c2thCQAAAAAAAAIJAAEsAAAAAgUAAAAEaW5hbAUAAAAFZWxlbmEFAAAABGxvdmV4ZFt5");
         }
 
         [TestMethod]
         public void TestSponsoredFeeTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("7EL2XEGP1By427BeLcHPYeVnBzGsXen4egMAwQpWGBVR");
+
+            var transactionId = "7EL2XEGP1By427BeLcHPYeVnBzGsXen4egMAwQpWGBVR";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(SponsoredFeeTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var sponsoredFeeTx = (SponsoredFeeTransaction)tx;
             Assert.AreEqual(sponsoredFeeTx.Sender, "3PHrS6VNPRtUD8MHkfkmELavL8JnGtSq5sx");
@@ -306,9 +338,12 @@ namespace WavesCSTests
         public void TestExchangeTransactionDeserialize()
         {
             var node = new Node(Node.MainNetHost);
-            var tx = node.GetTransactionById("G4wGLw9XtnScqk5eWoLb7r3GXEf1FFg4CMmSX7du1wmg");
+
+            var transactionId = "G4wGLw9XtnScqk5eWoLb7r3GXEf1FFg4CMmSX7du1wmg";
+            var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(ExchangeTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
             var exchangeTx = (ExchangeTransaction)tx;
 

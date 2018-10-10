@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using HashLib;
+using Blake2Sharp;
+using System.Linq;
+
 namespace WavesCS
 {
 
@@ -14,17 +18,17 @@ namespace WavesCS
         Cancelled,
         NotFound
     }
-    
+
     public class Order
     {
-        public string Id { get; }
+        public string Id { get; set;  }
         public OrderSide Side { get; }
         public decimal Amount { get; }
         public decimal Price { get; }
         public DateTime Timestamp { get; }
         public DateTime Expiration { get; set; }
-        public decimal Filled { get; }
-        public OrderStatus Status { get; }
+        public decimal Filled { get; set; }
+        public OrderStatus Status { get; set; }
         public Asset AmountAsset { get; }
         public Asset PriceAsset { get; }
         public byte[] SenderPublicKey { get; }
@@ -36,20 +40,17 @@ namespace WavesCS
 
         public string Sender { get; }
 
-        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp, OrderStatus status,
+        public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp,
             Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
-            decimal matcherFee, string sender, string id = "", decimal filled = 1m)
+            decimal matcherFee, string sender)
         {
             SenderPublicKey = senderPublicKey;
             MatcherPublicKey = matcherPublicKey;
-            Id = id;
             Side = side;
             Amount = amount;
             Price = price;
             Timestamp = timestamp;
             Expiration = expiration;
-            Filled = filled;
-            Status = status;
             AmountAsset = amountAsset;
             PriceAsset = priceAsset;
             MatcherFee = matcherFee;
@@ -58,18 +59,12 @@ namespace WavesCS
 
         public static Order CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
         {
-            var status = OrderStatus.NotFound;
-
             var side = OrderSide.Buy;
+
             if (json.ContainsKey("orderType"))
                 side = json.GetString("orderType") == "buy" ? OrderSide.Buy : OrderSide.Sell;
             else
                 side = (OrderSide)Enum.Parse(typeof(OrderSide), json.GetString("type"), true);
-
-            var filled = json.ContainsKey("filled") ? amountAsset.LongToAmount(json.GetLong("filled")) : 1;
-
-            if (json.ContainsKey("status"))
-                status = (OrderStatus) Enum.Parse(typeof(OrderStatus), json.GetString("status"));
 
             var senderPublicKey = json.ContainsKey("senderPublicKey") ? json.GetString("senderPublicKey") : "";
             var matcherPublicKey = json.ContainsKey("matcherPublicKey") ? json.GetString("matcherPublicKey") : "";
@@ -77,23 +72,30 @@ namespace WavesCS
             var matcherFee = json.ContainsKey("matcherFee") ? Assets.WAVES.LongToAmount(json.GetLong("matcherFee")) : 1;
             string sender = json.ContainsKey("sender") ? json.GetString("sender") : null;
 
-            var id = json.ContainsKey("id") ? json.GetString("id") : "";
+            var signature = json.ContainsKey("signature") ? json.GetString("signature") : null;
+            var status = json.ContainsKey("status") ? (OrderStatus)Enum.Parse(typeof(OrderStatus), json.GetString("status")) : OrderStatus.Accepted;
+            var id = json.ContainsKey("id") ? json.GetString("id") : null;
+            var filled = json.ContainsKey("filled") ? amountAsset.LongToAmount(json.GetLong("filled")) : 1m;
 
             return new Order(
                 side,
                 amountAsset.LongToAmount(json.GetLong("amount")),
                 Asset.LongToPrice(amountAsset, priceAsset, json.GetLong("price")),
                 json.GetDate("timestamp"),
-                status,
                 amountAsset,
                 priceAsset,
                 senderPublicKey.FromBase58(),
                 matcherPublicKey.FromBase58(),
                 expiration,
                 matcherFee,
-                sender, id, filled);
-        }
-
+                sender)
+            {
+                Signature = signature.FromBase58(),
+                Status = status,
+                Id = id,
+                Filled = filled
+            };
+    }
         public byte[] GetBytes()
         {
             using (var stream = new MemoryStream())
@@ -143,6 +145,11 @@ namespace WavesCS
         {
             order.Signature = account.Sign(order.GetBytes());
             return order;
+        }
+
+        public static string GenerateId(this Order order)
+        {
+            return AddressEncoding.FastHash(order.GetBytes()).ToBase58();
         }
     }
 }
