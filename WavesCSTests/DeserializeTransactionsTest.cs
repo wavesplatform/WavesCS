@@ -311,6 +311,7 @@ namespace WavesCSTests
             Assert.IsInstanceOfType(tx, typeof(ExchangeTransaction));
 
             var exchangeTx = (ExchangeTransaction)tx;
+
             Assert.AreEqual(exchangeTx.Sender, "3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3");
             Assert.AreEqual(exchangeTx.SenderPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
             Assert.AreEqual(exchangeTx.Fee, Assets.WAVES.LongToAmount(300000));
