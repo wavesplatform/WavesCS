@@ -33,7 +33,7 @@ namespace WavesCSTests
         {
             var node = new Node(Node.MainNetHost);
 
-            var limit = 1000;
+            var limit = 10;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
 
             var issueTransactions = node.GetTransactions<IssueTransaction>(address, limit);
