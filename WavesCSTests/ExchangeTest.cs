@@ -25,7 +25,7 @@ namespace WavesCSTests
             var amountAsset = Assets.GetById("5hozySTi6nZtE6SvgmS28MhpPph4hzsfUAP2LjM9Qxod", node);
             var priceAsset = Assets.WAVES;
 
-            decimal amount = 1m;
+            decimal amount = 2m;
             var price = Asset.LongToPrice(amountAsset, priceAsset, 100000000L);
 
             Order sellOrder = new Order(OrderSide.Sell, amount, price,
@@ -63,7 +63,7 @@ namespace WavesCSTests
             exchangeTx.Sign(Accounts.Carol);
             node.Broadcast(exchangeTx.GetJson());
 
-            Thread.Sleep(10000);
+            Thread.Sleep(7000);
 
             var aliceBalanceAfter = matcher.GetTradableBalance(Accounts.Alice.Address, amountAsset, priceAsset)[amountAsset];
             var bobBalanceAfter = matcher.GetTradableBalance(Accounts.Bob.Address, amountAsset, priceAsset)[amountAsset];
