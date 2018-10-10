@@ -3,6 +3,14 @@ A C# library for interacting with the Waves blockchain
 
 Supports node interaction, offline transaction signing, Matcher orders, and creating addresses and keys.
 
+
+
+## Topic on Waves Forum
+
+Here you we can discuss library usage and further development:
+
+https://forum.wavesplatform.com/t/wavescs-c-client-library-for-waves-api/83
+
 ## Getting Started
 
 You can install **WavesPlatform.WavesCS** [NuGet package](https://www.nuget.org/packages/WavesPlatform.WavesCS/) and add it to your project's References and in your code as:
@@ -36,7 +44,4 @@ The library utilizes classes to represent various Waves data structures and enco
 Code examples are in [WavesCSTests](https://github.com/wavesplatform/WavesCS/tree/master/WavesCSTests) project and [Examples](Examples.md) page.
 
 ### Source code
-[WavesCS Github repository](https://github.com/wavesplatform/WavesCS)
-
-### Topic on Waves Forum
-https://forum.wavesplatform.com/t/wavescs-c-client-library-for-waves-api/83
+[WavesCS Github repository](https://github.com/wavesplatform/WavesCS
