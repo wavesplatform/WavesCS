@@ -11,24 +11,23 @@ namespace WavesCS
 
         private static readonly IHash Keccak256 = HashFactory.Crypto.SHA3.CreateKeccak256();
 
-        private static byte[] Hash(byte[] message, int offset, int lenght, IHash algorithm)
+        private static byte[] Hash(byte[] message, int offset, int length, IHash algorithm)
         {            
             algorithm.Initialize();
-            algorithm.TransformBytes(message, offset, lenght);
+            algorithm.TransformBytes(message, offset, length);
             return algorithm.TransformFinal().GetBytes();
         }
 
-        public static byte[] SecureHash(byte[] message, int offset, int lenght)
-        {
-            var blakeConfig = new Blake2BConfig {OutputSizeInBits = 256};
-            var blake2B = Blake2B.ComputeHash(message, offset, lenght, blakeConfig);
-            return Hash(blake2B, 0, blake2B.Length, Keccak256);
-        }
-
-        public static byte[] FastHash(byte[] message)
+        public static byte[] FastHash(byte[] message, int offset, int length)
         {
             var blakeConfig = new Blake2BConfig { OutputSizeInBits = 256 };
-            return Blake2B.ComputeHash(message, blakeConfig);
+            return Blake2B.ComputeHash(message, offset, length, blakeConfig);
+        }
+
+        public static byte[] SecureHash(byte[] message, int offset, int length)
+        {
+            var blake2B = FastHash(message, offset, length);
+            return Hash(blake2B, 0, blake2B.Length, Keccak256);
         }
 
         public static string GetAddressFromPublicKey(byte[] publicKey, char scheme)

@@ -8,15 +8,20 @@ namespace WavesCS
 {
     public abstract class Transaction
     {
-        public DateTime Timestamp { get; protected set; }        
-        
+        public DateTime Timestamp { get; protected set; }
+
         public byte[] SenderPublicKey { get; }
         public string Sender { get; }
+        public decimal Fee { get; set; }
+
+        public virtual byte Version { get; set; }
 
         public abstract byte[] GetBody();
         public abstract DictionaryObject GetJson();
 
         public byte[][] Proofs { get; }
+
+        public static bool checkId = false;
 
         protected Transaction(byte[] senderPublicKey)
         {
@@ -30,6 +35,7 @@ namespace WavesCS
             Timestamp = tx.GetDate("timestamp");
             Sender = tx.GetString("sender");
             SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
+            Version = tx.ContainsKey("version") ? tx.GetByte("version") : (byte)1;
 
             if (tx.ContainsKey("proofs"))
             {
@@ -111,7 +117,7 @@ namespace WavesCS
             else
                 bodyBytes = transaction.GetBody();
 
-            return AddressEncoding.FastHash(bodyBytes).ToBase58();
+            return AddressEncoding.FastHash(bodyBytes, 0, bodyBytes.Length).ToBase58();
         }
     }
 }

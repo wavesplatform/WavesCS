@@ -149,7 +149,8 @@ namespace WavesCS
 
         public static string GenerateId(this Order order)
         {
-            return AddressEncoding.FastHash(order.GetBytes()).ToBase58();
+            var bytes = order.GetBytes();
+            return AddressEncoding.FastHash(bytes, 0, bytes.Length).ToBase58();
         }
     }
 }

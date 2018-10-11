@@ -8,8 +8,6 @@ namespace WavesCS
 {
     public class ExchangeTransaction : Transaction
     {
-
-        public decimal Fee { get; }
         public decimal BuyMatcherFee { get; }
         public decimal SellMatcherFee { get; }
 

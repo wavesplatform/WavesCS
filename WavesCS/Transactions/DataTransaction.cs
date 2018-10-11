@@ -9,9 +9,7 @@ namespace WavesCS
     public class DataTransaction : Transaction
     {
         public Dictionary<string, object> Entries { get; }
-        public decimal Fee { get; }
-
-        private const byte Version = 1;
+        public override byte Version { get; set; } = 1;
 
         public DataTransaction(byte[] senderPublicKey, Dictionary<string, object> entries,
             decimal? fee = null) : base(senderPublicKey)

@@ -9,16 +9,15 @@ namespace WavesCS
         public string Recipient { get; }
         public decimal Amount { get; }
         public Asset Asset { get; }
-        public decimal Fee { get; }
         public Asset FeeAsset { get; }
         public byte[] Attachment { get; }
 
-        public static byte Version = 2;
+        public override byte Version { get; set; } = 1;
 
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, string attachment) : 
             this(senderPublicKey, recipient, asset, amount, 0.001m, Encoding.UTF8.GetBytes(attachment))
-        {                  
+        {
         }
         
         public TransferTransaction(byte[] senderPublicKey, string recipient,
@@ -54,10 +53,9 @@ namespace WavesCS
 
             Recipient = tx.GetString("recipient");
 
-            if (tx.ContainsKey("attachment"))
-                Attachment = tx.GetString("attachment").FromBase58();
-            else
-                Attachment = new byte[0];
+            Attachment = tx.ContainsKey("attachment")
+                           ? tx.GetString("attachment").FromBase58()
+                           : new byte[0];
         }
 
         public void WriteBytes(BinaryWriter writer)

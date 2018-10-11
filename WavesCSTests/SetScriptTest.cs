@@ -55,7 +55,6 @@ namespace WavesCSTests
         public void MultisigTest()
         {
             // This test works with tranfer transactions of version 2 only
-            TransferTransaction.Version = 2;
             var node = new Node();
 
             var script = $@"                
@@ -81,7 +80,7 @@ namespace WavesCSTests
 
             Thread.Sleep(10000);
 
-            var tx = new TransferTransaction(multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.01m);
+            var tx = new TransferTransaction(multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.01m) { Version = 2 };
             tx.Sign(Accounts.Alice, 0);
             tx.Sign(Accounts.Bob, 1);
 

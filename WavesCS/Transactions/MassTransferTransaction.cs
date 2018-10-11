@@ -22,15 +22,14 @@ namespace WavesCS
     {
         public Asset Asset { get; }
         public byte[] Attachment { get; }
-        public decimal Fee { get; }
         public MassTransferItem[] Transfers { get; }
-        
-        private const byte Version = 1;
+
+        public override byte Version { get; set; } = 1;
 
         public MassTransferTransaction(byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
             string attachment, decimal? fee = null) : 
             this(senderPublicKey, asset, transfers, Encoding.UTF8.GetBytes(attachment), fee) 
-        {            
+        {
         }
         
         public MassTransferTransaction(byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
