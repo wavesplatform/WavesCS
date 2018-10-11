@@ -56,7 +56,7 @@ namespace WavesCS
         {
                     
             string path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/publicKey/{account.PublicKey.ToBase58()}";
-            var t = account.PublicKey.ToBase58();
+
             var headers = GetProtectionHeaders(account);
             var response = Http.GetObjectsWithHeaders(path, headers);
             

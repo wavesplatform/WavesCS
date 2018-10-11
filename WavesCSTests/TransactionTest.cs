@@ -4,7 +4,6 @@ using System.Text;
 using WavesCS;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 using System.Collections.Generic;
 
 namespace WavesCSTests
