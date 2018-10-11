@@ -2,9 +2,6 @@
 using System.Threading;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using System.IO;
-using System.Text;
 
 namespace WavesCSTests
 {

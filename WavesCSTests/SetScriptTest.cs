@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Serialization;
 using WavesCS;
-using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCSTests
 {
