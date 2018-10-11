@@ -25,7 +25,7 @@ namespace WavesCSTests
             Asset asset = null;
             try
             {
-                asset = Assets.GetById("2Sp5w3DodLUY4XCQz9RRuEh32mQ9i3WmrGzunhEUspRp", node);
+                asset = Assets.GetById("HkNSgxYpBLkzLb2vGYFFDrRT3gD5aoUnFV9eFav5DWpB", node);
             }
             catch (Exception)
             {
@@ -42,12 +42,12 @@ namespace WavesCSTests
             Thread.Sleep(10000);
 
             var amount = 0.2m;
-            var transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, asset, amount, 0001m, asset).ParseJsonObject().GetString("id");
+            var transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, asset, amount, 0.0001m, asset).ParseJsonObject().GetString("id");
             Thread.Sleep(10000);
             var txInfo = node.GetObject("transactions/info/{0}", transactionId);
             
-            Assert.AreEqual(asset.Id.ToString(), txInfo["assetId"]);
-            Assert.AreEqual(asset.Id.ToString(), txInfo["feeAssetId"]);
+            Assert.AreEqual(asset.Id, txInfo["assetId"]);
+            Assert.AreEqual(asset.Id, txInfo["feeAssetId"]);
         }
     }
 }

@@ -103,14 +103,13 @@ namespace WavesCS
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price) },
                 {"amount", AmountAsset.AmountToLong(Amount) },
                 {"buyMatcherFee", Assets.WAVES.AmountToLong(BuyMatcherFee)},
-                {"signature", Proofs[0].ToBase58()},
                 {"sellMatcherFee", Assets.WAVES.AmountToLong(SellMatcherFee)}
             };
         }
 
         protected override bool SupportsProofs()
         {
-            return true;
+            return false;
         }
     }
 }
