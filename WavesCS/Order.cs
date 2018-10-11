@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-
-using HashLib;
-using Blake2Sharp;
-using System.Linq;
 
 namespace WavesCS
 {
@@ -149,7 +144,8 @@ namespace WavesCS
 
         public static string GenerateId(this Order order)
         {
-            return AddressEncoding.FastHash(order.GetBytes()).ToBase58();
+            var bytes = order.GetBytes();
+            return AddressEncoding.FastHash(bytes, 0, bytes.Length).ToBase58();
         }
     }
 }

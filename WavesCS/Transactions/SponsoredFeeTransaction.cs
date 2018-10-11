@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace WavesCS
@@ -10,11 +9,12 @@ namespace WavesCS
         public decimal MinimalFeeInAssets { get; }
         public Asset Asset { get; }
 
+        public override byte Version { get; set; } = 1;
+
         public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1) :
             base(senderPublicKey)
         {
-            Asset = asset;            
-            Fee = fee;
+            Asset = asset;
             MinimalFeeInAssets = minimalFeeInAssets;
         }
 
@@ -24,8 +24,6 @@ namespace WavesCS
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             MinimalFeeInAssets = Asset.LongToAmount(tx.GetLong("minSponsoredAssetFee"));
         }
-
-        public readonly byte Version = 1;
 
         public override byte[] GetBody()
         {

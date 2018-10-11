@@ -8,8 +8,7 @@ namespace WavesCS
     {
         public string Alias { get; }
         public char Scheme { get; }
-        public decimal Fee { get; }
-
+ 
         public AliasTransaction(byte[] senderPublicKey, string alias, char scheme, decimal fee = 0.001m) : 
             base(senderPublicKey)
         {

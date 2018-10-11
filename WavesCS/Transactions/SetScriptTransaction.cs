@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace WavesCS
 {
@@ -8,9 +7,8 @@ namespace WavesCS
     {
         public byte[] Script { get; }
         public char ChainId { get; }
-        public decimal Fee { get; }
-        
-        public readonly byte Version = 1;
+
+        public override byte Version { get; set; } = 1;
 
         public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.02m) : base(senderPublicKey)
         {
