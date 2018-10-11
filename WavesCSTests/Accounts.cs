@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
 
@@ -10,7 +9,13 @@ namespace WavesCSTests
     {
         public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seed4Alice", AddressEncoding.TestNet);
         public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seed4Bob", AddressEncoding.TestNet);
-        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("seed4Carol", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("seed4Carol2", AddressEncoding.TestNet);
+
+        [TestInitialize]
+        public void Init()
+        {
+            Http.Tracing = true;
+        }
 
         [TestMethod]
         public void TestBalance()

@@ -11,10 +11,10 @@ namespace WavesCS
         public decimal Quantity { get; }
         public byte Decimals { get; }
         public bool Reissuable { get; }
-        public decimal Fee { get; }
         public Asset Asset { get; }
 
-        public static byte Version = 2;
+        public override byte Version { get; set; } = 2;
+
         public char ChainId { get; }
         public byte[] Script { get; }
 

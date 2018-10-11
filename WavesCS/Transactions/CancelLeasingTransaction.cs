@@ -5,19 +5,18 @@ namespace WavesCS
 {
     public class CancelLeasingTransaction : Transaction
     {
-        public string TransactionId { get; }
-        public decimal Fee { get; }
-
-        public CancelLeasingTransaction(byte[] senderPublicKey, string transactionId, decimal fee = 0.001m) : 
+        public string LeaseId { get; }
+      
+        public CancelLeasingTransaction(byte[] senderPublicKey, string leaseId, decimal fee = 0.001m) : 
             base(senderPublicKey)
         {
-            TransactionId = transactionId;
+            LeaseId = leaseId;
             Fee = fee;
         }
 
         public CancelLeasingTransaction(Dictionary<string, object> tx) : base (tx)
         {
-            TransactionId = tx.GetString("leaseId");
+            LeaseId = tx.GetString("leaseId");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
         }
 
@@ -30,7 +29,7 @@ namespace WavesCS
                 writer.Write(SenderPublicKey);
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
                 writer.WriteLong(Timestamp.ToLong());
-                writer.Write(TransactionId.FromBase58());
+                writer.Write(LeaseId.FromBase58());
                 return stream.ToArray();
             }            
         }
@@ -41,7 +40,7 @@ namespace WavesCS
             {
                 {"type", TransactionType.LeaseCancel},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"leaseId", TransactionId},
+                {"leaseId", LeaseId},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}
             };

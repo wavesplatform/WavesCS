@@ -211,7 +211,7 @@ namespace WavesCSTests
             Assert.AreEqual(cancelLeaseTx.Fee, Assets.WAVES.LongToAmount(100000));
             Assert.AreEqual(cancelLeaseTx.Timestamp.ToLong(), 1534418379080);
             Assert.AreEqual(cancelLeaseTx.Proofs[0].ToBase58(), "5DDoFWGpKcQsuoMLHbGTEevzX1KtkPrvSgSZdxVqtZdqm2CnVJa3yVQAmFFErAzhZcxYEibESjp6jhMgjzsZV2cQ");
-            Assert.AreEqual(cancelLeaseTx.TransactionId, "YjrfVmtCKo9P5K9EwK86kUFjtoEhaRjC4HpTf7hZeN8");
+            Assert.AreEqual(cancelLeaseTx.LeaseId, "YjrfVmtCKo9P5K9EwK86kUFjtoEhaRjC4HpTf7hZeN8");
         }
 
         [TestMethod]

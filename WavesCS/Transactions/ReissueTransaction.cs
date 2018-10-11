@@ -8,7 +8,6 @@ namespace WavesCS
         public Asset Asset { get; }
         public decimal Quantity { get; }
         public bool Reissuable { get; }
-        public decimal Fee { get; }
 
         public ReissueTransaction(byte[] senderPublicKey, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
             base(senderPublicKey)
