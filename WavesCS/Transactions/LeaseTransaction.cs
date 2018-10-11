@@ -7,7 +7,6 @@ namespace WavesCS
     {
         public string Recipient { get; }
         public decimal Amount { get; }
-        public decimal Fee { get; }
         public bool IsActive { get; }
 
         public LeaseTransaction(byte[] senderPublicKey, string recipient, decimal amount, decimal fee = 0.001m) : 

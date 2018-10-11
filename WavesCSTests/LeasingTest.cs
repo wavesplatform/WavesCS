@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Remoting.Lifetime;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;

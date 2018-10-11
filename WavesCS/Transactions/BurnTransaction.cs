@@ -7,7 +7,6 @@ namespace WavesCS
     {
         public Asset Asset { get; }
         public decimal Quantity { get; }
-        public decimal Fee { get; }
 
         public BurnTransaction(byte[] senderPublicKey, Asset asset, decimal quantity, decimal fee = 0.001m) : base(senderPublicKey)
         {

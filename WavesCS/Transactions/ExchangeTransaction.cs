@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
     public class ExchangeTransaction : Transaction
     {
-
-        public decimal Fee { get; }
         public decimal BuyMatcherFee { get; }
         public decimal SellMatcherFee { get; }
 

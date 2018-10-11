@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
@@ -52,13 +50,13 @@ namespace WavesCS
         public static string GetJson(string url, NameValueCollection headers = null)
         {
             Trace($"Getting: {url}");
-            var client = new WebClient {Encoding = Encoding.UTF8};
+            var client = new WebClient { Encoding = Encoding.UTF8 };
             if (headers != null)
                 client.Headers.Add(headers);
             var result = client.DownloadString(url);
             Trace($"Received: {result}");
             return result;
-        }      
+        }
         
         public static string Post(string url, DictionaryObject data, NameValueCollection headers = null)
         {
