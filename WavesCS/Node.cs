@@ -210,7 +210,7 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string CreateAlias(PrivateKeyAccount account, string alias, char scheme, long fee)
+        public string CreateAlias(PrivateKeyAccount account, string alias, char scheme)
         {
             var tx = new AliasTransaction(account.PublicKey, alias, scheme);
             tx.Sign(account);
