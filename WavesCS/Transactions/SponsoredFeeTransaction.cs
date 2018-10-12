@@ -42,6 +42,11 @@ namespace WavesCS
             }                
         }
 
+        public override byte[] GetIdBytes()
+        {
+            return GetBody();
+        }
+
         protected override bool SupportsProofs()
         {
             return true;

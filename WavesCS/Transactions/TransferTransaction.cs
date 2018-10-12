@@ -66,8 +66,19 @@ namespace WavesCS
             writer.WriteLong(Timestamp.ToLong());
             writer.WriteLong(Asset.AmountToLong(Amount));
             writer.WriteLong(FeeAsset.AmountToLong(Fee));
-            writer.Write(Recipient.FromBase58());
-            writer.WriteShort(Attachment.Length);
+
+            if (Recipient.StartsWith("alias", System.StringComparison.Ordinal))
+            {
+                var networkByte = Recipient[6]; 
+                var name = Recipient.Substring(8);
+
+                writer.Write((byte)2);
+                writer.Write(networkByte);
+                writer.Write(Encoding.UTF8.GetBytes(name));
+            }
+            else
+                writer.Write(Recipient.FromBase58());
+            
             writer.Write(Attachment);
         }
 
@@ -85,7 +96,7 @@ namespace WavesCS
             return stream.ToArray();
         }
 
-        public byte[] GetIdBytes()
+        public override byte[] GetIdBytes()
         {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
@@ -94,6 +105,7 @@ namespace WavesCS
             WriteBytes(writer);
             return stream.ToArray();
         }
+
 
         public override Dictionary<string, object> GetJson()
         {

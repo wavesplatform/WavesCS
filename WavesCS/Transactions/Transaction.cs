@@ -15,6 +15,7 @@ namespace WavesCS
         public virtual byte Version { get; set; }
 
         public abstract byte[] GetBody();
+        public abstract byte[] GetIdBytes();
         public abstract DictionaryObject GetJson();
 
         public byte[][] Proofs { get; }
@@ -104,17 +105,7 @@ namespace WavesCS
 
         public static string GenerateId<T>(this T transaction) where T : Transaction
         {
-            var bodyBytes = new byte[0];
-
-            if (transaction is TransferTransaction)
-                bodyBytes = ((TransferTransaction)(Transaction)transaction).GetIdBytes();
-            else if(transaction is IssueTransaction)
-                bodyBytes = ((IssueTransaction)(Transaction)transaction).GetIdBytes();
-            else if (transaction is AliasTransaction)
-                bodyBytes = ((AliasTransaction)(Transaction)transaction).GetIdBytes();
-            else
-                bodyBytes = transaction.GetBody();
-
+            var bodyBytes = transaction.GetIdBytes();
             return AddressEncoding.FastHash(bodyBytes, 0, bodyBytes.Length).ToBase58();
         }
     }

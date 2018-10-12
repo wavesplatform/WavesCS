@@ -7,7 +7,7 @@ namespace WavesCS
     public class AliasTransaction : Transaction
     {
         public string Alias { get; }
-        public char Scheme { get; }
+        public char Scheme { get; } = 'W';
  
         public AliasTransaction(byte[] senderPublicKey, string alias, char scheme, decimal fee = 0.001m) : 
             base(senderPublicKey)
@@ -21,7 +21,6 @@ namespace WavesCS
         {
             Alias = tx.GetString("alias");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            Scheme = 'W';
         }
 
         public override byte[] GetBody()
@@ -42,7 +41,7 @@ namespace WavesCS
             }
         }
 
-        public byte[] GetIdBytes()
+        public override byte[] GetIdBytes()
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))

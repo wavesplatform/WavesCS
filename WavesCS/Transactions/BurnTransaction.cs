@@ -37,6 +37,11 @@ namespace WavesCS
             }
         }
 
+        public override byte[] GetIdBytes()
+        {
+            return GetBody();
+        }
+
         public override Dictionary<string, object> GetJson()
         {
             return new Dictionary<string, object>
