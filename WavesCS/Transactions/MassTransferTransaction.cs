@@ -65,13 +65,14 @@ namespace WavesCS
                 writer.WriteShort(Transfers.Length);
                 foreach (var transfer in Transfers)
                 {
-                    if (transfer.Recipient.StartsWith("alias", System.StringComparison.Ordinal))
+                    if (transfer.Recipient.StartsWith("alias", StringComparison.Ordinal))
                     {
                         var networkByte = transfer.Recipient[6];
                         var name = transfer.Recipient.Substring(8);
 
                         writer.Write((byte)2);
                         writer.Write(networkByte);
+                        writer.WriteShort((short)name.Length);
                         writer.Write(Encoding.UTF8.GetBytes(name));
                     }
                     else
