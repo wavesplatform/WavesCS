@@ -35,16 +35,21 @@ namespace WavesCSTests
             Assert.IsTrue(bobBalanceWaves > 1);
             Assert.IsTrue(carolBalanceWaves > 1);
         }
-        
+
         [TestMethod]
-        public void TestScripts()
+        public void TestScript()
         {
             Http.Tracing = true;
-            
+
             var node = new Node();
 
-            var account = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), 'T');
-            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", account.Address);
+            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
+            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
+
+            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Bob.Address);
+            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
+
+            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Carol.Address);
 
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
         }
