@@ -61,6 +61,7 @@ namespace WavesCS
                 {
                     {"type", TransactionType.Alias},
                     {"senderPublicKey", SenderPublicKey.ToBase58()},
+                    {"sender", AddressEncoding.GetAddressFromPublicKey(SenderPublicKey, Scheme)},
                     {"alias", Alias},
                     {"fee", Assets.WAVES.AmountToLong(Fee)},
                     {"timestamp", Timestamp.ToLong()}

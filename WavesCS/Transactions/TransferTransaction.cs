@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -16,7 +17,8 @@ namespace WavesCS
 
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, string attachment) : 
-            this(senderPublicKey, recipient, asset, amount, 0.001m, Encoding.UTF8.GetBytes(attachment))
+        this(senderPublicKey, recipient, asset, amount, 0.001m,
+             Encoding.UTF8.GetBytes(attachment))
         {
         }
         
@@ -67,18 +69,20 @@ namespace WavesCS
             writer.WriteLong(Asset.AmountToLong(Amount));
             writer.WriteLong(FeeAsset.AmountToLong(Fee));
 
-            if (Recipient.StartsWith("alias", System.StringComparison.Ordinal))
+            if (Recipient.StartsWith("alias", StringComparison.Ordinal))
             {
-                var networkByte = Recipient[6]; 
+                var networkByte = Recipient[6];
                 var name = Recipient.Substring(8);
 
                 writer.Write((byte)2);
                 writer.Write(networkByte);
+
+                writer.WriteShort(name.Length);
                 writer.Write(Encoding.UTF8.GetBytes(name));
             }
             else
                 writer.Write(Recipient.FromBase58());
-            
+            writer.WriteShort(Attachment.Length);
             writer.Write(Attachment);
         }
 
@@ -111,8 +115,9 @@ namespace WavesCS
         {
             var result = new Dictionary<string, object>
             {
-                {"type", TransactionType.Transfer},                
+                {"type", TransactionType.Transfer},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"sender", AddressEncoding.GetAddressFromPublicKey(SenderPublicKey, 'T')},
                 {"recipient", Recipient},
                 {"amount", Asset.AmountToLong(Amount)},
                 {"assetId", Asset.IdOrNull},

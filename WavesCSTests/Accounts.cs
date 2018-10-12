@@ -42,14 +42,10 @@ namespace WavesCSTests
             Http.Tracing = true;
             
             var node = new Node();
-            
-            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
-            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
-            
-            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Bob.Address);
-            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
-            
-            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Carol.Address);
+
+            var account = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), 'T');
+            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", account.Address);
+
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
         }
     }
