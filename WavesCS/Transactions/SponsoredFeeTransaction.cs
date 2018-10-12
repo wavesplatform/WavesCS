@@ -5,7 +5,6 @@ namespace WavesCS
 {
     public class SponsoredFeeTransaction : Transaction
     {
-        public decimal Fee { get; }
         public decimal MinimalFeeInAssets { get; }
         public Asset Asset { get; }
 
