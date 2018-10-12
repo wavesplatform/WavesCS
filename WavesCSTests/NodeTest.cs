@@ -14,7 +14,9 @@ namespace WavesCSTests
         {
             Http.Tracing = true;
         }        
-        
+
+
+
         [TestMethod]
         public void TestGetters()
         {
@@ -67,7 +69,7 @@ namespace WavesCSTests
         }        
 
         [TestMethod]
-        public void BatchBroadcastTest()
+        public void TestBatchBroadcast()
         {
             var node = new Node();
 

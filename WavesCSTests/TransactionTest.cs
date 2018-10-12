@@ -20,7 +20,7 @@ namespace WavesCSTests
         
 
         [TestMethod]
-        public void SmokeTest()
+        public void TestSmoke()
         {
             // doesn't validate transactions, just checks that all methods run to completion, no buffer overflows occur etc
             var account = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);

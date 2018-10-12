@@ -117,7 +117,6 @@ namespace WavesCS
             {
                 {"type", TransactionType.Transfer},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"sender", AddressEncoding.GetAddressFromPublicKey(SenderPublicKey, 'T')},
                 {"recipient", Recipient},
                 {"amount", Asset.AmountToLong(Amount)},
                 {"assetId", Asset.IdOrNull},
