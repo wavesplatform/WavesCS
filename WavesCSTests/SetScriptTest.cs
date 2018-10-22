@@ -49,7 +49,7 @@ namespace WavesCSTests
         }
 
         [TestMethod]
-        public void MultisigTest()
+        public void TestMultisig()
         {
             // This test works with tranfer transactions of version 2 only
             var node = new Node();

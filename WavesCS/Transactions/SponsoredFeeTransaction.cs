@@ -5,7 +5,6 @@ namespace WavesCS
 {
     public class SponsoredFeeTransaction : Transaction
     {
-        public decimal Fee { get; }
         public decimal MinimalFeeInAssets { get; }
         public Asset Asset { get; }
 
@@ -40,6 +39,11 @@ namespace WavesCS
 
                 return stream.ToArray();
             }                
+        }
+
+        public override byte[] GetIdBytes()
+        {
+            return GetBody();
         }
 
         protected override bool SupportsProofs()

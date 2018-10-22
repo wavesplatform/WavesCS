@@ -65,7 +65,19 @@ namespace WavesCS
                 writer.WriteShort(Transfers.Length);
                 foreach (var transfer in Transfers)
                 {
-                    writer.Write(transfer.Recipient.FromBase58());
+                    if (transfer.Recipient.StartsWith("alias", StringComparison.Ordinal))
+                    {
+                        var networkByte = transfer.Recipient[6];
+                        var name = transfer.Recipient.Substring(8);
+
+                        writer.Write((byte)2);
+                        writer.Write(networkByte);
+                        writer.WriteShort((short)name.Length);
+                        writer.Write(Encoding.UTF8.GetBytes(name));
+                    }
+                    else
+                        writer.Write(transfer.Recipient.FromBase58());
+
                     writer.WriteLong(Asset.AmountToLong(transfer.Amount));
                 }
                 writer.WriteLong(Timestamp.ToLong());
@@ -74,6 +86,11 @@ namespace WavesCS
                 writer.Write(Attachment);
                 return stream.ToArray();
             }
+        }
+
+        public override byte[] GetIdBytes()
+        {
+            return GetBody();
         }
 
         public override Dictionary<string, object> GetJson()
