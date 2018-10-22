@@ -50,7 +50,6 @@ namespace WavesCSTests
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
 
             scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Carol.Address);
-
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
         }
     }

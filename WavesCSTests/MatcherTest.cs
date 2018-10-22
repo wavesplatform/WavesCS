@@ -70,7 +70,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestOrders()
         {
-            var matcher = new Matcher("https://testnode1.wavesnodes.com");
+            var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
