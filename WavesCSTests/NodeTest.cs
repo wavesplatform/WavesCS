@@ -41,6 +41,23 @@ namespace WavesCSTests
             Assert.AreEqual(200000, asset.AmountToLong(0.002m));
             Assert.AreEqual(0.03m, asset.LongToAmount(3000000));
         }
+        
+        [TestMethod]
+        public void TestAssetBalances()
+        {
+            Http.Tracing = false;
+            
+            var node = new Node(Node.MainNetHost);
+ 
+            var portfolio = node.GetAssetBalances("3PPF1JfQLJLVd6v4ewmuDbjDLcxBCUe5GSu");
+            
+            Assert.IsTrue(portfolio.Count > 0);
+
+            foreach (var pair in portfolio)
+            {
+                Console.WriteLine("Asset: {0}, balance: {1}", pair.Key.Name, pair.Value);
+            }
+        }
 
         [TestMethod]
         public void TestGetTransactionsByAddress()
