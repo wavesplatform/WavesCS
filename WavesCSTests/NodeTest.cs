@@ -59,6 +59,16 @@ namespace WavesCSTests
                 Console.WriteLine("Asset: {0}, balance: {1}", pair.Key.Name, pair.Value);
             }
         }
+        
+        [TestMethod]
+        public void TestBalance()
+        {
+            var node = new Node(Node.MainNetHost);
+ 
+            var balance = node.GetBalance("3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3", Assets.WAVES);            
+            
+            Assert.IsTrue(balance > 1000);
+        }
 
         [TestMethod]
         public void TestGetTransactionsByAddress()
