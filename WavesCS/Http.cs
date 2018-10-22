@@ -49,6 +49,7 @@ namespace WavesCS
 
         public static string GetJson(string url, NameValueCollection headers = null)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             Trace($"Getting: {url}");
             var client = new WebClient { Encoding = Encoding.UTF8 };
             if (headers != null)

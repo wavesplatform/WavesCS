@@ -104,17 +104,6 @@ namespace WavesCSTests
             orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
             
             Assert.IsTrue(orders.All(o => o.Status == OrderStatus.Cancelled));
-
-            foreach (var order in orders)
-            {
-                matcher.DeleteOrder(Accounts.Carol, Assets.WAVES, WBTC, order.Id);
-            }
-            
-            Thread.Sleep(3000);
-
-            orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
-
-            Assert.IsFalse(orders.Any());
         }
 
     }
