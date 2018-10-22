@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -53,7 +54,10 @@ namespace WavesCS
 
         public decimal GetBalance(string address, Asset asset)
         {
-            return GetObject($"assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset);
+            if (asset == Assets.WAVES)
+                return GetBalance(address);
+            else
+                return GetObject($"assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset);
         }
         
         public Dictionary<Asset, decimal> GetAssetBalances(string address)
