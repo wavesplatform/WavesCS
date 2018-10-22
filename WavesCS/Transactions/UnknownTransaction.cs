@@ -22,6 +22,11 @@ namespace WavesCS
             throw new Exception("Unknown transaction");
         }
 
+        public override byte[] GetIdBytes()
+        {
+            throw new Exception("Unknown transaction");
+        }
+
         public override Dictionary<string, object> GetJson()
         {
             throw new Exception("Unknown transaction");
