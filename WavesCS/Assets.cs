@@ -51,9 +51,9 @@ namespace WavesCS
             return price * scale;
         }
 
-        public bool Equals(Asset other)
+        public override bool Equals(object obj)
         {
-            return Id == other.Id;
+            return obj is Asset && Id == ((Asset)obj).Id;
         }
 
         public override int GetHashCode()

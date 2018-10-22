@@ -67,7 +67,7 @@ namespace WavesCS
             var matcherFee = json.ContainsKey("matcherFee") ? Assets.WAVES.LongToAmount(json.GetLong("matcherFee")) : 1;
             string sender = json.ContainsKey("sender") ? json.GetString("sender") : null;
 
-            var signature = json.ContainsKey("signature") ? json.GetString("signature") : null;
+            var signature = json.ContainsKey("signature") ? json.GetString("signature").FromBase58() : null;
             var status = json.ContainsKey("status") ? (OrderStatus)Enum.Parse(typeof(OrderStatus), json.GetString("status")) : OrderStatus.Accepted;
             var id = json.ContainsKey("id") ? json.GetString("id") : null;
             var filled = json.ContainsKey("filled") ? amountAsset.LongToAmount(json.GetLong("filled")) : 1m;
@@ -85,7 +85,7 @@ namespace WavesCS
                 matcherFee,
                 sender)
             {
-                Signature = signature.FromBase58(),
+                Signature = signature,
                 Status = status,
                 Id = id,
                 Filled = filled
