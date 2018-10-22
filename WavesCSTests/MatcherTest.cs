@@ -113,7 +113,7 @@ namespace WavesCSTests
             Thread.Sleep(3000);
 
             orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
-            
+
             Assert.IsFalse(orders.Any());
         }
 

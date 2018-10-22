@@ -13,6 +13,7 @@ namespace WavesCS
         public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1) :
             base(senderPublicKey)
         {
+            Fee = fee;
             Asset = asset;
             MinimalFeeInAssets = minimalFeeInAssets;
         }
