@@ -57,6 +57,22 @@ namespace WavesCS
         {
             return GetObject($"assets/balance/{address}/{asset.Id}").GetDecimal("balance", asset);
         }
+        
+        public Dictionary<Asset, decimal> GetAssetBalances(string address)
+        {
+            return GetObject($"assets/balance/{address}")
+                .GetObjects("balances")
+                .Select(o =>
+                {
+                    var asset = GetAsset(o.GetString("assetId"));
+                    return new
+                    {
+                        Asset = asset,
+                        Balance = o.GetDecimal("balance", asset)
+                    };
+                })
+                .ToDictionary(o => o.Asset, o => o.Balance);
+        }
 
         public int GetUnconfirmedPoolSize()
         {
