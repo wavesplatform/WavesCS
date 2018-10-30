@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -12,7 +12,7 @@ namespace WavesCS
             Type = type;
         }
 
-        public UnknownTransaction(Dictionary<string, object> tx) : base(tx)
+        public UnknownTransaction(DictionaryObject tx) : base(tx)
         {
             Type = tx.GetInt("type");
         }
@@ -27,7 +27,7 @@ namespace WavesCS
             throw new Exception("Unknown transaction");
         }
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
             throw new Exception("Unknown transaction");
         }

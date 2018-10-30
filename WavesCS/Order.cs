@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -52,7 +53,7 @@ namespace WavesCS
             Sender = sender;
         }
 
-        public static Order CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
+        public static Order CreateFromJson(DictionaryObject json, Asset amountAsset, Asset priceAsset)
         {
             var side = OrderSide.Buy;
 
@@ -111,9 +112,9 @@ namespace WavesCS
             }
         }
 
-        public Dictionary<string, object> GetJson()
+        public DictionaryObject GetJson()
         {
-            return new Dictionary<string, object>
+            return new DictionaryObject
             {
                 {"amount", AmountAsset.AmountToLong(Amount)},
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price)},
@@ -122,7 +123,7 @@ namespace WavesCS
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"matcherPublicKey", MatcherPublicKey.ToBase58()},
                 {"matcherFee", Assets.WAVES.AmountToLong(MatcherFee)},
-                {"assetPair", new Dictionary<string, object>
+                {"assetPair", new DictionaryObject
                     {
                         {"amountAsset", AmountAsset.IdOrNull},
                         {"priceAsset", PriceAsset.IdOrNull}

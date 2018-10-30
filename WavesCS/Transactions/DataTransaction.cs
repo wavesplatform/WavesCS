@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
     public class DataTransaction : Transaction
     {
-        public Dictionary<string, object> Entries { get; }
+        public DictionaryObject Entries { get; }
         public override byte Version { get; set; } = 1;
 
-        public DataTransaction(byte[] senderPublicKey, Dictionary<string, object> entries,
+        public DataTransaction(byte[] senderPublicKey, DictionaryObject entries,
             decimal? fee = null) : base(senderPublicKey)
         {
             Entries = entries;
             Fee = fee ?? ((GetBody().Length + 70) / 1024 + 1) * 0.001m;
         }
 
-        public DataTransaction(Dictionary<string, object> tx) : base(tx)
+        public DataTransaction(DictionaryObject tx) : base(tx)
         {
             Entries = tx.GetObjects("data")
                         .ToDictionary(o => o.GetString("key"), Node.DataValue);
@@ -83,14 +83,14 @@ namespace WavesCS
             return GetBody();
         }
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
-            return new Dictionary<string, object>
+            return new DictionaryObject
             {
                 {"type", TransactionType.DataTx},
                 {"version", Version},
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
-                {"data", Entries.Select(pair => new Dictionary<string, object>
+                {"data", Entries.Select(pair => new DictionaryObject
                 {
                     {"key", pair.Key},
                     {"type", pair.Value is long ? "integer" : (pair.Value is bool ? "boolean" : (pair.Value is string ? "string"  : "binary"))},

@@ -1,26 +1,27 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
     public class AliasTransaction : Transaction
     {
         public string Alias { get; }
-        public char Scheme { get; } = 'W';
+        public char ChainId { get; set; }
  
-        public AliasTransaction(byte[] senderPublicKey, string alias, char scheme, decimal fee = 0.001m) : 
+        public AliasTransaction(byte[] senderPublicKey, string alias, char chainId, decimal fee = 0.001m) : 
             base(senderPublicKey)
         {
             Alias = alias;
-            Scheme = scheme;
+            ChainId = chainId;
             Fee = fee;
         }
 
-        public AliasTransaction(Dictionary<string, object> tx) : base(tx)
+        public AliasTransaction(DictionaryObject tx) : base(tx)
         {
             Alias = tx.GetString("alias");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            ChainId = (char) tx.GetByte("chainId");
         }
 
         public override byte[] GetBody()
@@ -32,7 +33,7 @@ namespace WavesCS
                 writer.Write(SenderPublicKey);
                 writer.WriteShort(Alias.Length + 4);
                 writer.Write((byte) 0x02);
-                writer.Write((byte) Scheme);
+                writer.Write((byte) ChainId);
                 writer.WriteShort(Alias.Length);
                 writer.Write(Encoding.ASCII.GetBytes(Alias));
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
@@ -48,20 +49,20 @@ namespace WavesCS
             {
                 writer.Write(TransactionType.Alias);
                 writer.Write((byte)0x02);
-                writer.Write((byte)Scheme);
+                writer.Write((byte)ChainId);
                 writer.WriteShort(Alias.Length);
                 writer.Write(Encoding.UTF8.GetBytes(Alias));
                 return stream.ToArray();
             }
         }
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
-            return new Dictionary<string, object>
+            return new DictionaryObject
                 {
                     {"type", TransactionType.Alias},
                     {"senderPublicKey", SenderPublicKey.ToBase58()},
-                    {"sender", AddressEncoding.GetAddressFromPublicKey(SenderPublicKey, Scheme)},
+                    {"sender", AddressEncoding.GetAddressFromPublicKey(SenderPublicKey, ChainId)},
                     {"alias", Alias},
                     {"fee", Assets.WAVES.AmountToLong(Fee)},
                     {"timestamp", Timestamp.ToLong()}

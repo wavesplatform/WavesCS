@@ -14,7 +14,7 @@ namespace WavesCS
     {        
         private static readonly JsonSerializer Serializer = new JsonSerializer();
         
-        public static string ToJson(this Dictionary<string, object> data)
+        public static string ToJson(this DictionaryObject data)
         {
             var builder = new StringBuilder();
             var writer = new StringWriter(builder);
@@ -22,7 +22,7 @@ namespace WavesCS
             return builder.ToString();
         }
         
-        public static string ToJson(this Dictionary<string, object>[] data)
+        public static string ToJson(this DictionaryObject[] data)
         {
             var builder = new StringBuilder();
             var writer = new StringWriter(builder);
@@ -32,12 +32,12 @@ namespace WavesCS
         
         public static DictionaryObject ParseJsonObject(this string json)
         {
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            return JsonConvert.DeserializeObject<DictionaryObject>(json);
         }
         
         public static DictionaryObject[] ParseJsonObjects(this string json)
         {
-            return JsonConvert.DeserializeObject<Dictionary<string, object>[]>(json);		
+            return JsonConvert.DeserializeObject<DictionaryObject[]>(json);		
         }
         
         public static DictionaryObject[] ParseFlatObjects(this string json)
