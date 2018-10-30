@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -30,7 +30,7 @@ namespace WavesCS
         
         public TransferTransaction(byte[] senderPublicKey, string recipient,
             Asset asset, decimal amount, decimal fee, Asset feeAsset, byte[] attachment = null) : base(senderPublicKey)
-        {                        
+        {
             Recipient = recipient;
             Amount = amount;
             Asset = asset ?? Assets.WAVES;
@@ -39,7 +39,7 @@ namespace WavesCS
             Attachment = attachment ?? new byte[0];
         }
 
-        public TransferTransaction(Dictionary<string, object> tx): base(tx)
+        public TransferTransaction(DictionaryObject tx): base(tx)
         {
             Asset = Assets.WAVES;
             if (tx.ContainsKey("assetId") && tx.GetString("assetId") != null)
@@ -71,11 +71,11 @@ namespace WavesCS
 
             if (Recipient.StartsWith("alias", StringComparison.Ordinal))
             {
-                var networkByte = Recipient[6];
+                var chainId = Recipient[6];
                 var name = Recipient.Substring(8);
 
                 writer.Write((byte)2);
-                writer.Write(networkByte);
+                writer.Write(chainId);
 
                 writer.WriteShort(name.Length);
                 writer.Write(Encoding.UTF8.GetBytes(name));
@@ -111,9 +111,9 @@ namespace WavesCS
         }
 
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
-            var result = new Dictionary<string, object>
+            var result = new DictionaryObject
             {
                 {"type", TransactionType.Transfer},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},

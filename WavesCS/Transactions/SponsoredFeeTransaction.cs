@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -18,7 +18,7 @@ namespace WavesCS
             MinimalFeeInAssets = minimalFeeInAssets;
         }
 
-        public SponsoredFeeTransaction(Dictionary<string, object> tx) : base(tx)
+        public SponsoredFeeTransaction(DictionaryObject tx) : base(tx)
         {
             Asset = Assets.GetById(tx.GetString("assetId"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
@@ -52,7 +52,7 @@ namespace WavesCS
             return true;
         }
 
-        public override Dictionary<string, object> GetJson() => new Dictionary<string, object>
+        public override DictionaryObject GetJson() => new DictionaryObject
             {
                 {"type", TransactionType.SponsoredFee},
                 {"version", Version},

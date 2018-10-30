@@ -8,7 +8,6 @@ using System.Numerics;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Resources;
 using org.whispersystems.curve25519;
 
 namespace WavesCS
@@ -29,29 +28,29 @@ namespace WavesCS
 
         public string Address { get; }
 
-        private PrivateKeyAccount(byte[] privateKey, char scheme)         
+        private PrivateKeyAccount(byte[] privateKey, char chainId)         
         {
             _publicKey = GetPublicKeyFromPrivateKey(privateKey);
-            Address = AddressEncoding.GetAddressFromPublicKey(PublicKey, scheme);
+            Address = AddressEncoding.GetAddressFromPublicKey(PublicKey, chainId);
             _privateKey = privateKey;
         }
 
-        private PrivateKeyAccount(byte[] seed, char scheme, int nonce) : this(GeneratePrivateKey(seed, nonce), scheme) { }
-        private PrivateKeyAccount(string privateKey, char scheme) : this(Base58.Decode(privateKey), scheme) { }
+        private PrivateKeyAccount(byte[] seed, char chainId, int nonce) : this(GeneratePrivateKey(seed, nonce), chainId) { }
+        private PrivateKeyAccount(string privateKey, char chainId) : this(Base58.Decode(privateKey), chainId) { }
 
-        public static PrivateKeyAccount CreateFromSeed(string seed, char scheme, int nonce = 0)
+        public static PrivateKeyAccount CreateFromSeed(string seed, char chainId, int nonce = 0)
         {
-            return new PrivateKeyAccount(Encoding.UTF8.GetBytes(seed), scheme, nonce);
+            return new PrivateKeyAccount(Encoding.UTF8.GetBytes(seed), chainId, nonce);
         }
 
-        public static PrivateKeyAccount CreateFromSeed(byte[] seed, char scheme, int nonce = 0)
+        public static PrivateKeyAccount CreateFromSeed(byte[] seed, char chainId, int nonce = 0)
         {
-            return new PrivateKeyAccount(seed, scheme, nonce);
+            return new PrivateKeyAccount(seed, chainId, nonce);
         }
 
-        public static PrivateKeyAccount CreateFromPrivateKey(string privateKey, char scheme)
+        public static PrivateKeyAccount CreateFromPrivateKey(string privateKey, char chainId)
         {
-            return new PrivateKeyAccount(privateKey, scheme);
+            return new PrivateKeyAccount(privateKey, chainId);
         }        
 
         private static byte[] GeneratePrivateKey(byte[] seed, int nonce)
