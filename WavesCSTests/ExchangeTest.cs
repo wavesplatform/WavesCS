@@ -23,9 +23,6 @@ namespace WavesCSTests
             try
             {
                 amountAsset = Assets.GetById("CVRciuSiK8xiNJSRitAG9dGqcmfFPHvn9bcXtntnpuvp", node);
-
-                if (node.GetBalance(Accounts.Alice.Address, amountAsset) < 0.1m)
-                    throw new Exception();
             }
             catch (Exception)
             {
@@ -75,8 +72,7 @@ namespace WavesCSTests
             exchangeTx.Sign(Accounts.Carol);
             node.Broadcast(exchangeTx);
 
-            Thread.Sleep(15000);
-
+            Thread.Sleep(7000);
 
             var aliceBalanceAfter = matcher.GetTradableBalance(Accounts.Alice.Address, amountAsset, priceAsset)[amountAsset];
             var bobBalanceAfter = matcher.GetTradableBalance(Accounts.Bob.Address, amountAsset, priceAsset)[amountAsset];
