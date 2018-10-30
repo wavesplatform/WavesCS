@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WavesCS
+﻿namespace WavesCS
 {
 
     public class Asset
@@ -10,14 +8,17 @@ namespace WavesCS
         public byte Decimals { get; }
 
         public string IdOrNull => Id == "WAVES" ? null : Id;
-        
+
+        public byte[] Script { get; set; }
+
         private readonly decimal _scale;
 
-        public Asset(string id, string name, byte decimals)
+        public Asset(string id, string name, byte decimals, byte[] script = null)
         {
             Id = id;
             Name = name;
-            Decimals = decimals;                        
+            Decimals = decimals;
+            Script = script;
             _scale = new decimal(1, 0, 0, false, decimals);
         }
 
