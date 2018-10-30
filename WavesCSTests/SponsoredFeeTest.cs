@@ -23,9 +23,6 @@ namespace WavesCSTests
             try
             {
                 asset = Assets.GetById("HkNSgxYpBLkzLb2vGYFFDrRT3gD5aoUnFV9eFav5DWpB", node);
-
-                if (node.GetBalance(Accounts.Alice.Address, asset) < 0.2001m)
-                    throw new Exception();
             }
             catch (Exception)
             {
