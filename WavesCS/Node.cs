@@ -18,13 +18,19 @@ namespace WavesCS
 
         public Node(string nodeHost = TestNetHost)
         {
-            if (nodeHost.EndsWith("/"))
+            if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
             _host = nodeHost;
 
             if (DefaultNode == null)
                 DefaultNode = this;
             AssetsCache = new Dictionary<string, Asset>();
+        }
+
+        public Node(char chainId)
+            : this (chainId == 'W' ? MainNetHost : TestNetHost)
+        {
+
         }
 
         public Dictionary<string, object> GetObject(string url, params object[] args)
@@ -207,13 +213,13 @@ namespace WavesCS
         }
 
         public Asset IssueAsset(PrivateKeyAccount account,
-            string name, string description, decimal quantity, byte decimals, bool reissuable)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null)
         {
-            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable);
+            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, 1, script);
             tx.Sign(account);
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
-            return new Asset(assetId, name, decimals);
+            return new Asset(assetId, name, decimals, script);
         }
 
         public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable)
