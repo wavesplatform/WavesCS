@@ -137,7 +137,7 @@ namespace WavesCS
         public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
-                .Select(tx => { var t = tx; t["chainId"] = (byte)ChainId; return t; })
+                .Select(tx => { tx["chainId"] = ChainId; return tx; })
                 .Select(Transaction.FromJson)
                 .ToArray();
         }
@@ -168,7 +168,7 @@ namespace WavesCS
 
             return GetTransactionsByAddress(address, limit)
                 .Where(tx => (TransactionType)tx.GetInt("type") == typeId)
-                .Select(tx => { var t = tx; t["chainId"] = (byte)ChainId; return t; })
+                .Select(tx => { tx["chainId"] = ChainId; return tx; })
                 .Select(Transaction.FromJson)
                 .Cast<T>()
                 .ToArray();
@@ -180,7 +180,7 @@ namespace WavesCS
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
                          .ParseJsonObject();
 
-            tx["chainId"] = (byte)ChainId;
+            tx["chainId"] = ChainId;
 
             return Transaction.FromJson(tx);
         }

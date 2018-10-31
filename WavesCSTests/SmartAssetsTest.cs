@@ -33,12 +33,10 @@ namespace WavesCSTests
             Assert.AreEqual(quantity, 2);
         }
 
-
         [TestMethod]
         public void TestSetAssetScript()
         {
             var node = new Node();
-
         }
     }
 }

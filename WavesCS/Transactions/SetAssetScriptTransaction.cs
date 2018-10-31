@@ -24,8 +24,8 @@ namespace WavesCS
         {
             Script = tx.GetString("script").FromBase64();
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            ChainId = (char) tx.GetByte("chainId");
-            // Asset = ?node.GetAsset(tx.GetString("assetId"));
+            ChainId = tx.GetChar("chainId");
+            Asset = Assets.GetById(tx.GetString("assetId"));
         }
 
         public override byte[] GetBody()

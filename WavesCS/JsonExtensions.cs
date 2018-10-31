@@ -112,7 +112,13 @@ namespace WavesCS
         {		
             return byte.Parse(d.GetValue(field).ToString());
         }
-        
+
+        public static char GetChar(this DictionaryObject d, string field)
+        {
+            Char.TryParse(d.GetValue(field).ToString(), out char result);
+            return result;
+        }
+
         public static bool GetBool(this DictionaryObject d, string field)
         {		
             return (bool) d.GetValue(field);
