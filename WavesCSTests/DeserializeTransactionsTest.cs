@@ -385,5 +385,28 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(260224));
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
         }
+
+        [TestMethod]
+        public void TestSetAssetScriptTransactionDeserialize()
+        {
+            var node = new Node(Node.TestNetHost);
+
+            var transactionId = "";
+            var tx = node.GetTransactionById(transactionId);
+
+            Assert.IsInstanceOfType(tx, typeof(SetAssetScriptTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
+
+            var setAssetScriptTx = (SetAssetScriptTransaction)tx;
+
+            Assert.AreEqual(setAssetScriptTx.Sender, "");
+            Assert.AreEqual(setAssetScriptTx.SenderPublicKey.ToBase58(), "");
+            Assert.AreEqual(setAssetScriptTx.Fee, Assets.WAVES.LongToAmount(100000000));
+            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 1534759535561);
+            Assert.AreEqual(setAssetScriptTx.Proofs[0].ToBase58(), "");
+
+            Assert.AreEqual(setAssetScriptTx.Asset.Id, "");
+            Assert.AreEqual(setAssetScriptTx.Script.ToBase64(), "base64:");
+        }
     }
 }

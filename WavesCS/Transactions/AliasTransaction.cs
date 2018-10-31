@@ -21,7 +21,7 @@ namespace WavesCS
         {
             Alias = tx.GetString("alias");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            ChainId = (char) tx.GetByte("chainId");
+            ChainId = tx.GetChar("chainId");
         }
 
         public override byte[] GetBody()
