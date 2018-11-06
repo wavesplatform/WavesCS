@@ -8,8 +8,6 @@ namespace WavesCSTests
     [TestClass]
     public class SmartAssetsTest
     {
-        Asset smartAsset = new Asset("", "", 8);
-
         [TestInitialize]
         public void Init()
         {
@@ -24,16 +22,15 @@ namespace WavesCSTests
             var script = "true";
             var compiledScript = node.CompileScript(script);
 
-
-            smartAsset = node.IssueAsset(Accounts.Alice, "SmartAsset",
+            Asset smartAsset = node.IssueAsset(Accounts.Alice, "SmartAsset",
                                           "Smart Asset", 100, 4,
                                           true, compiledScript);
             Assert.IsNotNull(smartAsset);
 
             Thread.Sleep(15000);
 
-            var quantity = node.GetBalance(Accounts.Alice.Address, smartAsset);
-            Assert.AreEqual(quantity, 100);
+            Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 100);
+            Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
         }
 
         [TestMethod]
@@ -41,6 +38,12 @@ namespace WavesCSTests
         {
             var node = new Node();
 
+            var wavesBalanceBefore = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
+
+
+            Asset smartAsset = node.IssueAsset(Accounts.Alice, "SmartAsset",
+                                          "Smart Asset", 100, 4,
+                                          true, node.CompileScript("true"));
             var script = $@"                
                 match tx {{
                     case tx : TransferTransaction => tx.amount < 300000
@@ -48,20 +51,17 @@ namespace WavesCSTests
                     case _  => false
                 }}";
 
-            var asset = Assets.GetById("");
-
             var compiledScript = node.CompileScript(script);
 
-            var setAssetScriptTransaction = new SetAssetScriptTransaction(Accounts.Alice.PublicKey,
-                                                                          asset, compiledScript,
-                                                                          'T', 1);
+            var setAssetScriptTransaction = new SetAssetScriptTransaction(Accounts.Alice.PublicKey, smartAsset,
+                                                                          compiledScript, 'T', 1);
 
             setAssetScriptTransaction.Sign(Accounts.Alice);
             node.Broadcast(setAssetScriptTransaction);
 
             Thread.Sleep(4000);
 
-            var balanceBefore = ;
+            var balanceBefore = node.GetBalance(Accounts.Alice.Address, smartAsset);
 
             for (decimal amount = 0.01m; amount < 0.5m; amount += 0.1m)
             {
@@ -78,13 +78,24 @@ namespace WavesCSTests
 
             Thread.Sleep(5000);
 
-            var balanceAfter = ;
+            var balanceAfter = node.GetBalance(Accounts.Alice.Address, smartAsset);
 
             Assert.AreEqual(balanceAfter, balanceBefore + 0.01m + 0.11m + 0.21m);
 
-            // + check the fee
+
+            setAssetScriptTransaction = new SetAssetScriptTransaction(Accounts.Alice.PublicKey, smartAsset,
+                                                                          node.CompileScript("false"), 'T', 1);
+
+            setAssetScriptTransaction.Sign(Accounts.Alice);
+            node.Broadcast(setAssetScriptTransaction);
+            Thread.Sleep(4000);
+
+            Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());
 
 
+            // Check the fee
+            var wavesBalanceAfter = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
+            Assert.AreEqual(balanceBefore, balanceAfter + 0.004m);
         }
     }
 }
