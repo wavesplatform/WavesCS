@@ -79,7 +79,7 @@ namespace WavesCSTests
             var transactions = node.GetTransactionsByAddress(Accounts.Alice.Address, 10);
             
             Assert.IsTrue(transactions.Count() == 10);
-            Assert.IsTrue(transactions.All(t => t.GetInt("type") < 20));
+            Assert.IsTrue(transactions.All(t => t.GetByte("type") < 20));
             Assert.IsTrue(transactions.All(t => t.GetString("sender").Length > 30));
         }
 

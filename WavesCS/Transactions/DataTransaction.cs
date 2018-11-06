@@ -87,9 +87,10 @@ namespace WavesCS
         {
             return new Dictionary<string, object>
             {
-                {"type", TransactionType.DataTx},
+                {"type", (byte) TransactionType.DataTx},
                 {"version", Version},
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
+                {"sender", Sender},
                 {"data", Entries.Select(pair => new Dictionary<string, object>
                 {
                     {"key", pair.Key},

@@ -118,8 +118,9 @@ namespace WavesCS
         {
             var result = new Dictionary<string, object>
             {
-                {"type", TransactionType.Issue},
+                {"type", (byte) TransactionType.Issue},
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},
+                {"sender", Sender},
                 {"name", Name},
                 {"description", Description},
                 {"quantity", Asset.AmountToLong(Quantity)},

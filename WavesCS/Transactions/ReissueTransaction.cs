@@ -51,8 +51,9 @@ namespace WavesCS
         {
             return new Dictionary<string, object>
             {
-                {"type", TransactionType.Reissue},
+                {"type", (byte) TransactionType.Reissue},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"sender", Sender},
                 {"assetId", Asset.Id},
                 {"quantity", Asset.AmountToLong(Quantity)},
                 {"reissuable", Reissuable},
