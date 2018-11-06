@@ -104,7 +104,7 @@ namespace WavesCS
         }
 	
         public static int GetInt(this DictionaryObject d, string field)
-        {		
+        {
             return int.Parse(d.GetValue(field).ToString());
         }
         

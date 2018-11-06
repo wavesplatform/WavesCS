@@ -53,15 +53,16 @@ namespace WavesCS
         }
 
         public override Dictionary<string, object> GetJson() => new Dictionary<string, object>
-            {
-                {"type", TransactionType.SponsoredFee},
-                {"version", Version},
-                {"senderPublicKey", Base58.Encode(SenderPublicKey)},
-                {"assetId", Asset.IdOrNull},             
-                {"fee", Assets.WAVES.AmountToLong(Fee)},
-                {"timestamp", Timestamp.ToLong()},
-                {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
-            };
+        {
+            {"type", (byte) TransactionType.SponsoredFee},
+            {"version", Version},
+            {"senderPublicKey", Base58.Encode(SenderPublicKey)},
+            {"sender", Sender},
+            {"assetId", Asset.IdOrNull},
+            {"fee", Assets.WAVES.AmountToLong(Fee)},
+            {"timestamp", Timestamp.ToLong()},
+            {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
+        };
 
     }
 }

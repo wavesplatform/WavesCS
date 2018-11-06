@@ -14,7 +14,7 @@ namespace WavesCS
 
         public UnknownTransaction(Dictionary<string, object> tx) : base(tx)
         {
-            Type = tx.GetInt("type");
+            Type = tx.GetByte("type");
         }
 
         public override byte[] GetBody()
