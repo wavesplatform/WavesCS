@@ -40,7 +40,6 @@ namespace WavesCSTests
 
             var wavesBalanceBefore = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
 
-
             Asset smartAsset = node.IssueAsset(Accounts.Alice, "SmartAsset",
                                           "Smart Asset", 100, 4,
                                           true, node.CompileScript("true"));
@@ -75,13 +74,11 @@ namespace WavesCSTests
                 }
             }
 
-
             Thread.Sleep(5000);
 
             var balanceAfter = node.GetBalance(Accounts.Alice.Address, smartAsset);
 
             Assert.AreEqual(balanceAfter, balanceBefore + 0.01m + 0.11m + 0.21m);
-
 
             setAssetScriptTransaction = new SetAssetScriptTransaction(Accounts.Alice.PublicKey, smartAsset,
                                                                           node.CompileScript("false"), 'T', 1);
@@ -93,8 +90,9 @@ namespace WavesCSTests
             Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());
 
 
-            // Check the fee
             var wavesBalanceAfter = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
+
+            // Check the fee
             Assert.AreEqual(balanceBefore, balanceAfter + 0.004m);
         }
     }
