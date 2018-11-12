@@ -46,9 +46,12 @@ namespace WavesCS
                 Asset = Assets.GetById(tx.GetString("assetId"));
 
             FeeAsset = Assets.WAVES;
-            if (tx.ContainsKey("feeAsset") && tx.GetString("feeAsset") != null)
+            if (tx.ContainsKey("feeAssetId")
+                && tx.GetString("feeAssetId") != null
+                && tx.GetString("feeAssetId") != "")
+            {
                 FeeAsset = Assets.GetById(tx.GetString("feeAssetId"));
-            
+            }
 
             Amount = Asset.LongToAmount(tx.GetLong("amount"));
             Fee = FeeAsset.LongToAmount(tx.GetLong("fee"));
@@ -121,6 +124,7 @@ namespace WavesCS
                 {"amount", Asset.AmountToLong(Amount)},
                 {"assetId", Asset.IdOrNull},
                 {"fee", FeeAsset.AmountToLong(Fee)},
+                {"feeAsset", FeeAsset.IdOrNull},  // legacy v0.11.1 compat
                 {"feeAssetId", FeeAsset.IdOrNull},
                 {"timestamp", Timestamp.ToLong()},
                 {"attachment", Attachment.ToBase58()}
