@@ -401,8 +401,8 @@ namespace WavesCSTests
 
             Assert.AreEqual(setAssetScriptTx.Sender, "");
             Assert.AreEqual(setAssetScriptTx.SenderPublicKey.ToBase58(), "");
-            Assert.AreEqual(setAssetScriptTx.Fee, Assets.WAVES.LongToAmount(100000000));
-            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 1534759535561);
+            Assert.AreEqual(setAssetScriptTx.Fee, Assets.WAVES.LongToAmount(0));
+            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 0);
             Assert.AreEqual(setAssetScriptTx.Proofs[0].ToBase58(), "");
 
             Assert.AreEqual(setAssetScriptTx.Asset.Id, "");
