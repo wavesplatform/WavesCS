@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -10,7 +10,7 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 1;
 
-        public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1) :
+        public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m) :
             base(senderPublicKey)
         {
             Fee = fee;
@@ -18,7 +18,7 @@ namespace WavesCS
             MinimalFeeInAssets = minimalFeeInAssets;
         }
 
-        public SponsoredFeeTransaction(Dictionary<string, object> tx) : base(tx)
+        public SponsoredFeeTransaction(DictionaryObject tx) : base(tx)
         {
             Asset = Assets.GetById(tx.GetString("assetId"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
@@ -52,17 +52,16 @@ namespace WavesCS
             return true;
         }
 
-        public override Dictionary<string, object> GetJson() => new Dictionary<string, object>
-        {
-            {"type", (byte) TransactionType.SponsoredFee},
-            {"version", Version},
-            {"senderPublicKey", Base58.Encode(SenderPublicKey)},
-            {"sender", Sender},
-            {"assetId", Asset.IdOrNull},
-            {"fee", Assets.WAVES.AmountToLong(Fee)},
-            {"timestamp", Timestamp.ToLong()},
-            {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
-        };
-
+        public override DictionaryObject GetJson() => new DictionaryObject
+            {
+                {"type", (byte) TransactionType.SponsoredFee},
+                {"version", Version},
+                {"senderPublicKey", Base58.Encode(SenderPublicKey)},
+                {"sender", Sender},
+                {"assetId", Asset.IdOrNull},             
+                {"fee", Assets.WAVES.AmountToLong(Fee)},
+                {"timestamp", Timestamp.ToLong()},
+                {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
+            };
     }
 }

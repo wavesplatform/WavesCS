@@ -30,13 +30,13 @@ namespace WavesCS
             return Hash(blake2B, 0, blake2B.Length, Keccak256);
         }
 
-        public static string GetAddressFromPublicKey(byte[] publicKey, char scheme)
+        public static string GetAddressFromPublicKey(byte[] publicKey, char chainId)
         {
             var stream = new MemoryStream(26);
             var hash = SecureHash(publicKey, 0, publicKey.Length);
             var writer = new BinaryWriter(stream);
             writer.Write((byte)1);
-            writer.Write((byte)scheme);
+            writer.Write((byte)chainId);
             writer.Write(hash, 0, 20);
             var checksum = SecureHash(stream.ToArray(), 0, 22);
             writer.Write(checksum, 0, 4);
