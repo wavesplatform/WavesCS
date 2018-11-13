@@ -49,8 +49,9 @@ namespace WavesCS
         public override DictionaryObject GetJson()
         {
             return new DictionaryObject {
-                {"type", TransactionType.Lease },
+                {"type", (byte) TransactionType.Lease},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},                
+                {"sender", Sender},
                 {"recipient", Recipient},
                 {"amount", Assets.WAVES.AmountToLong(Amount)},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},

@@ -60,9 +60,10 @@ namespace WavesCS
         {
             return new DictionaryObject
             {
-                {"type", TransactionType.SetScript},
+                {"type", (byte) TransactionType.SetScript},
                 {"version", Version},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"sender", Sender},
                 {"script", Script?.ToBase64()},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}

@@ -46,8 +46,9 @@ namespace WavesCS
         {
             return new DictionaryObject
             {
-                {"type", TransactionType.Burn},
+                {"type", (byte) TransactionType.Burn},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"sender", Sender},
                 {"assetId", Asset.Id},
                 {"amount", Asset.AmountToLong(Quantity)},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},

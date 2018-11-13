@@ -43,8 +43,9 @@ namespace WavesCS
         {
             return new DictionaryObject
             {
-                {"type", TransactionType.LeaseCancel},
+                {"type", (byte) TransactionType.LeaseCancel},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
+                {"sender", Sender},
                 {"leaseId", LeaseId},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}

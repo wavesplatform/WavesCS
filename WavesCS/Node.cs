@@ -124,7 +124,7 @@ namespace WavesCS
             else
             {
                 var tx = GetObject($"transactions/info/{assetId}");
-                if ((TransactionType)tx.GetInt("type") != TransactionType.Issue)
+                if ((TransactionType)tx.GetByte("type") != TransactionType.Issue)
                     throw new ArgumentException("Wrong asset id (transaction type)");
 
                 asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
@@ -167,8 +167,12 @@ namespace WavesCS
             var typeId = TransactionTypeId(typeof(T));
 
             return GetTransactionsByAddress(address, limit)
+<<<<<<< HEAD
                 .Where(tx => (TransactionType)tx.GetInt("type") == typeId)
                 .Select(tx => { tx["chainId"] = ChainId; return tx; })
+=======
+                .Where(tx => (TransactionType)tx.GetByte("type") == typeId)
+>>>>>>> master
                 .Select(Transaction.FromJson)
                 .Cast<T>()
                 .ToArray();

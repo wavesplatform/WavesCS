@@ -98,8 +98,9 @@ namespace WavesCS
         {
             return new DictionaryObject
             {
-                { "type", TransactionType.MassTransfer},
+                { "type", (byte) TransactionType.MassTransfer},
                 { "version", Version},
+                { "sender", Sender},
                 { "senderPublicKey", Base58.Encode(SenderPublicKey)},                
                 { "transfers", Transfers.Select(t => new DictionaryObject()
                 {

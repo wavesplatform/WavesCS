@@ -95,8 +95,9 @@ namespace WavesCS
         {
             return new DictionaryObject
             {
-                {"type", TransactionType.Exchange},
+                {"type", (byte) TransactionType.Exchange},
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
+                {"sender", Sender},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
                 {"order1", BuyOrder.GetJson()},
