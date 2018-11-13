@@ -13,7 +13,7 @@ namespace WavesCSTests
         {
             Http.Tracing = true;
         }
-
+        /*
         [TestMethod]
         public void TestIssueSmartAsset()
         {
@@ -95,5 +95,6 @@ namespace WavesCSTests
             // Check the fee
             Assert.AreEqual(balanceBefore, balanceAfter + 0.004m);
         }
+        */
     }
 }

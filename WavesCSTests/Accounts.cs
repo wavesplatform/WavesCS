@@ -23,8 +23,8 @@ namespace WavesCSTests
             // Use faucet to fill acounts https://testnet.wavesexplorer.com/faucet
             var node = new Node();
 
-            var bobBalanceWaves = node.GetBalance(Bob.Address);
             var aliceBalanceWaves = node.GetBalance(Alice.Address);
+            var bobBalanceWaves = node.GetBalance(Bob.Address);
             var carolBalanceWaves = node.GetBalance(Carol.Address);
 
             Console.WriteLine("Alice address: {0}, balance: {1}", Alice.Address, aliceBalanceWaves);

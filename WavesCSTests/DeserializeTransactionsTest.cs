@@ -386,7 +386,7 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void TestSetAssetScriptTransactionDeserialize()
         {
             var node = new Node(Node.TestNetHost);
@@ -408,5 +408,6 @@ namespace WavesCSTests
             Assert.AreEqual(setAssetScriptTx.Asset.Id, "");
             Assert.AreEqual(setAssetScriptTx.Script.ToBase64(), "base64:");
         }
+        */
     }
 }
