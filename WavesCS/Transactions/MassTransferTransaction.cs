@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -41,7 +42,7 @@ namespace WavesCS
             Fee = fee ?? Math.Round(0.001m + Transfers.Length * 0.0005m, 3, MidpointRounding.AwayFromZero);
         }
 
-        public MassTransferTransaction(Dictionary<string, object> tx) : base(tx)
+        public MassTransferTransaction(DictionaryObject tx) : base(tx)
         {
             Asset = Assets.GetById(tx.GetString("assetId") ?? Assets.WAVES.Id);
             Attachment = tx.GetString("attachment").FromBase58();
@@ -67,11 +68,11 @@ namespace WavesCS
                 {
                     if (transfer.Recipient.StartsWith("alias", StringComparison.Ordinal))
                     {
-                        var networkByte = transfer.Recipient[6];
+                        var chainId = transfer.Recipient[6];
                         var name = transfer.Recipient.Substring(8);
 
                         writer.Write((byte)2);
-                        writer.Write(networkByte);
+                        writer.Write(chainId);
                         writer.WriteShort((short)name.Length);
                         writer.Write(Encoding.UTF8.GetBytes(name));
                     }
@@ -93,15 +94,15 @@ namespace WavesCS
             return GetBody();
         }
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
-            return new Dictionary<string, object>
+            return new DictionaryObject
             {
                 { "type", (byte) TransactionType.MassTransfer},
                 { "version", Version},
                 { "sender", Sender},
                 { "senderPublicKey", Base58.Encode(SenderPublicKey)},                
-                { "transfers", Transfers.Select(t => new Dictionary<string, object>()
+                { "transfers", Transfers.Select(t => new DictionaryObject()
                 {
                     {"recipient", t.Recipient },
                     {"amount", Asset.AmountToLong(t.Amount)}

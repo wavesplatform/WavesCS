@@ -76,7 +76,7 @@ namespace WavesCS
 
         public static Transaction FromJson(DictionaryObject tx)
         {
-            switch ((TransactionType)(tx.GetByte("type")))
+            switch ((TransactionType)tx.GetByte("type"))
             {
                 case TransactionType.Alias: return new AliasTransaction(tx);
                 case TransactionType.Burn: return new BurnTransaction(tx);
