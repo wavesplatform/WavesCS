@@ -167,12 +167,8 @@ namespace WavesCS
             var typeId = TransactionTypeId(typeof(T));
 
             return GetTransactionsByAddress(address, limit)
-<<<<<<< HEAD
-                .Where(tx => (TransactionType)tx.GetInt("type") == typeId)
-                .Select(tx => { tx["chainId"] = ChainId; return tx; })
-=======
                 .Where(tx => (TransactionType)tx.GetByte("type") == typeId)
->>>>>>> master
+                .Select(tx => { tx["chainId"] = ChainId; return tx; })
                 .Select(Transaction.FromJson)
                 .Cast<T>()
                 .ToArray();
