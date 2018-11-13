@@ -70,7 +70,14 @@ namespace WavesCS
             var url = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/cancel";
             return Http.Post(url, request);
         }
-        
+
+        public string CancelAll(PrivateKeyAccount account)
+        {
+            var request = MakeCancelAllRequest(account);
+            var url = $"{_host}/matcher/orderbook/cancel";
+            return Http.Post(url, request);
+        }
+
         public string DeleteOrder(PrivateKeyAccount account,
             Asset amountAsset, Asset priceAsset, string orderId)
         {
@@ -105,6 +112,22 @@ namespace WavesCS
             {
                 {"sender", sender.PublicKey.ToBase58()},
                 {"orderId", orderId},
+                {"signature", signature.ToBase58()}
+            };
+        }
+
+        public static DictionaryObject MakeCancelAllRequest(PrivateKeyAccount sender)
+        {
+            long timestamp = Utils.CurrentTimestamp();
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+            writer.Write(sender.PublicKey);
+            writer.WriteLong(timestamp);
+            var signature = sender.Sign(stream);
+            return new DictionaryObject
+            {
+                {"sender", sender.PublicKey.ToBase58()},
+                {"timestamp", timestamp},
                 {"signature", signature.ToBase58()}
             };
         }

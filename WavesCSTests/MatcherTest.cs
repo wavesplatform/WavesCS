@@ -64,9 +64,8 @@ namespace WavesCSTests
             Assert.IsTrue(balance[WBTC] >= 0);
             
             Console.WriteLine(string.Join(", ", balance.Select(p => $"{p.Key}: {p.Value}")));
-        }
-            
-        
+        }       
+
         [TestMethod]
         public void TestOrders()
         {
@@ -77,7 +76,7 @@ namespace WavesCSTests
 
             Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow,
                                      Assets.WAVES, WBTC, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
-                                     DateTime.UtcNow.AddHours(1), 0.003m , Accounts.Carol.Address);
+                                     DateTime.UtcNow.AddHours(1), 0.007m , Accounts.Carol.Address, 2);
 
             matcher.PlaceOrder(Accounts.Carol, order1);
             Thread.Sleep(3000);
@@ -94,11 +93,8 @@ namespace WavesCSTests
             Assert.AreEqual(WBTC, lastOrder.PriceAsset);
             Assert.AreEqual(0.0, (lastOrder.Timestamp - DateTime.UtcNow).TotalSeconds, 10.0);
 
-            foreach (var order in orders.Where(o => o.Status == OrderStatus.Accepted || o.Status == OrderStatus.PartiallyFilled))
-            {
-                matcher.CancelOrder(Accounts.Carol, Assets.WAVES, WBTC, order.Id);
-            }
-            
+            matcher.CancelAll(Accounts.Carol);
+
             Thread.Sleep(3000);
             
             orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
