@@ -36,7 +36,7 @@ namespace WavesCSTests
             Assert.IsTrue(scriptInfo.GetInt("complexity") > 0);
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);
 
-            var cleanScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, null, 'T');
+            var cleanScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, null, 'T', 0.014m);
             node.Broadcast(cleanScriptTx.GetJsonWithSignature());
 
             Thread.Sleep(10000);
