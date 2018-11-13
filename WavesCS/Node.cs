@@ -11,28 +11,41 @@ namespace WavesCS
         public const string TestNetHost = "https://testnodes.wavesnodes.com";
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
+        public const char TestNetChainId = 'T';
+        public const char MainNetChainId = 'W';
+
         private readonly string _host;
+        public readonly char ChainId;
 
         public static Node DefaultNode { get; private set; }
         private Dictionary<string, Asset> AssetsCache;
 
-        public Node(string nodeHost = TestNetHost)
+        public Node(string nodeHost = TestNetHost, char nodeChainId = TestNetChainId)
         {
-            if (nodeHost.EndsWith("/"))
+            if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
+
             _host = nodeHost;
+
+            if (_host == TestNetHost)
+                ChainId = TestNetChainId;
+            else if (_host == MainNetHost)
+                ChainId = MainNetChainId;
+            else
+                ChainId = nodeChainId;
 
             if (DefaultNode == null)
                 DefaultNode = this;
+
             AssetsCache = new Dictionary<string, Asset>();
         }
 
-        public Dictionary<string, object> GetObject(string url, params object[] args)
+        public DictionaryObject GetObject(string url, params object[] args)
         {
             return Http.GetObject($"{_host}/{url}", args);
         }
 
-        public IEnumerable<Dictionary<string, object>> GetObjects(string url, params object[] args)
+        public IEnumerable<DictionaryObject> GetObjects(string url, params object[] args)
         {
             return Http.GetObjects($"{_host}/{url}", args);
         }
@@ -93,7 +106,7 @@ namespace WavesCS
             }
         }
 
-        public Dictionary<string, object> GetAddressData(string address)
+        public DictionaryObject GetAddressData(string address)
         {
             return GetObjects("addresses/data/{0}", address)
                 .ToDictionary(o => o.GetString("key"), DataValue);
@@ -124,8 +137,9 @@ namespace WavesCS
         public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
-                       .Select(Transaction.FromJson)
-                       .ToArray();
+                .Select(tx => { tx["chainId"] = ChainId; return tx; })
+                .Select(Transaction.FromJson)
+                .ToArray();
         }
 
         public TransactionType TransactionTypeId(Type transactionType)
@@ -154,6 +168,7 @@ namespace WavesCS
 
             return GetTransactionsByAddress(address, limit)
                 .Where(tx => (TransactionType)tx.GetByte("type") == typeId)
+                .Select(tx => { tx["chainId"] = ChainId; return tx; })
                 .Select(Transaction.FromJson)
                 .Cast<T>()
                 .ToArray();
@@ -164,6 +179,8 @@ namespace WavesCS
         {
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
                          .ParseJsonObject();
+
+            tx["chainId"] = ChainId;
 
             return Transaction.FromJson(tx);
         }
@@ -207,13 +224,13 @@ namespace WavesCS
         }
 
         public Asset IssueAsset(PrivateKeyAccount account,
-            string name, string description, decimal quantity, byte decimals, bool reissuable)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null)
         {
-            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable);
+            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, 1, script);
             tx.Sign(account);
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
-            return new Asset(assetId, name, decimals);
+            return new Asset(assetId, name, decimals, script);
         }
 
         public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable)
@@ -230,9 +247,9 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string CreateAlias(PrivateKeyAccount account, string alias, char scheme)
+        public string CreateAlias(PrivateKeyAccount account, string alias, char chainId)
         {
-            var tx = new AliasTransaction(account.PublicKey, alias, scheme);
+            var tx = new AliasTransaction(account.PublicKey, alias, chainId);
             tx.Sign(account);
             return Broadcast(tx);
         }
