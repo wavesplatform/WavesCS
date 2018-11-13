@@ -57,10 +57,16 @@ namespace WavesCS
 	
         public static object GetValue(this DictionaryObject d, string field)
         {
-            if (field.Contains("."))
-                return d.GetObject(field.Substring(0, field.IndexOf("."))).GetValue(field.Substring(field.IndexOf(".") + 1));
-            else
-                return d[field];
+            try
+            {
+                if (field.Contains("."))
+                    return d.GetObject(field.Substring(0, field.IndexOf("."))).GetValue(field.Substring(field.IndexOf(".") + 1));
+                else
+                    return d[field];
+            } catch(Exception ex)
+            {
+                throw new Exception(String.Format("Cannot get value of \"{0}\" field", field));
+            }
         }
 		
         public static T Get<T>(this DictionaryObject d, string field)

@@ -34,10 +34,11 @@ namespace WavesCS
         public byte[] Signature { get; set; }
 
         public string Sender { get; }
+        public byte Version { get; set; } = 1;
 
         public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp,
             Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
-            decimal matcherFee, string sender)
+            decimal matcherFee, string sender, byte version = 1)
         {
             SenderPublicKey = senderPublicKey;
             MatcherPublicKey = matcherPublicKey;
@@ -50,6 +51,7 @@ namespace WavesCS
             PriceAsset = priceAsset;
             MatcherFee = matcherFee;
             Sender = sender;
+            Version = version;
         }
 
         public static Order CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
@@ -71,6 +73,7 @@ namespace WavesCS
             var status = json.ContainsKey("status") ? (OrderStatus)Enum.Parse(typeof(OrderStatus), json.GetString("status")) : OrderStatus.Accepted;
             var id = json.ContainsKey("id") ? json.GetString("id") : null;
             var filled = json.ContainsKey("filled") ? amountAsset.LongToAmount(json.GetLong("filled")) : 1m;
+            var version = json.ContainsKey("version") ? json.GetByte("version") : (byte)1;
 
             return new Order(
                 side,
@@ -83,7 +86,7 @@ namespace WavesCS
                 matcherPublicKey.FromBase58(),
                 expiration,
                 matcherFee,
-                sender)
+                sender, version)
             {
                 Signature = signature,
                 Status = status,
@@ -96,6 +99,8 @@ namespace WavesCS
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
+                if (Version > 1)
+                    writer.Write(Version);
                 writer.Write(SenderPublicKey);
                 writer.Write(MatcherPublicKey);
                 writer.WriteAsset(AmountAsset.Id);
@@ -129,7 +134,8 @@ namespace WavesCS
                     }
                 },
                 {"orderType", Side.ToString().ToLower()},
-                {"signature", Signature.ToBase58()}
+                {"signature", Signature.ToBase58()},
+                {"version", Version}
             };
         }
     }
