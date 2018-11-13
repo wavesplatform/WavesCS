@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -17,7 +17,7 @@ namespace WavesCS
             Fee = fee;
         }
 
-        public LeaseTransaction(Dictionary<string, object> tx) : base(tx)
+        public LeaseTransaction(DictionaryObject tx) : base(tx)
         {
             Recipient = tx.GetString("recipient");
             Amount = Assets.WAVES.LongToAmount(tx.GetLong("amount"));
@@ -46,11 +46,11 @@ namespace WavesCS
             return GetBody();
         }
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
-            return new Dictionary<string, object> {
-                {"type", (byte) TransactionType.Lease },
-                {"senderPublicKey", SenderPublicKey.ToBase58()},
+            return new DictionaryObject {
+                {"type", (byte) TransactionType.Lease},
+                {"senderPublicKey", SenderPublicKey.ToBase58()},                
                 {"sender", Sender},
                 {"recipient", Recipient},
                 {"amount", Assets.WAVES.AmountToLong(Amount)},

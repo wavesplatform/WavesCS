@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -33,7 +34,7 @@ namespace WavesCS
             Asks = asks;
         }
 
-        public static OrderBook CreateFromJson(Dictionary<string, object> json, Asset amountAsset, Asset priceAsset)
+        public static OrderBook CreateFromJson(DictionaryObject json, Asset amountAsset, Asset priceAsset)
         {
             return new OrderBook(
                 json.GetDate("timestamp"),
@@ -43,7 +44,7 @@ namespace WavesCS
                 json.GetObjects("asks").Select(o => ParseItem(amountAsset, priceAsset, o)).ToArray());
         }
 
-        private static Item ParseItem(Asset amountAsset, Asset priceAsset, Dictionary<string, object> o)
+        private static Item ParseItem(Asset amountAsset, Asset priceAsset, DictionaryObject o)
         {
             return new Item(
                 Asset.LongToPrice(amountAsset, priceAsset, o.GetLong("price")), 

@@ -11,8 +11,8 @@ namespace WavesCSTests
     [TestClass]
     public class TransactionTest
     {
-        private static readonly decimal AMOUNT = 105m;
-        private static readonly decimal FEE = 0.001m;
+        private static readonly decimal Amount = 105m;
+        private static readonly decimal Fee = 0.001m;
 
         private static readonly JsonSerializer serializer = new JsonSerializer();
         
@@ -30,18 +30,18 @@ namespace WavesCSTests
 
             var recipients = new List<MassTransferItem>
             {
-                new MassTransferItem(recipient, AMOUNT),
-                new MassTransferItem(recipient, AMOUNT)
+                new MassTransferItem(recipient, Amount),
+                new MassTransferItem(recipient, Amount)
             };
 
-            Dump("alias", new AliasTransaction(account.PublicKey, "daphnie", AddressEncoding.TestNet, FEE));
-            Dump("burn", new BurnTransaction(account.PublicKey, asset, AMOUNT, FEE));
-            Dump("issue", new IssueTransaction(account.PublicKey, "Pure Gold", "Gold backed asset", AMOUNT, 8, true, FEE));
-            Dump("reissue", new ReissueTransaction(account.PublicKey, asset, AMOUNT, false, FEE));
-            Dump("lease", new LeaseTransaction(account.PublicKey, recipient, AMOUNT, FEE));
-            Dump("lease cancel", new CancelLeasingTransaction(account.PublicKey, transactionId, FEE));
-            Dump("xfer", new TransferTransaction(account.PublicKey, recipient, asset, AMOUNT, "Shut up & take my money"));
-            Dump("massxfer", new MassTransferTransaction(account.PublicKey, asset, recipients, "Shut up & take my money", FEE));
+            Dump("alias", new AliasTransaction(account.PublicKey, "daphnie", AddressEncoding.TestNet, Fee));
+            Dump("burn", new BurnTransaction(account.PublicKey, asset, Amount, Fee));
+            Dump("issue", new IssueTransaction(account.PublicKey, "Pure Gold", "Gold backed asset", Amount, 8, true, 'T', Fee));
+            Dump("reissue", new ReissueTransaction(account.PublicKey, asset, Amount, false, Fee));
+            Dump("lease", new LeaseTransaction(account.PublicKey, recipient, Amount, Fee));
+            Dump("lease cancel", new CancelLeasingTransaction(account.PublicKey, transactionId, Fee));
+            Dump("xfer", new TransferTransaction(account.PublicKey, recipient, asset, Amount, "Shut up & take my money"));
+            Dump("massxfer", new MassTransferTransaction(account.PublicKey, asset, recipients, "Shut up & take my money", Fee));
         }
 
         private void Dump(String header, Transaction transaction)

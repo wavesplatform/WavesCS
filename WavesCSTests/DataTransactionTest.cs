@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCSTests
 {
@@ -19,7 +19,7 @@ namespace WavesCSTests
         {
             var node = new Node();            
             
-            var data = new Dictionary<string, object>
+            var data = new DictionaryObject
             {
                 { "test long", -1001L },
                 { "test true", true },

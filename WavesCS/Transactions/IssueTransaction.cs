@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
@@ -19,7 +19,7 @@ namespace WavesCS
         public byte[] Script { get; }
 
         public IssueTransaction(byte[] senderPublicKey,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, decimal fee = 1m, byte[] script = null, char chainId = 'T') : base(senderPublicKey)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null) : base(senderPublicKey)
         {
             Name = name ?? "";
             Description = description ?? "";
@@ -27,12 +27,12 @@ namespace WavesCS
             Decimals = decimals;
             Reissuable = reissuable;
             Fee = fee;
-            Asset = new Asset("", "", Decimals);
+            Asset = new Asset("", "", Decimals, script);
             Script = script;
             ChainId = chainId;
         }
 
-        public IssueTransaction(Dictionary<string, object> tx): base(tx)
+        public IssueTransaction(DictionaryObject tx): base(tx)
         {
             Name = tx.GetString("name");
             Description = tx.GetString("description");
@@ -114,9 +114,9 @@ namespace WavesCS
         }
 
 
-        public override Dictionary<string, object> GetJson()
+        public override DictionaryObject GetJson()
         {
-            var result = new Dictionary<string, object>
+            var result = new DictionaryObject
             {
                 {"type", (byte) TransactionType.Issue},
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},
