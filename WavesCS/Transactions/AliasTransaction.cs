@@ -60,7 +60,7 @@ namespace WavesCS
         {
             return new DictionaryObject
                 {
-                    {"type", TransactionType.Alias},
+                    {"type", (byte) TransactionType.Alias},
                     {"senderPublicKey", SenderPublicKey.ToBase58()},
                     {"sender", AddressEncoding.GetAddressFromPublicKey(SenderPublicKey, ChainId)},
                     {"alias", Alias},

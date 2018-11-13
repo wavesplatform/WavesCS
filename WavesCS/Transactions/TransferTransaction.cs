@@ -118,7 +118,8 @@ namespace WavesCS
         {
             var result = new DictionaryObject
             {
-                {"type", TransactionType.Transfer},
+                {"type", (byte) TransactionType.Transfer},
+                {"sender", Sender},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"recipient", Recipient},
                 {"amount", Asset.AmountToLong(Amount)},

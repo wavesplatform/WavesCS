@@ -54,14 +54,14 @@ namespace WavesCS
 
         public override DictionaryObject GetJson() => new DictionaryObject
             {
-                {"type", TransactionType.SponsoredFee},
+                {"type", (byte) TransactionType.SponsoredFee},
                 {"version", Version},
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},
+                {"sender", Sender},
                 {"assetId", Asset.IdOrNull},             
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
                 {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
             };
-
     }
 }
