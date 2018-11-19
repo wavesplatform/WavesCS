@@ -127,7 +127,11 @@ namespace WavesCS
                 if ((TransactionType)tx.GetByte("type") != TransactionType.Issue)
                     throw new ArgumentException("Wrong asset id (transaction type)");
 
-                asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"));
+                var assetDetails = GetObject($"assets/details/{assetId}?full=true");
+                var scripted = assetDetails.GetBool("scripted");
+
+                var script = scripted ? assetDetails.GetString("scriptDetails.script").FromBase64() : null;
+                asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"), script);
                 AssetsCache[assetId] = asset;
             }
 
@@ -188,13 +192,14 @@ namespace WavesCS
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
             string message = "")
         {
+            var fee = 0.001m + (asset.Script != null ?  0.004m : 0) ;
             var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, message);
             tx.Sign(sender);
             return Broadcast(tx);
         }
 
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
-          decimal fee, Asset feeAsset, byte[] message = null)
+                               decimal fee, Asset feeAsset = null, byte[] message = null)
         {
             var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, fee, feeAsset, message);           
             tx.Sign(sender);

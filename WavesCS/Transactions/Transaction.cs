@@ -90,6 +90,8 @@ namespace WavesCS
                 case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
                 case TransactionType.Transfer: return new TransferTransaction(tx);
                 case TransactionType.Exchange: return new ExchangeTransaction(tx);
+                case TransactionType.SetAssetScript: return new SetAssetScriptTransaction(tx);
+
                 default: return new UnknownTransaction(tx);
             }
         }
