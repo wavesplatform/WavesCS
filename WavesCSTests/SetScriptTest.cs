@@ -24,7 +24,7 @@ namespace WavesCSTests
 
             Console.WriteLine("Compiled script: {0}", compiledScript);
 
-            var setScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, compiledScript, 'T');
+            var setScriptTx = new SetScriptTransaction(Accounts.Carol.PublicKey, compiledScript, 'T', 0.14m);
             setScriptTx.Sign(Accounts.Carol);
             node.Broadcast(setScriptTx.GetJsonWithSignature());
 
@@ -77,7 +77,7 @@ namespace WavesCSTests
 
             Thread.Sleep(10000);
 
-            var tx = new TransferTransaction(multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.01m) { Version = 2 };
+            var tx = new TransferTransaction(multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.005m) { Version = 2 };
             tx.Sign(Accounts.Alice, 0);
             tx.Sign(Accounts.Bob, 1);
 

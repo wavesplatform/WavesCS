@@ -16,7 +16,7 @@ namespace WavesCS
         public override byte Version { get; set; } = 1;
 
         public TransferTransaction(byte[] senderPublicKey, string recipient,
-            Asset asset, decimal amount, string attachment) : 
+           Asset asset, decimal amount, string attachment) :
         this(senderPublicKey, recipient, asset, amount, 0.001m,
              Encoding.UTF8.GetBytes(attachment))
         {
@@ -35,7 +35,7 @@ namespace WavesCS
             Amount = amount;
             Asset = asset ?? Assets.WAVES;
             Fee = fee;
-            FeeAsset = feeAsset;
+            FeeAsset = feeAsset ?? Assets.WAVES;
             Attachment = attachment ?? new byte[0];
         }
 

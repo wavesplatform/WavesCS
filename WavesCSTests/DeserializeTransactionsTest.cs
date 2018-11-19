@@ -386,12 +386,12 @@ namespace WavesCSTests
             Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(19791));
         }
 
-        /*[TestMethod]
+        [TestMethod]
         public void TestSetAssetScriptTransactionDeserialize()
         {
             var node = new Node(Node.TestNetHost);
 
-            var transactionId = "";
+            var transactionId = "C7FsodHwqKrB3Ban6M9zs5muZEj1JVQycAfZ7P6US2dN";
             var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(SetAssetScriptTransaction));
@@ -399,15 +399,14 @@ namespace WavesCSTests
 
             var setAssetScriptTx = (SetAssetScriptTransaction)tx;
 
-            Assert.AreEqual(setAssetScriptTx.Sender, "");
-            Assert.AreEqual(setAssetScriptTx.SenderPublicKey.ToBase58(), "");
-            Assert.AreEqual(setAssetScriptTx.Fee, Assets.WAVES.LongToAmount(0));
-            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 0);
-            Assert.AreEqual(setAssetScriptTx.Proofs[0].ToBase58(), "");
+            Assert.AreEqual(setAssetScriptTx.Sender, "3N8S8VUbDJuqtUP8wAraWhMMeqcYHH5EWcF");
+            Assert.AreEqual(setAssetScriptTx.SenderPublicKey.ToBase58(), "GLCqFngy1TYE4y2GW9pEZPLCbbZFaDG9qPTsTArBURF7");
+            Assert.AreEqual(setAssetScriptTx.Fee, Assets.WAVES.LongToAmount(100000000));
+            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 1542642212671);
+            Assert.AreEqual(setAssetScriptTx.Proofs[0].ToBase58(), "3qD2n6nv7HSGmnHvVzETEAAyKXNE6NhZ5FDzLEct6hzQpLoNfpZypd6FoJYBCvgHpv18yoiKyHDm2sdt2jzkhFP8");
 
-            Assert.AreEqual(setAssetScriptTx.Asset.Id, "");
-            Assert.AreEqual(setAssetScriptTx.Script.ToBase64(), "base64:");
+            Assert.AreEqual(setAssetScriptTx.Asset.Id, "6JEMpVjpJSxCymSS8UJoYZRdRDD4pUCzaRm5uJ2J4tUZ");
+            Assert.AreEqual(setAssetScriptTx.Script.ToBase64(), "base64:AQQAAAAHJG1hdGNoMAUAAAACdHgDCQAAAQAAAAIFAAAAByRtYXRjaDACAAAAE1RyYW5zZmVyVHJhbnNhY3Rpb24EAAAAAXQFAAAAByRtYXRjaDAJAABmAAAAAgAAAAAAAAST4AgFAAAAAXQAAAAGYW1vdW50AwMJAAABAAAAAgUAAAAHJG1hdGNoMAIAAAAZU2V0QXNzZXRTY3JpcHRUcmFuc2FjdGlvbgYJAAABAAAAAgUAAAAHJG1hdGNoMAIAAAAPQnVyblRyYW5zYWN0aW9uBAAAAAJicwUAAAAHJG1hdGNoMAYHBptFtA==");
         }
-        */
     }
 }

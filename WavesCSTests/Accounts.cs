@@ -39,8 +39,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestScript()
         {
-            Http.Tracing = true;
-
+            Http.Tracing = false;
             var node = new Node();
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
