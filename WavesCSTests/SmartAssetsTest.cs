@@ -29,8 +29,6 @@ namespace WavesCSTests
             Thread.Sleep(15000);
 
             Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 100);
-            var t = Assets.GetById(smartAsset.Id);
-
             Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
         }
 
