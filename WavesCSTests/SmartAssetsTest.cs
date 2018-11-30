@@ -32,7 +32,6 @@ namespace WavesCSTests
             Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
         }
 
-
         [TestMethod]
         public void TestSetAssetScript()
         {
