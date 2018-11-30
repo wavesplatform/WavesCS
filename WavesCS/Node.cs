@@ -128,7 +128,7 @@ namespace WavesCS
                     throw new ArgumentException("Wrong asset id (transaction type)");
 
                 var assetDetails = GetObject($"assets/details/{assetId}?full=true");
-                var scripted = assetDetails.GetBool("scripted");
+                var scripted = assetDetails.ContainsKey("scripted") && assetDetails.GetBool("scripted");
 
                 var script = scripted ? assetDetails.GetString("scriptDetails.script").FromBase64() : null;
                 asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"), script);

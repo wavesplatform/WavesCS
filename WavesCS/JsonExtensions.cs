@@ -63,7 +63,7 @@ namespace WavesCS
                     return d.GetObject(field.Substring(0, field.IndexOf("."))).GetValue(field.Substring(field.IndexOf(".") + 1));
                 else
                     return d[field];
-            } catch(Exception ex)
+            } catch(Exception)
             {
                 throw new Exception(String.Format("Cannot get value of \"{0}\" field", field));
             }

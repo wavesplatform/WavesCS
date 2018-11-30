@@ -32,7 +32,7 @@ namespace WavesCS
         protected Transaction(DictionaryObject tx)
         {
             Timestamp = tx.GetDate("timestamp");
-            Sender = tx.GetString("sender");
+            Sender = tx.ContainsKey("sender") ? tx.GetString("sender") : "";
             SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
             Version = tx.ContainsKey("version") ? tx.GetByte("version") : (byte)1;
 
