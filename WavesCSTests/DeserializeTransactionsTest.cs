@@ -391,7 +391,7 @@ namespace WavesCSTests
         {
             var node = new Node(Node.TestNetHost);
 
-            var transactionId = "C7FsodHwqKrB3Ban6M9zs5muZEj1JVQycAfZ7P6US2dN";
+            var transactionId = "CL1xVnX93Wyq8c6N2X5ER8UkR49uZJofGwx9YVB7Deny";
             var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(SetAssetScriptTransaction));
@@ -402,11 +402,66 @@ namespace WavesCSTests
             Assert.AreEqual(setAssetScriptTx.Sender, "3N8S8VUbDJuqtUP8wAraWhMMeqcYHH5EWcF");
             Assert.AreEqual(setAssetScriptTx.SenderPublicKey.ToBase58(), "GLCqFngy1TYE4y2GW9pEZPLCbbZFaDG9qPTsTArBURF7");
             Assert.AreEqual(setAssetScriptTx.Fee, Assets.WAVES.LongToAmount(100000000));
-            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 1542642212671);
-            Assert.AreEqual(setAssetScriptTx.Proofs[0].ToBase58(), "3qD2n6nv7HSGmnHvVzETEAAyKXNE6NhZ5FDzLEct6hzQpLoNfpZypd6FoJYBCvgHpv18yoiKyHDm2sdt2jzkhFP8");
+            Assert.AreEqual(setAssetScriptTx.Timestamp.ToLong(), 1543834873148);
+            Assert.AreEqual(setAssetScriptTx.Proofs[0].ToBase58(), "5kFVUfUNTyCRhuPVyLez8B7oihE4o4so1kpZxxJ3RTmHQBEv4wKLBdNzhWPaf8q3Gx9aV3Wg213xz67xXq2LsEY9");
 
-            Assert.AreEqual(setAssetScriptTx.Asset.Id, "6JEMpVjpJSxCymSS8UJoYZRdRDD4pUCzaRm5uJ2J4tUZ");
-            Assert.AreEqual(setAssetScriptTx.Script.ToBase64(), "base64:AQQAAAAHJG1hdGNoMAUAAAACdHgDCQAAAQAAAAIFAAAAByRtYXRjaDACAAAAE1RyYW5zZmVyVHJhbnNhY3Rpb24EAAAAAXQFAAAAByRtYXRjaDAJAABmAAAAAgAAAAAAAAST4AgFAAAAAXQAAAAGYW1vdW50AwMJAAABAAAAAgUAAAAHJG1hdGNoMAIAAAAZU2V0QXNzZXRTY3JpcHRUcmFuc2FjdGlvbgYJAAABAAAAAgUAAAAHJG1hdGNoMAIAAAAPQnVyblRyYW5zYWN0aW9uBAAAAAJicwUAAAAHJG1hdGNoMAYHBptFtA==");
+            Assert.AreEqual(setAssetScriptTx.Asset.Id, "FLWiU3i5TUroZqTJZkweGVFjQALuo7dHCFM6jj4N8shK");
+            Assert.AreEqual(setAssetScriptTx.Script.ToBase64(), "base64:AQfeYll6");
+        }
+
+        [TestMethod]
+        public void TestExchangeTransactionV2Deserialize()
+        {
+            var node = new Node(Node.MainNetHost, 'W');
+
+            var json = @"
+            {
+              'type': 7,
+              'senderPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
+              'sender': null,
+              'fee': 300000,
+              'timestamp': 1543830569955,
+              'order1': {
+                'amount': 1000000,
+                'price': 10000,
+                'timestamp': 1543830559950,
+                'expiration': 1543834159950,
+                'senderPublicKey': '9KAjBEaDxTtHebQ5G8te5t6QH6WroQEJohg2K5hVg86F',
+                'matcherPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
+                'matcherFee': 300000,
+                'assetPair': {
+                  'amountAsset': 'HKiMLDiHedS9riMoaGS99GL3txmd88RkcCfqZVyuoL6Y',
+                  'priceAsset': null
+                },
+                'orderType': 'buy',
+                'signature': '3PeY5yNKD3s5d6eoWEZiBdgQvHnqaV8Mgdg191P72vLfomNAbw769VN8g7QasUEL8BHPweWi9gne9ewb974k6Pch',
+                'version': 1
+              },
+              'order2': {
+                'amount': 1000000,
+                'price': 10000,
+                'timestamp': 1543830559942,
+                'expiration': 1543834159942,
+                'senderPublicKey': 'DCXccuJLBvY3Jj5FG98eEoAqU2Sf3uxgvZ3NVPHuBeRQ',
+                'matcherPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
+                'matcherFee': 300000,
+                'assetPair': {
+                  'amountAsset': 'HKiMLDiHedS9riMoaGS99GL3txmd88RkcCfqZVyuoL6Y',
+                  'priceAsset': null
+                },
+                'orderType': 'sell',
+                'signature': '3HdTei2ZnXNybguXoZQKcm5D6vWW7vahTbjwL5LAyssYKNXbjgK1XauvLsh1iuZR7pAcVVTLcZD2hCR2aZdsYi2H',
+                'version': 1
+              },
+              'price': 10000,
+              'amount': 1000000,
+              'buyMatcherFee': 300000,
+              'sellMatcherFee': 300000
+            }";
+
+            var tx = Transaction.FromJson(json.ParseJsonObject()).Sign(Accounts.Alice);
+            Assert.IsNotNull(tx);
+
         }
     }
 }
