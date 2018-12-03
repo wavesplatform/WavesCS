@@ -29,17 +29,17 @@ namespace WavesCS
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
-            {                   
-                writer.Write(TransactionType.SponsoredFee);                
+            {
+                writer.Write(TransactionType.SponsoredFee);
                 writer.Write(Version);
                 writer.Write(SenderPublicKey);
                 writer.Write(Asset.Id.FromBase58());
                 writer.WriteLong(Asset.AmountToLong(MinimalFeeInAssets));
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
-                writer.WriteLong(Timestamp.ToLong());                                                                 
+                writer.WriteLong(Timestamp.ToLong());
 
                 return stream.ToArray();
-            }                
+            }
         }
 
         public override byte[] GetIdBytes()
@@ -52,16 +52,24 @@ namespace WavesCS
             return true;
         }
 
-        public override DictionaryObject GetJson() => new DictionaryObject
+        public override DictionaryObject GetJson()
+        {
+            var result = new DictionaryObject
             {
                 {"type", (byte) TransactionType.SponsoredFee},
                 {"version", Version},
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},
-                {"sender", Sender},
-                {"assetId", Asset.IdOrNull},             
+               
+                {"assetId", Asset.IdOrNull},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
                 {"minSponsoredAssetFee", Asset.AmountToLong(MinimalFeeInAssets)}
             };
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
+            return result;
+        }
     }
 }

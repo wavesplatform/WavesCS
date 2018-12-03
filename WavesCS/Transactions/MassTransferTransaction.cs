@@ -96,11 +96,10 @@ namespace WavesCS
 
         public override DictionaryObject GetJson()
         {
-            return new DictionaryObject
+            var result = new DictionaryObject
             {
                 { "type", (byte) TransactionType.MassTransfer},
                 { "version", Version},
-                { "sender", Sender},
                 { "senderPublicKey", Base58.Encode(SenderPublicKey)},                
                 { "transfers", Transfers.Select(t => new DictionaryObject()
                 {
@@ -112,6 +111,11 @@ namespace WavesCS
                 { "timestamp", Timestamp.ToLong() },
                 { "attachment", Attachment.ToBase58() }
             };
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
+            return result;
         }
 
         protected override bool SupportsProofs()

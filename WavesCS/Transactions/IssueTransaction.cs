@@ -120,7 +120,6 @@ namespace WavesCS
             {
                 {"type", (byte) TransactionType.Issue},
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},
-                {"sender", Sender},
                 {"name", Name},
                 {"description", Description},
                 {"quantity", Asset.AmountToLong(Quantity)},
@@ -132,6 +131,10 @@ namespace WavesCS
             };
             if (Version > 1)
                 result.Add("version", Version);
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
             return result;
         }
 

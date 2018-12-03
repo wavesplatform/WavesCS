@@ -93,11 +93,10 @@ namespace WavesCS
 
         public override DictionaryObject GetJson()
         {
-            return new DictionaryObject
+            var result = new DictionaryObject
             {
                 {"type", (byte) TransactionType.Exchange},
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
-                {"sender", Sender},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
                 {"order1", BuyOrder.GetJson()},
@@ -107,6 +106,11 @@ namespace WavesCS
                 {"buyMatcherFee", Assets.WAVES.AmountToLong(BuyMatcherFee)},
                 {"sellMatcherFee", Assets.WAVES.AmountToLong(SellMatcherFee)}
             };
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
+            return result;
         }
 
         protected override bool SupportsProofs()

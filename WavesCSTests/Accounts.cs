@@ -20,7 +20,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestBalance()
         {
-            // Use faucet to fill acounts https://testnet.wavesexplorer.com/faucet
+            // Use faucet to fill accounts https://testnet.wavesexplorer.com/faucet
             var node = new Node();
 
             var aliceBalanceWaves = node.GetBalance(Alice.Address);

@@ -58,16 +58,20 @@ namespace WavesCS
 
         public override DictionaryObject GetJson()
         {
-            return new DictionaryObject
+            var result = new DictionaryObject
             {
                 {"type", (byte) TransactionType.SetScript},
                 {"version", Version},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"sender", Sender},
                 {"script", Script?.ToBase64()},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}
             };
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
+            return result;
         }
 
         protected override bool SupportsProofs()
