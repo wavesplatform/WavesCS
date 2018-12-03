@@ -119,7 +119,6 @@ namespace WavesCS
             var result = new DictionaryObject
             {
                 {"type", (byte) TransactionType.Transfer},
-                {"sender", Sender},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"recipient", Recipient},
                 {"amount", Asset.AmountToLong(Amount)},
@@ -130,8 +129,13 @@ namespace WavesCS
                 {"timestamp", Timestamp.ToLong()},
                 {"attachment", Attachment.ToBase58()}
             };
+
             if (Version > 1)
                 result.Add("version", Version);
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
             return result;
         }
 

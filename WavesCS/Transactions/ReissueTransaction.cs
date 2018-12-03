@@ -49,17 +49,21 @@ namespace WavesCS
 
         public override DictionaryObject GetJson()
         {
-            return new DictionaryObject
+            var result = new DictionaryObject
             {
                 {"type", (byte) TransactionType.Reissue},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"sender", Sender},
                 {"assetId", Asset.Id},
                 {"quantity", Asset.AmountToLong(Quantity)},
                 {"reissuable", Reissuable},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()}
             };
+
+            if (Sender != null)
+                result.Add("sender", Sender);
+
+            return result;
         }
 
         protected override bool SupportsProofs()
