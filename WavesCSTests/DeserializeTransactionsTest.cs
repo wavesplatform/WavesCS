@@ -462,6 +462,52 @@ namespace WavesCSTests
             var tx = Transaction.FromJson(json.ParseJsonObject()).Sign(Accounts.Alice);
             Assert.IsNotNull(tx);
 
+            var json2 = @"
+            {
+              'type': 7,
+              'sender': '3PGV3FCPoUKkCMCdBksAJRj4jWvEQyc6MXY',
+              'senderPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
+              'fee': 300000,
+              'timestamp': 1543854000820,
+              'sellMatcherFee': 300000,
+              'buyMatcherFee': 300000,
+              'amount': 1000000,
+              'price': 10000,
+              'order1': {
+                'amount': 1000000,
+                'price': 10000,
+                'timestamp': 1543854000812,
+                'expiration': 1543857600812,
+                'senderPublicKey': '9KAjBEaDxTtHebQ5G8te5t6QH6WroQEJohg2K5hVg86F',
+                'matcherPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
+                'matcherFee': 300000,
+                'assetPair': {
+                  'amountAsset': 'HKiMLDiHedS9riMoaGS99GL3txmd88RkcCfqZVyuoL6Y',
+                  'priceAsset': null
+                },
+                'orderType': 'buy',
+                'signature': '4rU9SRKi8re3cdwa6g2gRx9N9MM8scwyDGYzPgfdXKDThUwWjTHQMzedJiZ7gxgFnMShhofCxkhMAZB3coCaqBKU',
+                'version': 1
+              },
+              'order2': {
+                'amount': 1000000,
+                'price': 10000,
+                'timestamp': 1543854000806,
+                'expiration': 1543857600806,
+                'senderPublicKey': 'DCXccuJLBvY3Jj5FG98eEoAqU2Sf3uxgvZ3NVPHuBeRQ',
+                'matcherPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
+                'matcherFee': 300000,
+                'assetPair': {
+                  'amountAsset': 'HKiMLDiHedS9riMoaGS99GL3txmd88RkcCfqZVyuoL6Y',
+                  'priceAsset': null
+                },
+                'orderType': 'sell',
+                'signature': 't8KgwhBCFoon7mfH8ifK3fK8gcAHABuZttCkurio34Zfa1DvoWdz39qRgPJbm6qwyahBY27kdA2TMsEbeuVjQjs',
+                'version': 1
+              }
+            }";
+            var tx2 = Transaction.FromJson(json2.ParseJsonObject()).Sign(Accounts.Alice);
+            Assert.IsNotNull(tx);
         }
     }
 }
