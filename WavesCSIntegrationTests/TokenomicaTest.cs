@@ -24,41 +24,44 @@ namespace WavesCSIntegrationTests
         {
             var node = new Node();
             var script = @"let tokenomicaPubKey = base58'7dkSgXFv9EpYi3C3JK76wJTkciBsVPZ1xE5fVAMB6AD9'                            
-                                let this = extract(tx.sender)
+                            let this = extract(tx.sender)
 
-                                match tx { 
-                                    case s: SetScriptTransaction =>
-                                        sigVerify(s.bodyBytes, s.proofs[0], tokenomicaPubKey)
-                                    case t: TransferTransaction =>
-                                        let limit = extract(getInteger(this, ""limit""))
-                                        (t.amount <= limit) &&
-                                        isDefined(t.assetId) &&                                        
-                                        sigVerify(t.bodyBytes, t.proofs[0], tx.senderPublicKey)                                    
-                                    case m: MassTransferTransaction =>
-                                        let limit = extract(getInteger(this, ""limit""))
-                                        (m.totalAmount <= limit) &&
-                                        isDefined(m.assetId) &&
-                                        sigVerify(m.bodyBytes, m.proofs[0], tx.senderPublicKey)  
-                                    case e: ExchangeTransaction =>
-                                        let limit = extract(getInteger(this, ""limit""))
-                                        (!isDefined(e.sellOrder.assetPair.amountAsset) && e.buyOrder.amount <= limit) ||
-                                        (!isDefined(e.sellOrder.assetPair.priceAsset) && e.sellOrder.amount <= limit) &&
-                                        sigVerify(e.bodyBytes, e.proofs[0], tx.senderPublicKey)  
-                                    case d: DataTransaction =>
-                                        sigVerify(d.bodyBytes, d.proofs[0], tokenomicaPubKey)
-                                    case _ => false
-                                }";
+                            match tx { 
+                                case s: SetScriptTransaction =>
+                                    sigVerify(s.bodyBytes, s.proofs[0], tokenomicaPubKey)
+                                case t: TransferTransaction =>
+                                    let limit = extract(getInteger(tx.sender, ""limit""))
+                                    (!isDefined(t.assetId) &&
+                                     t.amount <= limit ||
+                                    isDefined(t.assetId)) &&
+                                    sigVerify(t.bodyBytes, t.proofs[0], t.senderPublicKey)
+                                case m: MassTransferTransaction =>
+                                    let limit = extract(getInteger(this, ""limit""))
+                                    (!isDefined(m.assetId) &&
+                                    m.totalAmount <= limit ||
+                                    isDefined(m.assetId)) &&
+                                    sigVerify(m.bodyBytes, m.proofs[0], tx.senderPublicKey)
+                                case e: ExchangeTransaction =>
+                                    let limit = extract(getInteger(this, ""limit""))
+                                    ((!isDefined(e.sellOrder.assetPair.amountAsset) && e.buyOrder.amount <= limit)
+                                        || isDefined(e.sellOrder.assetPair.amountAsset)) &&
+                                    ((!isDefined(e.sellOrder.assetPair.priceAsset) && e.sellOrder.amount <= limit)
+                                        || isDefined(e.buyOrder.assetPair.amountAsset)) &&
+                                    sigVerify(e.bodyBytes, e.proofs[0], tx.senderPublicKey)
+                                case d: DataTransaction =>
+                                    sigVerify(d.bodyBytes, d.proofs[0], tokenomicaPubKey)
+                                case _ => false
+                            }";
             var compiledScript = node.CompileScript(script);
-
-            Console.WriteLine("Compiled script: {0}", compiledScript);
             var userSeed = PrivateKeyAccount.GenerateSeed();
             var userAccount = PrivateKeyAccount.CreateFromSeed(userSeed, AddressEncoding.TestNet);
+            var transferTransaction = new TransferTransaction(Alice.PublicKey, userAccount.Address, Assets.WAVES, 1m, 0.001m).Sign(Alice);
+            node.Broadcast(transferTransaction.GetJsonWithSignature());
+            Thread.Sleep(5000);
 
             var setScriptTx = new SetScriptTransaction(userAccount.PublicKey, compiledScript, AddressEncoding.TestNet, 0.14m);
             setScriptTx.Sign(userAccount);
             node.Broadcast(setScriptTx.GetJsonWithSignature());
-
-            Thread.Sleep(10000);
         }
 
         [TestMethod]
@@ -79,7 +82,10 @@ namespace WavesCSIntegrationTests
                                     case s: SetScriptTransaction =>
                                         sigVerify(s.bodyBytes, s.proofs[0], tokenomicaPubKey)
                                     case t: TransferTransaction =>
-                                        
+                                        let limit = extract(getInteger(tx.sender, ""limit""))
+                                        (!isDefined(t.assetId) &&
+                                         t.amount <= limit ||
+                                        isDefined(t.assetId)) &&
                                         sigVerify(t.bodyBytes, t.proofs[0], tx.senderPublicKey)
                                     case m: MassTransferTransaction =>
                                         let limit = extract(getInteger(this, ""limit""))
@@ -105,8 +111,6 @@ namespace WavesCSIntegrationTests
             var s = newCompiledScript.ToBase58();
             tokenomicaSetScriptTx.Sign(tokenomicaAccount);
             node.Broadcast(tokenomicaSetScriptTx.GetJsonWithSignature());
-
-            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", userAccount);
 
         }
 

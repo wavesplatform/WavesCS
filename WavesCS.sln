@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCS", "WavesCS\WavesCS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCSTests", "WavesCSTests\WavesCSTests.csproj", "{BA391F59-6B2D-4F95-B314-E50CF445E1B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WavesCSIntegrationTests", "WavesCSIntegrationTests\WavesCSIntegrationTests.csproj", "{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCSIntegrationTests", "WavesCSIntegrationTests\WavesCSIntegrationTests.csproj", "{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6C6002B5-24CF-496E-95FE-A3869B7D0705} = {6C6002B5-24CF-496E-95FE-A3869B7D0705}
 	EndProjectSection
