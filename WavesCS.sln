@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCS", "WavesCS\WavesCS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCSTests", "WavesCSTests\WavesCSTests.csproj", "{BA391F59-6B2D-4F95-B314-E50CF445E1B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WavesCSIntegrationTests", "WavesCSIntegrationTests\WavesCSIntegrationTests.csproj", "{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6C6002B5-24CF-496E-95FE-A3869B7D0705} = {6C6002B5-24CF-496E-95FE-A3869B7D0705}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +56,22 @@ Global
 		{BA391F59-6B2D-4F95-B314-E50CF445E1B8}.Release|x64.Build.0 = Release|Any CPU
 		{BA391F59-6B2D-4F95-B314-E50CF445E1B8}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA391F59-6B2D-4F95-B314-E50CF445E1B8}.Release|x86.Build.0 = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|ARM.Build.0 = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|x64.Build.0 = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Debug|x86.Build.0 = Debug|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|ARM.ActiveCfg = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|ARM.Build.0 = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|x64.ActiveCfg = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|x64.Build.0 = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E40F7FD-1DFE-48E4-BA5F-7631EE667662}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
