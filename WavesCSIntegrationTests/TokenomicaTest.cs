@@ -113,11 +113,6 @@ namespace WavesCSIntegrationTests
         {
             var node = new Node();
 
-           
-
-            var tokenomicaSeed = "aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic"; //3N6GrCERRyWw9k9siP9iPbqNV9q86jnbrYY
-            var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed(tokenomicaSeed, AddressEncoding.TestNet);
-
             var data = new DictionaryObject
             {
                 { "limit", 200000001L }
@@ -134,8 +129,7 @@ namespace WavesCSIntegrationTests
         [TestMethod]
         public void TestCreateAssetScript()
         {
-            var node = new Node();
-            var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed("aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic", 'T');
+            var node = new Node();            
             var script = $@"
             let tokenomicaAccount = base58'{tokenomicaAccount.Address}'
             let matcherAccount = tokenomicaAccount
