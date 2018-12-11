@@ -12,6 +12,8 @@ namespace WavesCSIntegrationTests
     {
 
         public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seed4Alice", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount userAccount = PrivateKeyAccount.CreateFromSeed("castle vocal place join absent various dignity sunset thrive hurry island joy you gossip public", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount tokenomicaAccount = PrivateKeyAccount.CreateFromSeed("aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic", AddressEncoding.TestNet); //3N6GrCERRyWw9k9siP9iPbqNV9q86jnbrYY
 
         [TestInitialize]
         public void Init()
@@ -52,9 +54,7 @@ namespace WavesCSIntegrationTests
                                     sigVerify(d.bodyBytes, d.proofs[0], tokenomicaPubKey)
                                 case _ => false
                             }";
-            var compiledScript = node.CompileScript(script);
-            var userSeed = PrivateKeyAccount.GenerateSeed();
-            var userAccount = PrivateKeyAccount.CreateFromSeed(userSeed, AddressEncoding.TestNet);
+            var compiledScript = node.CompileScript(script);            
             var transferTransaction = new TransferTransaction(Alice.PublicKey, userAccount.Address, Assets.WAVES, 1m, 0.001m).Sign(Alice);
             node.Broadcast(transferTransaction.GetJsonWithSignature());
             Thread.Sleep(5000);
@@ -69,11 +69,7 @@ namespace WavesCSIntegrationTests
         {
             var node = new Node();
 
-            var tokenomicaSeed = "aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic"; //3N6GrCERRyWw9k9siP9iPbqNV9q86jnbrYY
-            var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed(tokenomicaSeed, AddressEncoding.TestNet);
-
-            var userSeed = "castle vocal place join absent various dignity sunset thrive hurry island joy you gossip public";
-            var userAccount = PrivateKeyAccount.CreateFromSeed(userSeed, AddressEncoding.TestNet);
+            
 
             var newScript = @"let tokenomicaPubKey = base58'7dkSgXFv9EpYi3C3JK76wJTkciBsVPZ1xE5fVAMB6AD9'                            
                                 let this = extract(tx.sender)
@@ -110,12 +106,6 @@ namespace WavesCSIntegrationTests
             var s = newCompiledScript.ToBase58();
             tokenomicaSetScriptTx.Sign(tokenomicaAccount);
             node.Broadcast(tokenomicaSetScriptTx.GetJsonWithSignature());
-
-<<<<<<< HEAD
-            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", userAccount.Address);
-
-=======
->>>>>>> ced6bbcde045f6e2957c927135518e3da2e459eb
         }
 
         [TestMethod]
@@ -123,8 +113,7 @@ namespace WavesCSIntegrationTests
         {
             var node = new Node();
 
-            var userSeed = "castle vocal place join absent various dignity sunset thrive hurry island joy you gossip public";
-            var userAccount = PrivateKeyAccount.CreateFromSeed(userSeed, AddressEncoding.TestNet);
+           
 
             var tokenomicaSeed = "aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic"; //3N6GrCERRyWw9k9siP9iPbqNV9q86jnbrYY
             var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed(tokenomicaSeed, AddressEncoding.TestNet);
