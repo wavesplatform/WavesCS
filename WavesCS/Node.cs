@@ -238,9 +238,9 @@ namespace WavesCS
             return new Asset(assetId, name, decimals, script);
         }
 
-        public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable)
+        public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m)
         {
-            var tx = new ReissueTransaction(account.PublicKey, asset, quantity, reissuable);
+            var tx = new ReissueTransaction(account.PublicKey, asset, quantity, reissuable, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
