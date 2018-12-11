@@ -100,13 +100,12 @@ namespace WavesCSIntegrationTests
                                 }";
             var newCompiledScript = node.CompileScript(newScript);
 
-
             var tokenomicaSetScriptTx = new SetScriptTransaction(userAccount.PublicKey, newCompiledScript, AddressEncoding.TestNet, 0.14m);
             var s = newCompiledScript.ToBase58();
             tokenomicaSetScriptTx.Sign(tokenomicaAccount);
             node.Broadcast(tokenomicaSetScriptTx.GetJsonWithSignature());
 
-            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", userAccount);
+            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", userAccount.Address);
 
         }
 
@@ -138,23 +137,24 @@ namespace WavesCSIntegrationTests
         public void TestCreateAssetScript()
         {
             var node = new Node();
-            var account = PrivateKeyAccount.CreateFromSeed("aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic", 'T');
+            var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed("aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic", 'T');
             var script = $@"
-            let account = base58'{account.Address}'
-            let matcherAccount = account
+            let tokenomicaAccount = base58'{tokenomicaAccount.Address}'
+            let matcherAccount = tokenomicaAccount
              match tx {{
-                case tx: BurnTransaction => tx.sender.bytes == account
+                case tx: BurnTransaction => tx.sender.bytes == tokenomicaAccount
                 case tx: ExchangeTransaction =>
                     tx.sender.bytes == matcherAccount
-                    && extract(getBoolean(Address(account), toBase58String(tx.buyOrder.sender.bytes))) # whitelist
-                    && extract(getBoolean(Address(account), toBase58String(tx.sellOrder.sender.bytes)))
-                case tx: TransferTransaction => tx.sender.bytes == account || addressFromRecipient(tx.recipient).bytes == account
+                    && extract(getBoolean(Address(tokenomicaAccount), toBase58String(tx.buyOrder.sender.bytes))) # whitelist
+                    && extract(getBoolean(Address(tokenomicaAccount), toBase58String(tx.sellOrder.sender.bytes)))
+                case tx: TransferTransaction => tx.sender.bytes == tokenomicaAccount || addressFromRecipient(tx.recipient).bytes == tokenomicaAccount
                 case tx: MassTransferTransaction => false
                 case tx: ReissueTransaction => true
                 case _ => true # SetAssetScriptTransaction
             }}";
+
             var compiledScript = node.CompileScript(script);
-            var asset = node.IssueAsset(account, "ttoken", "ttoken", 1000000m, 8, true, compiledScript);
+            var asset = node.IssueAsset(tokenomicaAccount, "ttoken", "ttoken", 1000000m, 8, true, compiledScript);
         }
     }
 }
