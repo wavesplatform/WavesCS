@@ -113,8 +113,6 @@ namespace WavesCSIntegrationTests
         {
             var node = new Node();
 
-           
-
             var tokenomicaSeed = "aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic"; //3N6GrCERRyWw9k9siP9iPbqNV9q86jnbrYY
             var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed(tokenomicaSeed, AddressEncoding.TestNet);
 
