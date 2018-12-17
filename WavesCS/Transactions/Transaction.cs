@@ -99,7 +99,7 @@ namespace WavesCS
 
     public static class TransactionExtensons
     {
-        public static T Sign<T>(this T transaction, PrivateKeyAccount account, int proofIndex = 0) where T: Transaction
+        public static T Sign<T>(this T transaction, PrivateKeyAccount account, int proofIndex = 0) where T : Transaction
         {
             transaction.Proofs[proofIndex] = account.Sign(transaction.GetBody());
             return transaction;

@@ -133,7 +133,7 @@ namespace WavesCSIntegrationTests
         public void TestCreateAssetScript()
         {
             var node = new Node();
-            var tokenomicaAccount = PrivateKeyAccount.CreateFromSeed("aim property attract warfare stamp sample holiday input invest rather potato novel produce car arctic", 'T');
+
             var script = $@"
             let tokenomicaAccount = base58'{tokenomicaAccount.Address}'
             let matcherAccount = tokenomicaAccount

@@ -22,7 +22,6 @@ namespace WavesCSTests
         {
             // Use faucet to fill accounts https://testnet.wavesexplorer.com/faucet
             var node = new Node();
-
             var aliceBalanceWaves = node.GetBalance(Alice.Address);
             var bobBalanceWaves = node.GetBalance(Bob.Address);
             var carolBalanceWaves = node.GetBalance(Carol.Address);

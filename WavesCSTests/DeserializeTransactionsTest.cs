@@ -507,7 +507,7 @@ namespace WavesCSTests
               }
             }";
             var tx2 = Transaction.FromJson(json2.ParseJsonObject()).Sign(Accounts.Alice);
-            Assert.IsNotNull(tx);
+            Assert.IsNotNull(tx2);
         }
     }
 }

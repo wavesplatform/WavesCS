@@ -192,7 +192,7 @@ namespace WavesCS
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
             string message = "")
         {
-            var fee = 0.001m + (asset.Script != null ?  0.004m : 0) ;
+            var fee = 0.001m + (asset.Script != null ?  0.004m : 0);
             var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, message);
             tx.Sign(sender);
             return Broadcast(tx);
@@ -231,7 +231,7 @@ namespace WavesCS
         public Asset IssueAsset(PrivateKeyAccount account,
             string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null)
         {
-            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, 1, script);
+            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, 1.004m, script);
             tx.Sign(account);
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
