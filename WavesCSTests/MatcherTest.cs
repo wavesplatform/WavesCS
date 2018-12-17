@@ -53,6 +53,14 @@ namespace WavesCSTests
         }
 
         [TestMethod]
+        public void Test2()
+        {        
+
+            var t = PrivateKeyAccount.CreateFromSeed("Lvje1NjwcXFoR3SqNn1kwX3igAeNh5MqpPM5YmqhK".FromBase58(), chainId: 'D', nonce: 0).Address;
+            Console.WriteLine();
+        }
+
+        [TestMethod]
         public void TestTradableBalance()
         {
             var matcher = new Matcher("https://testnode1.wavesnodes.com");

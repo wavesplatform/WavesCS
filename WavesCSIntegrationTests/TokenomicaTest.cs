@@ -112,7 +112,6 @@ namespace WavesCSIntegrationTests
         public void TestWavesSpendingUserAccountScript()
         {
             var node = new Node();
-
             var data = new DictionaryObject
             {
                 { "limit", 200000001L }
@@ -129,7 +128,7 @@ namespace WavesCSIntegrationTests
         [TestMethod]
         public void TestCreateAssetScript()
         {
-            var node = new Node();            
+            var node = new Node();
             var script = $@"
             let tokenomicaAccount = base58'{tokenomicaAccount.Address}'
             let matcherAccount = tokenomicaAccount

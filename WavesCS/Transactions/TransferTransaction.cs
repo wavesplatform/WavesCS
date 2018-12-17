@@ -105,14 +105,8 @@ namespace WavesCS
 
         public override byte[] GetIdBytes()
         {
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
-
-            writer.Write(TransactionType.Transfer);
-            WriteBytes(writer);
-            return stream.ToArray();
+            return GetBody();
         }
-
 
         public override DictionaryObject GetJson()
         {
