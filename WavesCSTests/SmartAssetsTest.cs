@@ -36,7 +36,6 @@ namespace WavesCSTests
         public void TestSetAssetScript()
         {
             var node = new Node();
-
             var wavesBalanceBefore = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
 
             Asset smartAsset = node.IssueAsset(Accounts.Alice, "SmartAsset",
