@@ -79,17 +79,20 @@ namespace WavesCSTests
         {
             var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
 
-            var orderBook = matcher.GetOrderBook(Assets.WAVES, WBTC);
+            var priceAsset = Assets.WAVES;
+            var amountAsset = WBTC;
+
+            var orderBook = matcher.GetOrderBook(amountAsset, priceAsset);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
 
             Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow,
-                                     Assets.WAVES, WBTC, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
+                                     amountAsset, priceAsset, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
                                      DateTime.UtcNow.AddHours(1), 0.007m , Accounts.Carol.Address, 2);
 
             matcher.PlaceOrder(Accounts.Carol, order1);
             Thread.Sleep(3000);
 
-            var orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
+            var orders = matcher.GetOrders(Accounts.Carol, amountAsset, priceAsset);
 
             var lastOrder = orders.OrderBy(o => o.Timestamp).Last();
 
@@ -97,15 +100,15 @@ namespace WavesCSTests
             Assert.AreEqual(myPrice, lastOrder.Price);
             Assert.AreEqual(0.5m, lastOrder.Amount);
             Assert.AreEqual(OrderSide.Sell, lastOrder.Side);
-            Assert.AreEqual(Assets.WAVES, lastOrder.AmountAsset);
-            Assert.AreEqual(WBTC, lastOrder.PriceAsset);
+            Assert.AreEqual(amountAsset, lastOrder.AmountAsset);
+            Assert.AreEqual(priceAsset, lastOrder.PriceAsset);
             Assert.AreEqual(0.0, (lastOrder.Timestamp - DateTime.UtcNow).TotalSeconds, 10.0);
 
             matcher.CancelAll(Accounts.Carol);
 
             Thread.Sleep(3000);
             
-            orders = matcher.GetOrders(Accounts.Carol, Assets.WAVES, WBTC);
+            orders = matcher.GetOrders(Accounts.Carol, amountAsset, priceAsset);
             
             Assert.IsTrue(orders.All(o => o.Status == OrderStatus.Cancelled));
         }

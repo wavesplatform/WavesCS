@@ -207,31 +207,31 @@ namespace WavesCS
         }
 
         public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers,
-            string message = "")
+            string message = "", decimal? fee = null)
         {
-            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message);
+            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
 
-        public string Lease(PrivateKeyAccount sender, string recipient, decimal amount)
+        public string Lease(PrivateKeyAccount sender, string recipient, decimal amount, decimal fee = 0.001m)
         {
-            var tx = new LeaseTransaction(sender.PublicKey, recipient, amount);
+            var tx = new LeaseTransaction(sender.PublicKey, recipient, amount, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
        
-        public string CancelLease(PrivateKeyAccount account, string transactionId)
+        public string CancelLease(PrivateKeyAccount account, string transactionId, decimal fee = 0.001m)
         {
-            var tx = new CancelLeasingTransaction(account.PublicKey, transactionId);
+            var tx = new CancelLeasingTransaction(account.PublicKey, transactionId, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public Asset IssueAsset(PrivateKeyAccount account,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null, decimal fee = 1m)
         {
-            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, 1.004m, script);
+            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, fee, script);
             tx.Sign(account);
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
@@ -245,30 +245,30 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string BurnAsset(PrivateKeyAccount account, Asset asset, decimal amount)
+        public string BurnAsset(PrivateKeyAccount account, Asset asset, decimal amount, decimal fee = 0.001m)
         {
-            var tx = new BurnTransaction(account.PublicKey, asset, amount).Sign(account);
+            var tx = new BurnTransaction(account.PublicKey, asset, amount, fee).Sign(account);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
-        public string CreateAlias(PrivateKeyAccount account, string alias, char chainId)
+        public string CreateAlias(PrivateKeyAccount account, string alias, char chainId, decimal fee = 0.001m)
         {
-            var tx = new AliasTransaction(account.PublicKey, alias, chainId);
+            var tx = new AliasTransaction(account.PublicKey, alias, chainId, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
-        public string SponsoredFeeForAsset(PrivateKeyAccount account, Asset asset, decimal minimalFeeInAssets)
+        public string SponsoredFeeForAsset(PrivateKeyAccount account, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m)
         {
-            var tx = new SponsoredFeeTransaction(account.PublicKey, asset, minimalFeeInAssets);
+            var tx = new SponsoredFeeTransaction(account.PublicKey, asset, minimalFeeInAssets, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
-        public string PutData(PrivateKeyAccount account, DictionaryObject entries)
+        public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
         {
-            var tx = new DataTransaction(account.PublicKey, entries);
+            var tx = new DataTransaction(account.PublicKey, entries, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
