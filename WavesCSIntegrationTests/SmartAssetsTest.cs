@@ -97,8 +97,6 @@ match tx {
         public void TestIssueRaiseAsset()
         {
             var node = new Node();
-
-            
             var script = $@"let startPrice = 10
 let startHeight = 413039
 let interval = 1000
