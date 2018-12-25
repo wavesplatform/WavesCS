@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>WavesCSIntegrationTests</AssemblyTitle>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;net451</TargetFrameworks>
     <AssemblyName>WavesCSIntegrationTests</AssemblyName>
   </PropertyGroup>
   <ItemGroup>

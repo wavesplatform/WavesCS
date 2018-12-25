@@ -4,7 +4,10 @@
     <Product>WavesCS</Product>
     <Copyright>Copyright ©  2018</Copyright>
     <VersionPrefix>1.0.0.0</VersionPrefix>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;net451</TargetFrameworks>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
