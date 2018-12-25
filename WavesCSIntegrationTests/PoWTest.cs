@@ -12,26 +12,13 @@ namespace WavesCSIntegrationTests
     public class PoWTest
     {
         public static readonly PrivateKeyAccount PoWAccount = PrivateKeyAccount.CreateFromSeed("gossip system also kitten coast fossil much board maximum replace hip stumble color stem", 'T');
-        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seed4Alice", AddressEncoding.TestNet);
-        public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seed4Bob", 'T');
+        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seed4Alice", 'T');
 
-        [TestInitialize]
-        public void Init()
-        {
-            Http.Tracing = true;
-        }
+        int N = 2; // current PoW complexity
 
-        [TestMethod]
-        public void TestPoW()
-        {
-            var node = new Node();
-            Asset PoWAsset = Assets.GetById("1KcaUQAEUBmuJmdiP9gkwJdXdUwAvk9ZCGXviUeDF3v");
-
-            long N = 2;
-
-            var accountScript = @"#Proof-of-Work account
+        string accountScript = @"#Proof-of-Work account
                         let PoWAccount = extract(tx.sender)
-                        let PoWAsset = base58'1KcaUQAEUBmuJmdiP9gkwJdXdUwAvk9ZCGXviUeDF3v'
+                        let PoWAsset = base58'CZk46R9XmGhrtCHFRB1qJqZbQAM9yK2ys7c5xsakBjJ4'
                         match tx {
                             case tx : TransferTransaction =>
                                 if tx.assetId == PoWAsset then tx.fee == 900000 else sigVerify(tx.bodyBytes, tx.proofs[0], tx.senderPublicKey)
@@ -42,11 +29,9 @@ namespace WavesCSIntegrationTests
                             case _ => sigVerify(tx.bodyBytes, tx.proofs[0], tx.senderPublicKey)
                         }";
 
-            var compiledAccountScript = node.CompileScript(accountScript);
-
-            var assetScript = @"#Proof-of-Work asset
+        string assetScript = @"#Proof-of-Work asset
                     let PoWAccount = Address(base58'3N2hBea4tJ4vmGdTnr7iGEfeCwsDkLyCbWK')
-                    let PoWAsset = base58'1KcaUQAEUBmuJmdiP9gkwJdXdUwAvk9ZCGXviUeDF3v'
+                    let PoWAsset = base58'CZk46R9XmGhrtCHFRB1qJqZbQAM9yK2ys7c5xsakBjJ4'
                     match tx {
                         case tx : TransferTransaction =>
                             let N = extract(getInteger(PoWAccount, ""N""))
@@ -58,7 +43,29 @@ namespace WavesCSIntegrationTests
                         case _ => true
                     }";
 
-            var compiledAssetScript = node.CompileScript(assetScript);
+
+        [TestInitialize]
+        public void Init()
+        {
+            Http.Tracing = true;
+        }
+
+        [TestMethod]
+        public void TestIssueAsset ()
+        {
+            var node = new Node();
+
+            Asset smartAsset = node.IssueAsset(PoWAccount, "GoldAsset",
+                                               "GoldAsset is a smart asset that can be mined. Get some GoldAssets and sell them on DEX. The detailed info can be found on https://sway.office.com/CXrafP6sNPTKHCXJ?ref=Link",
+                                               1000000m, 0, false, node.CompileScript("true"), 1.004m);
+            Thread.Sleep(3000);
+            Assert.IsNotNull(smartAsset);
+        }
+
+        [TestMethod]
+        public void TestPoWAccountData()
+        {
+            var node = new Node();
 
             try
             {
@@ -81,6 +88,29 @@ namespace WavesCSIntegrationTests
 
             try
             {
+                var currentN = (long) node.GetAddressData(PoWAccount.Address)["N"];
+                Assert.AreEqual(N, currentN);
+            }
+            catch (Exception)
+            {
+                var data = new DictionaryObject { { "N", N } };
+
+                var dataTx = new DataTransaction(PoWAccount.PublicKey, data, 0.005m).Sign(PoWAccount);
+                node.Broadcast(dataTx);
+
+                Thread.Sleep(10000);
+                Assert.AreEqual(N, node.GetAddressData(PoWAccount.Address)["N"]);
+            }
+        }
+
+        [TestMethod]
+        public void TestPoWAccountScript()
+        {
+            var node = new Node();
+            var compiledAccountScript = node.CompileScript(accountScript);
+
+            try
+            {
                 Assert.AreEqual(compiledAccountScript.ToBase64(), node.GetObject("addresses/scriptInfo/{0}", PoWAccount.Address)["script"]);
             }
             catch (Exception)
@@ -90,6 +120,14 @@ namespace WavesCSIntegrationTests
 
                 Thread.Sleep(10000);
             }
+        }
+
+        [TestMethod]
+        public void TestPoWAssetScript()
+        {
+            var node = new Node();
+            Asset PoWAsset = Assets.GetById("CZk46R9XmGhrtCHFRB1qJqZbQAM9yK2ys7c5xsakBjJ4");
+            var compiledAssetScript = node.CompileScript(assetScript);
 
             try
             {
@@ -102,25 +140,17 @@ namespace WavesCSIntegrationTests
 
                 Thread.Sleep(10000);
             }
+        }
 
-            try
-            {
-                Assert.AreEqual(N, node.GetAddressData(PoWAccount.Address)["N"]);
-            }
-            catch (Exception)
-            {
-                var data = new DictionaryObject { { "N", N } };
-
-                var dataTx = new DataTransaction(PoWAccount.PublicKey, data, 0.005m).Sign(PoWAccount);
-                node.Broadcast(dataTx);
-
-                Thread.Sleep(10000);
-                Assert.AreEqual(N, node.GetAddressData(PoWAccount.Address)["N"]);
-            }
+        [TestMethod]
+        public void TestPoWMining()
+        {
+            var node = new Node();
+            Asset PoWAsset = Assets.GetById("CZk46R9XmGhrtCHFRB1qJqZbQAM9yK2ys7c5xsakBjJ4");
 
             var currentBalance = (int) node.GetBalance(PoWAccount.Address, PoWAsset);
             var transferAmount = currentBalance / 100 + 1;
-            var tx = new TransferTransaction(PoWAccount.PublicKey, Bob.Address, PoWAsset, PoWAsset.LongToAmount(transferAmount)).Sign(Bob);
+            var tx = new TransferTransaction(PoWAccount.PublicKey, Alice.Address, PoWAsset, PoWAsset.LongToAmount(transferAmount), 0.009m);
 
             try
             {
@@ -136,22 +166,19 @@ namespace WavesCSIntegrationTests
             while (true)
             {
                 tx = new TransferTransaction(PoWAccount.PublicKey,
-                                             Bob.Address,
+                                             Alice.Address,
                                              PoWAsset, PoWAsset.LongToAmount(transferAmount), 0.009m);
                 var id = tx.GenerateId();
                 var idFirstNBytes = id.FromBase58().Take((int)N).ToArray();
 
                 if (idFirstNBytes.Count(b => b == 0) == N)
                 {
-                    Console.WriteLine($"Generated id: {id}");
+                    Console.WriteLine($"Elapsed time = {(DateTime.UtcNow - begin).TotalMilliseconds} ms");
+                    Console.WriteLine($"Generated transaction id: {id}");
+                    node.Broadcast(tx);
                     break;
                 }
             }
-
-            var end = DateTime.UtcNow;
-            Console.WriteLine($"Elapsed time = {(end - begin).TotalMilliseconds} ms");
-            Console.WriteLine(tx.GenerateId());
-            node.Broadcast(tx);
         }
     }
 }
