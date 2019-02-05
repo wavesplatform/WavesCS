@@ -44,7 +44,7 @@ namespace WavesCSTests
             Dump("massxfer", new MassTransferTransaction(account.PublicKey, asset, recipients, "Shut up & take my money", Fee));
         }
 
-        private void Dump(String header, Transaction transaction)
+        private void Dump(string header, Transaction transaction)
         {
             TestContext.WriteLine("*** " + header + " ***");
 
