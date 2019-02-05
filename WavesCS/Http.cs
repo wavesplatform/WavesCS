@@ -54,7 +54,22 @@ namespace WavesCS
             var client = new WebClient { Encoding = Encoding.UTF8 };
             if (headers != null)
                 client.Headers.Add(headers);
-            var result = client.DownloadString(url);
+            var remainingTries = 5;
+            string result = "";
+            do
+            {
+                --remainingTries;
+                try
+                {
+                    result = client.DownloadString(url);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            while (remainingTries > 0);
+
             Trace($"Received: {result}");
             return result;
         }

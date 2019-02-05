@@ -22,7 +22,7 @@ namespace WavesCS
             Recipient = tx.GetString("recipient");
             Amount = Assets.WAVES.LongToAmount(tx.GetLong("amount"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            IsActive = tx.GetString("status") == "active";
+            IsActive = tx.ContainsKey("status") ? tx.GetString("status") == "active" : true;
         }
 
         public override byte[] GetBody()

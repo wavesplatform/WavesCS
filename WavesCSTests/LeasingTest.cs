@@ -15,7 +15,7 @@ namespace WavesCSTests
         }
         
         [TestMethod]
-        public void Test()
+        public void TestLeasing()
         {
             var node = new Node();
 

@@ -17,9 +17,10 @@ namespace WavesCS
 
         public char ChainId { get; }
         public byte[] Script { get; }
+        public bool Scripted { get; }
 
         public IssueTransaction(byte[] senderPublicKey,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null) : base(senderPublicKey)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null, bool scripted = false) : base(senderPublicKey)
         {
             Name = name ?? "";
             Description = description ?? "";
@@ -30,6 +31,7 @@ namespace WavesCS
             Asset = new Asset("", "", Decimals, script);
             Script = script;
             ChainId = chainId;
+            Scripted = scripted;
         }
 
         public IssueTransaction(DictionaryObject tx): base(tx)
@@ -41,6 +43,9 @@ namespace WavesCS
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             Asset = Assets.GetById(tx.GetString("assetId"));
+            Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
+            Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
+
         }
 
         public void WriteType(BinaryWriter writer)
@@ -127,7 +132,8 @@ namespace WavesCS
                 {"reissuable", Reissuable},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},
-                {"script", Script?.ToBase64()}
+                {"script", Script?.ToBase64()},
+                {"scripted", Scripted}
             };
             if (Version > 1)
                 result.Add("version", Version);
