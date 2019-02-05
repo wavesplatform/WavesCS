@@ -13,7 +13,7 @@ namespace WavesCS
         public Asset FeeAsset { get; }
         public byte[] Attachment { get; }
 
-        public override byte Version { get; set; } = 1;
+        public override byte Version { get; set; } = 2;
 
         public TransferTransaction(byte[] senderPublicKey, string recipient,
            Asset asset, decimal amount, string attachment) :
@@ -105,12 +105,7 @@ namespace WavesCS
 
         public override byte[] GetIdBytes()
         {
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
-
-            writer.Write(TransactionType.Transfer);
-            WriteBytes(writer);
-            return stream.ToArray();
+            return GetBody();
         }
 
 
