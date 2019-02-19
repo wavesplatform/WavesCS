@@ -2,6 +2,8 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
+using System.Threading;
+using System.Text;
 
 namespace WavesCSTests
 {
@@ -86,13 +88,37 @@ namespace WavesCSTests
         {
             var node = new Node();
             
-            string transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
-            Assert.IsNotNull(transactionId);
+            var transferResponse = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
+            Assert.IsNotNull(transferResponse);
 
             // transfer back so that Alice's balance is not drained
-            transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice");
-            Assert.IsNotNull(transactionId);
-        }        
+            var transferTxId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice").ParseJsonObject().GetString("id");
+            Thread.Sleep(10000);
+            var fee = node.CalculateFee(node.GetTransactionById(transferTxId));
+            Assert.IsNotNull(fee);            
+        }
+        
+        [TestMethod]
+        public void TestHash()
+        {
+            var node = new Node();
+            var message = "lalala";
+            var messageBytes = Encoding.UTF8.GetBytes(message);
+
+            var hashedByNodeMessage = node.SecureHash(message);
+            var hashedMessage = AddressEncoding.SecureHash(messageBytes, 0, messageBytes.Length);
+            Assert.IsTrue(hashedByNodeMessage.SequenceEqual(hashedMessage));
+            var fastHashedByNodeMessage = node.FastHash(message);
+            var fasthashedMessage = AddressEncoding.FastHash(messageBytes, 0, messageBytes.Length);
+            Assert.IsTrue(fastHashedByNodeMessage.SequenceEqual(fasthashedMessage));
+        }
+
+        [TestMethod]
+        public void TestUnconfirmed()
+        {
+            var node = new Node();
+            node.GetUnconfirmedTransactions();
+        }
 
         [TestMethod]
         public void TestBatchBroadcast()

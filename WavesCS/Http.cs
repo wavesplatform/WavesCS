@@ -68,7 +68,7 @@ namespace WavesCS
 
                 }
             }
-            while (remainingTries > 0);
+            while (remainingTries > 0 && result == "");
 
             Trace($"Received: {result}");
             return result;
@@ -101,8 +101,8 @@ namespace WavesCS
             }
             catch (WebException e)
             {
-                Console.WriteLine(e);
-                Console.WriteLine(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
+                Trace($"Exception: {e}");
+                Trace(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
                 throw;
             }
         }

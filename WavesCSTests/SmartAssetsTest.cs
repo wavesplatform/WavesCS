@@ -29,7 +29,7 @@ namespace WavesCSTests
             Thread.Sleep(15000);
 
             Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 100);
-            Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
+            Assert.AreEqual(Node.GetAsset(smartAsset.Id, Node.DefaultNode).Script.ToBase64(), compiledScript.ToBase64());
         }
 
         [TestMethod]
@@ -54,11 +54,8 @@ namespace WavesCSTests
 
             var compiledScript = node.CompileScript(script);
 
-            var setAssetScriptTransaction = new SetAssetScriptTransaction(Accounts.Alice.PublicKey, smartAsset,
-                                                                          compiledScript, 'T', 1);
+            node.SetAssetScript(Accounts.Alice, smartAsset, compiledScript, 'T', 1);
 
-            setAssetScriptTransaction.Sign(Accounts.Alice);
-            node.Broadcast(setAssetScriptTransaction);
             Thread.Sleep(10000);
 
             var aliceBalanceBefore = node.GetBalance(Accounts.Alice.Address, smartAsset);
@@ -84,14 +81,11 @@ namespace WavesCSTests
             Assert.AreEqual(aliceBalanceBefore - aliceBalanceAfter, 0.01m + 0.11m + 0.21m);
             Assert.AreEqual(bobBalanceAfter - bobBalanceBefore, 0.01m + 0.11m + 0.21m);
 
-            setAssetScriptTransaction = new SetAssetScriptTransaction(Accounts.Alice.PublicKey, smartAsset,
-                                                                      node.CompileScript("false"), 'T', 1);
-
-            setAssetScriptTransaction.Sign(Accounts.Alice);
-            node.Broadcast(setAssetScriptTransaction);
+            node.SetAssetScript(Accounts.Alice, smartAsset, node.CompileScript("false"), 'T', 1);
+            
             Thread.Sleep(12000);
 
-            Assert.AreEqual(Assets.GetById(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());
+            Assert.AreEqual(Node.GetAsset(smartAsset.Id, Node.DefaultNode).Script.ToBase64(), node.CompileScript("false").ToBase64());
 
             var wavesBalanceAfter = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
 

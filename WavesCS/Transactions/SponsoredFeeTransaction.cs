@@ -20,7 +20,7 @@ namespace WavesCS
 
         public SponsoredFeeTransaction(DictionaryObject tx) : base(tx)
         {
-            Asset = Assets.GetById(tx.GetString("assetId"));
+            Asset = Node.GetAsset(tx.GetString("assetId"), Node.DefaultNode);
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             MinimalFeeInAssets = Asset.LongToAmount(tx.GetLong("minSponsoredAssetFee"));
         }
