@@ -22,7 +22,7 @@ namespace WavesCSTests
             Asset amountAsset = null;
             try
             {
-                amountAsset = Assets.GetById("CVRciuSiK8xiNJSRitAG9dGqcmfFPHvn9bcXtntnpuvp", node);
+                amountAsset = Node.GetAsset("CVRciuSiK8xiNJSRitAG9dGqcmfFPHvn9bcXtntnpuvp", node);
 
                 if (node.GetBalance(Accounts.Alice.Address, amountAsset) < 0.1m)
                     throw new Exception();
@@ -68,7 +68,7 @@ namespace WavesCSTests
                                                      DateTime.UtcNow.AddSeconds(10));
 
             Http.Tracing = true;
-            var matcher = new Matcher("https://testnode1.wavesnodes.com");
+            var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
             var aliceBalanceBefore = matcher.GetTradableBalance(Accounts.Alice.Address, amountAsset, priceAsset)[amountAsset];
             var bobBalanceBefore = matcher.GetTradableBalance(Accounts.Bob.Address, amountAsset, priceAsset)[amountAsset];
 

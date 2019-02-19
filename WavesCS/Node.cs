@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -138,7 +139,12 @@ namespace WavesCS
             return asset;
         }
 
-        public Transaction[] GetTransactions(string address, int limit = 100)
+        public static Asset GetAsset(string assetId, Node node)
+        {
+            return node.GetAsset(assetId);
+        }
+
+            public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
                 .Select(tx => { tx["chainId"] = ChainId; return tx; })
@@ -222,6 +228,27 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string MassTransfer(PrivateKeyAccount sender, Asset asset, string recipientsListFile,
+           string message = "", decimal? fee = null)
+        {
+            string line;
+            List<MassTransferItem> transfers = new List<MassTransferItem>();
+ 
+            System.IO.StreamReader file =
+                new System.IO.StreamReader(recipientsListFile);
+            while ((line = file.ReadLine()) != null)
+            {
+                var item = line.Split(new char[] { ',' });
+                var amount = decimal.Parse(item[1], CultureInfo.GetCultureInfo("en-US"));
+                transfers.Add(new MassTransferItem(item[0], amount));
+            }
+            file.Close();
+            
+            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message, fee);
+            tx.Sign(sender);
+            return Broadcast(tx);
+        }
+
         public string Lease(PrivateKeyAccount sender, string recipient, decimal amount, decimal fee = 0.001m)
         {
             var tx = new LeaseTransaction(sender.PublicKey, recipient, amount, fee);
@@ -274,6 +301,20 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string SetAssetScript(PrivateKeyAccount account, Asset asset, byte[] script, char chainId, decimal fee = 1m)
+        {
+            var tx = new SetAssetScriptTransaction(account.PublicKey, asset, script, chainId, fee = 1m);
+            tx.Sign(account);
+            return Broadcast(tx);
+        }
+
+        public string SetScript(PrivateKeyAccount account, byte[] script, char chainId, decimal fee = 1m)
+        {
+            var tx = new SetScriptTransaction(account.PublicKey, script, chainId, fee = 0.014m);
+            tx.Sign(account);
+            return Broadcast(tx);
+        }
+
         public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
         {
             var tx = new DataTransaction(account.PublicKey, entries, fee);
@@ -284,6 +325,23 @@ namespace WavesCS
         public byte[] CompileScript(string script)
         {
             return Post("/utils/script/compile", script).ParseJsonObject().Get<string>("script").FromBase64();
+        }
+
+        public byte[] SecureHash(string message)
+        {
+            return Post("/utils/hash/secure", message).ParseJsonObject().Get<string>("hash").FromBase58();
+        }
+
+        public byte[] FastHash(string message)
+        {
+            return Post("/utils/hash/fast", message).ParseJsonObject().Get<string>("hash").FromBase58();
+        }
+
+        public Transaction[] GetUnconfirmedTransactions()
+        {
+            var response = Http.GetObjects($"{_host}/transactions/unconfirmed").Select(tx => Transaction.FromJson(tx)).ToArray();
+
+            return response;
         }
 
         public string Post(string url, string data)
@@ -310,6 +368,17 @@ namespace WavesCS
         public DictionaryObject[] GetTransactionsByAddress(string address, int limit)
         {
             return Http.GetFlatObjects($"{_host}/transactions/address/{address}/limit/{limit}");
+        }
+
+        public decimal CalculateFee(Transaction transaction)
+        {
+            var response =  Http.Post($"{_host}/transactions/calculateFee", transaction.GetJsonWithSignature()).ParseJsonObject().GetInt("feeAmount");
+            return response;
+        }
+
+        public string CalculateFee(DictionaryObject transaction)
+        {
+            return Http.Post($"{_host}/transactions/calculateFee", transaction);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace WavesCS
 
         public ReissueTransaction(DictionaryObject tx) : base(tx)
         {
-            Asset = Assets.GetById(tx.GetString("assetId"));
+            Asset = Node.GetAsset(tx.GetString("assetId"), Node.DefaultNode);
             Quantity = Asset.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee")); 

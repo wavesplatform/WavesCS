@@ -117,7 +117,7 @@ namespace WavesCSTests
             Assert.AreEqual(transferTx.Proofs[0].ToBase58(), "47vBFvnu2jcYEUEvhVSJcsZcC1LmiDC31joS8PuftT2CpvrT5nm9gxjxuP4MFeogBgDhStzxKndQbh6P4ejaqtUs");
             Assert.AreEqual(transferTx.Recipient, "3PPsHUKZ8WLU7sLm9sV5Sb75RNKnMinqU58");
 
-            Asset asset = Assets.GetById("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
+            Asset asset = Node.GetAsset("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC", Node.DefaultNode);
             Assert.AreEqual(transferTx.Asset, asset);
             Assert.AreEqual(transferTx.Amount, asset.LongToAmount(1097948));
 
@@ -142,7 +142,7 @@ namespace WavesCSTests
             Assert.AreEqual(reissueTx.Timestamp.ToLong(), 1534335650023);
             Assert.AreEqual(reissueTx.Proofs[0].ToBase58(), "26U7gP4YRAB1YMR7nzSS2wc5CeWKMPWwep6xAFrpLRXhbAWkpszEgdZaFvjYdRGucLVioD1JzpvduHuuyM88fXPM");
 
-            Asset asset = Assets.GetById("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
+            Asset asset = Node.GetAsset("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq", Node.DefaultNode);
             Assert.AreEqual(reissueTx.Asset, asset);
             Assert.AreEqual(reissueTx.Quantity, asset.LongToAmount(1838160000000000000));
 
@@ -167,7 +167,7 @@ namespace WavesCSTests
             Assert.AreEqual(burnTx.Timestamp.ToLong(), 1534497330455);
             Assert.AreEqual(burnTx.Proofs[0].ToBase58(), "4UzYadVf4Gz9udZL5eZ1SHYVXF3XhjcCi46mBc6aP5zCuvxtS41sNUzBeTirggjVuU9P3cYzwNh1gDjDRQYZVY1t");
 
-            Asset asset = Assets.GetById("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
+            Asset asset = Node.GetAsset("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC", Node.DefaultNode);
             Assert.AreEqual(burnTx.Asset, asset);
             Assert.AreEqual(asset.AmountToLong(burnTx.Quantity), 274487);
         }
@@ -252,7 +252,7 @@ namespace WavesCSTests
             Assert.AreEqual(massTransferTx.Timestamp.ToLong(), 1534263320261);
             Assert.AreEqual(massTransferTx.Proofs[0].ToBase58(), "V9U4CCkcn5Br73ZHGtgFbDWFF9fYjHFcxiynEgEci5s2WkNEVr4h7mDBB9hqLMvRfkLLLaF6KyNehguJuBMer2a");
 
-            Asset asset = Assets.GetById("9GGTr8sRMbyb8wWi6dcJGDQR5qChdJxJqgzreMTAf716");
+            Asset asset = Node.GetAsset("9GGTr8sRMbyb8wWi6dcJGDQR5qChdJxJqgzreMTAf716", Node.DefaultNode);
             Assert.AreEqual(massTransferTx.Asset, asset);
 
             Assert.AreEqual(massTransferTx.Attachment.ToBase58(), "eS1N");
@@ -329,7 +329,7 @@ namespace WavesCSTests
             Assert.AreEqual(sponsoredFeeTx.Timestamp.ToLong(), 1534448057070);
             Assert.AreEqual(sponsoredFeeTx.Proofs[0].ToBase58(), "3Q4JS4ujrGxAqp8LMXR9zZJC4tJ7YHiTo4SvMgrPhufo2UtR5x9JAaCGDjEr7qWXFDPJk7vWL8eapQkS45Dx1kcb");
 
-            Asset asset = Assets.GetById("FN76goSi7hQn6gQ8aezKVwyDvhkWx5ekXbP3sNLWqavN");
+            Asset asset = Node.GetAsset("FN76goSi7hQn6gQ8aezKVwyDvhkWx5ekXbP3sNLWqavN", Node.DefaultNode);
             Assert.AreEqual(sponsoredFeeTx.Asset, asset);
             Assert.AreEqual(sponsoredFeeTx.MinimalFeeInAssets, asset.LongToAmount(10));
         }
