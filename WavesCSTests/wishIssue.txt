@@ -1,0 +1,27 @@
+[TestMethod]
+        public void TestIssueSmartAsset()
+        {
+            var node = new Node(Node.MainNetHost);
+
+            var compiledScript = node.CompileScript(@"let startTime = (11 + 3) * 60 * 60 + 11 * 60
+                                                      let endTime = (11 + 3) * 60 * 60 + 12 * 60
+
+                                                      match(tx) {
+                                                        case b: BurnTransaction => {
+                                                                let transactionSecondsOfTheDay = (b.timestamp / 1000) % (3600 * 24)
+                                                                transactionSecondsOfTheDay >= startTime && transactionSecondsOfTheDay < endTime
+                                                        }
+                                                        case t: TransferTransaction | MassTransferTransaction | ReissueTransaction | SetAssetScriptTransaction => true
+                                                        case _ => false
+                                                      }");
+
+            Asset smartAsset = node.IssueAsset(Accounts.Alice, "Wish",
+                                          "Smart Asset", 1000000, 0,
+                                          true, compiledScript);
+            Assert.IsNotNull(smartAsset);
+
+            Thread.Sleep(15000);
+
+            Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 1000000);
+            Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
+        }

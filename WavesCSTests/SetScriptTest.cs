@@ -76,9 +76,7 @@ namespace WavesCSTests
             tx.Sign(Accounts.Alice, 0);
             tx.Sign(Accounts.Bob, 1);
 
-            node.Broadcast(tx);
-
-            Thread.Sleep(10000);
+            node.BroadcastAndWait(tx);
 
             Assert.IsTrue(node.GetBalance(multiAccount.Address) < 0.02m);
         }

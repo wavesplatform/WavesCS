@@ -44,7 +44,7 @@ namespace WavesCS
 
         public MassTransferTransaction(DictionaryObject tx) : base(tx)
         {
-            Asset = Node.GetAsset(tx.GetString("assetId") ?? Assets.WAVES.Id, Node.DefaultNode);
+            Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId") ?? Assets.WAVES.Id);
             Attachment = tx.GetString("attachment").FromBase58();
 
             Transfers = tx.GetObjects("transfers")

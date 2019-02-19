@@ -83,9 +83,7 @@ namespace WavesCSTests
 
             var tx = new MassTransferTransaction(Accounts.Alice.PublicKey, Assets.WAVES, recipients);
             tx.Sign(Accounts.Alice);
-            node.Broadcast(tx.GetJsonWithSignature());
-
-            Thread.Sleep(20000);
+            node.BroadcastAndWait(tx.GetJsonWithSignature());
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount * recipients.Count, balanceAfter);
