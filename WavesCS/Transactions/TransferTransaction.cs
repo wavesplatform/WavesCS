@@ -43,14 +43,14 @@ namespace WavesCS
         {
             Asset = Assets.WAVES;
             if (tx.ContainsKey("assetId") && tx.GetString("assetId") != null)
-                Asset = Node.GetAsset(tx.GetString("assetId"), Node.DefaultNode);
+                Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId"));
 
             FeeAsset = Assets.WAVES;
             if (tx.ContainsKey("feeAssetId")
                 && tx.GetString("feeAssetId") != null
                 && tx.GetString("feeAssetId") != "")
             {
-                FeeAsset = Node.GetAsset(tx.GetString("feeAssetId"), Node.DefaultNode);
+                FeeAsset = Node.DefaultNode.GetAsset(tx.GetString("feeAssetId"));
             }
 
             Amount = Asset.LongToAmount(tx.GetLong("amount"));

@@ -42,7 +42,7 @@ namespace WavesCS
             Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            Asset = Node.GetAsset(tx.GetString("assetId"), Node.DefaultNode);
+            Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId"));
             Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
 

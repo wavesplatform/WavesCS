@@ -29,7 +29,7 @@ namespace WavesCSTests
             Thread.Sleep(15000);
 
             Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 100);
-            Assert.AreEqual(Node.GetAsset(smartAsset.Id, Node.DefaultNode).Script.ToBase64(), compiledScript.ToBase64());
+            Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
         }
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace WavesCSTests
             
             Thread.Sleep(12000);
 
-            Assert.AreEqual(Node.GetAsset(smartAsset.Id, Node.DefaultNode).Script.ToBase64(), node.CompileScript("false").ToBase64());
+            Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());
 
             var wavesBalanceAfter = node.GetBalance(Accounts.Alice.Address, Assets.WAVES);
 

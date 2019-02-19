@@ -22,7 +22,7 @@ namespace WavesCSTests
             Asset asset = null;
             try
             {
-                asset = Node.GetAsset("HkNSgxYpBLkzLb2vGYFFDrRT3gD5aoUnFV9eFav5DWpB", node);
+                asset = node.GetAsset("HkNSgxYpBLkzLb2vGYFFDrRT3gD5aoUnFV9eFav5DWpB");
 
                 if (node.GetBalance(Accounts.Alice.Address, asset) < 0.2001m)
                     throw new Exception();

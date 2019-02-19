@@ -23,7 +23,7 @@ namespace WavesCSTests
             Assert.AreEqual(0.001m, leaseTx.Fee);
             leaseTx.Sign(Accounts.Bob);
             
-            var response = node.Broadcast(leaseTx.GetJsonWithSignature());
+            var response = node.BroadcastAndWait(leaseTx.GetJsonWithSignature());
             Console.WriteLine(response);
             Assert.IsFalse(string.IsNullOrEmpty(response));
 
@@ -35,7 +35,7 @@ namespace WavesCSTests
             Assert.AreEqual(0.001m, cancelTx.Fee);
             cancelTx.Sign(Accounts.Bob);  
             Console.WriteLine(cancelTx.GetJsonWithSignature());
-            response = node.Broadcast(cancelTx.GetJsonWithSignature());            
+            response = node.BroadcastAndWait(cancelTx.GetJsonWithSignature());            
             Assert.IsFalse(string.IsNullOrEmpty(response));
             Console.WriteLine(response);
         }

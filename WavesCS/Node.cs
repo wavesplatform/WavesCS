@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -144,7 +145,7 @@ namespace WavesCS
             return node.GetAsset(assetId);
         }
 
-            public Transaction[] GetTransactions(string address, int limit = 100)
+        public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
                 .Select(tx => { tx["chainId"] = ChainId; return tx; })
@@ -193,6 +194,21 @@ namespace WavesCS
             tx["chainId"] = ChainId;
 
             return Transaction.FromJson(tx);
+        }
+
+        public Transaction GetTransactionByIdOrNull(string transactionId)
+        {
+            try
+            {
+                var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
+                             .ParseJsonObject();
+
+                tx["chainId"] = ChainId;
+                return Transaction.FromJson(tx);
+            }
+            catch(Exception e){
+                return null;
+            }           
         }
 
         public Transaction[] GetBlockTransactionsAtHeight(int height)
@@ -354,6 +370,26 @@ namespace WavesCS
             return Http.Post($"{_host}/transactions/broadcast", transaction.GetJsonWithSignature());
         }
         
+        public string BroadcastAndWait(DictionaryObject transaction)
+        {
+            var response = Broadcast(transaction);
+            while (DefaultNode.GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null) 
+            {
+                Thread.Sleep(1000);
+            }
+            return response;
+        }
+
+        public string BroadcastAndWait(Transaction transaction)
+        {
+            var response = Broadcast(transaction);
+            while (DefaultNode.GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null)
+            {
+                Thread.Sleep(1000);
+            }
+            return response;
+        }
+
         public string Broadcast(DictionaryObject transaction)
         {
             return Http.Post($"{_host}/transactions/broadcast", transaction);

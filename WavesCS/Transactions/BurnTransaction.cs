@@ -17,7 +17,7 @@ namespace WavesCS
 
         public BurnTransaction(DictionaryObject tx) : base(tx)
         {
-            Asset = Node.GetAsset(tx.GetString("assetId"), Node.DefaultNode);
+            Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId"));
             Quantity = Asset.LongToAmount(tx.GetLong("amount"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
         }
