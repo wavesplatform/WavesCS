@@ -140,11 +140,6 @@ namespace WavesCS
             return asset;
         }
 
-        public static Asset GetAsset(string assetId, Node node)
-        {
-            return node.GetAsset(assetId);
-        }
-
         public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
