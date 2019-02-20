@@ -127,8 +127,8 @@ namespace WavesCSTests
 
             var transactons = new[]
             {
-                new TransferTransaction(Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
-                new TransferTransaction(Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
+                new TransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
+                new TransferTransaction(node.ChainId, Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
             };
             
             var result = node.BatchBroadcast(transactons);

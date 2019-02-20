@@ -59,7 +59,7 @@ namespace WavesCSTests
             sellOrder.Sign(Accounts.Alice);
             buyOrder.Sign(Accounts.Bob);
 
-            var exchangeTx = new ExchangeTransaction(Accounts.Carol.PublicKey,
+            var exchangeTx = new ExchangeTransaction(node.ChainId, Accounts.Carol.PublicKey,
                                                      0.003m,
                                                      0.003m, 0.003m,
                                                      amountAsset,priceAsset,

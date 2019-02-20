@@ -7,7 +7,7 @@ namespace WavesCS
     {
         int Type;
 
-        public UnknownTransaction(byte[] senderPublicKey, int type) : base(senderPublicKey)
+        public UnknownTransaction(char chainId, byte[] senderPublicKey, int type) : base(chainId, senderPublicKey)
         {
             Type = type;
         }

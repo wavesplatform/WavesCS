@@ -9,8 +9,8 @@ namespace WavesCS
         public decimal Amount { get; }
         public bool IsActive { get; }
 
-        public LeaseTransaction(byte[] senderPublicKey, string recipient, decimal amount, decimal fee = 0.001m) : 
-            base(senderPublicKey)
+        public LeaseTransaction(char chainId, byte[] senderPublicKey, string recipient, decimal amount, decimal fee = 0.001m) : 
+            base(chainId, senderPublicKey)
         {
             Recipient = recipient;
             Amount = amount;

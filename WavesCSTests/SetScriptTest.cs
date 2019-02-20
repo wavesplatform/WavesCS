@@ -24,17 +24,17 @@ namespace WavesCSTests
 
             Console.WriteLine("Compiled script: {0}", compiledScript);
 
-            var setScriptTx = node.SetScript(Accounts.Carol, compiledScript, 'T', 0.014m);
+            var setScriptTx = node.SetScript(Accounts.Carol, compiledScript, 0.014m);
 
             Thread.Sleep(10000);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
-            Assert.AreEqual("TRUE", scriptInfo["scriptText"]);
+            Assert.AreEqual("true", scriptInfo["scriptText"]);
             Assert.AreEqual(compiledScript.ToBase64(), scriptInfo["script"]);
             Assert.IsTrue(scriptInfo.GetInt("complexity") > 0);
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);
 
-            node.SetScript(Accounts.Carol, null, 'T', 0.014m);
+            node.SetScript(Accounts.Carol, null, 0.014m);
 
             Thread.Sleep(10000);
 
@@ -68,11 +68,11 @@ namespace WavesCSTests
 
             Assert.IsTrue(node.GetBalance(multiAccount.Address) == 0.1m);
 
-            node.SetScript(multiAccount, compiledScript, 'T');
+            node.SetScript(multiAccount, compiledScript, node.ChainId);
 
             Thread.Sleep(10000);
 
-            var tx = new TransferTransaction(multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.005m) { Version = 2 };
+            var tx = new TransferTransaction(node.ChainId, multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.005m) { Version = 2 };
             tx.Sign(Accounts.Alice, 0);
             tx.Sign(Accounts.Bob, 1);
 

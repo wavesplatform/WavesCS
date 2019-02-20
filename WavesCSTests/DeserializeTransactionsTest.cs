@@ -393,6 +393,7 @@ namespace WavesCSTests
 
             var transactionId = "CL1xVnX93Wyq8c6N2X5ER8UkR49uZJofGwx9YVB7Deny";
             var tx = node.GetTransactionById(transactionId);
+            tx.ChainId = node.ChainId;
 
             Assert.IsInstanceOfType(tx, typeof(SetAssetScriptTransaction));
             Assert.AreEqual(tx.GenerateId(), transactionId);

@@ -10,8 +10,8 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 1;
 
-        public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m) :
-            base(senderPublicKey)
+        public SponsoredFeeTransaction(char chainId, byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m) :
+            base(chainId, senderPublicKey)
         {
             Fee = fee;
             Asset = asset;
