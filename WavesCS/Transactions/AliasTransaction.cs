@@ -10,7 +10,7 @@ namespace WavesCS
         public char ChainId { get; set; }
  
         public AliasTransaction(byte[] senderPublicKey, string alias, char chainId, decimal fee = 0.001m) : 
-            base(senderPublicKey)
+            base(chainId, senderPublicKey)
         {
             Alias = alias;
             ChainId = chainId;

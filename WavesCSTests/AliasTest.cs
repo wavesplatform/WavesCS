@@ -81,7 +81,7 @@ namespace WavesCSTests
                 new MassTransferItem("alias:T:" + alias, amount)
             };
 
-            var tx = new MassTransferTransaction(Accounts.Alice.PublicKey, Assets.WAVES, recipients);
+            var tx = new MassTransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Assets.WAVES, recipients);
             tx.Sign(Accounts.Alice);
             node.BroadcastAndWait(tx.GetJsonWithSignature());
 

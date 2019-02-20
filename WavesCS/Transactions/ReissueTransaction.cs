@@ -9,8 +9,8 @@ namespace WavesCS
         public decimal Quantity { get; }
         public bool Reissuable { get; }
 
-        public ReissueTransaction(byte[] senderPublicKey, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
-            base(senderPublicKey)
+        public ReissueTransaction(char chainId, byte[] senderPublicKey, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
+            base(chainId, senderPublicKey)
         {
             Asset = asset;
             Quantity = quantity;

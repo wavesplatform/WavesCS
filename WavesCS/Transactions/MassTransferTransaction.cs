@@ -27,14 +27,14 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 1;
 
-        public MassTransferTransaction(byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
+        public MassTransferTransaction(char chainId, byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
             string attachment, decimal? fee = null) : 
-            this(senderPublicKey, asset, transfers, Encoding.UTF8.GetBytes(attachment), fee) 
+            this(chainId, senderPublicKey, asset, transfers, Encoding.UTF8.GetBytes(attachment), fee) 
         {
         }
         
-        public MassTransferTransaction(byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
-            byte[] attachment = null, decimal? fee = null) : base(senderPublicKey)
+        public MassTransferTransaction(char chainId, byte[] senderPublicKey, Asset asset, IEnumerable<MassTransferItem> transfers,
+            byte[] attachment = null, decimal? fee = null) : base(chainId, senderPublicKey)
         {
             Asset = asset;
             Attachment = attachment ?? new byte[0];

@@ -7,8 +7,8 @@ namespace WavesCS
     {
         public string LeaseId { get; }
       
-        public CancelLeasingTransaction(byte[] senderPublicKey, string leaseId, decimal fee = 0.001m) : 
-            base(senderPublicKey)
+        public CancelLeasingTransaction(char chainId, byte[] senderPublicKey, string leaseId, decimal fee = 0.001m) : 
+            base(chainId, senderPublicKey)
         {
             LeaseId = leaseId;
             Fee = fee;

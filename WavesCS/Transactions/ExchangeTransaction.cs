@@ -18,12 +18,12 @@ namespace WavesCS
         public Order BuyOrder;
         public Order SellOrder;
 
-        public ExchangeTransaction(byte[] senderPublicKey,
+        public ExchangeTransaction(char chainId, byte[] senderPublicKey,
                                    decimal fee, decimal buyMatcherFee,
                                    decimal sellMatcherFee, Asset amountAsset,
                                    Asset priceAsset,
                                    Order buyOrder, Order sellOrder,
-                                   decimal amount, decimal price, DateTime timestamp) : base(senderPublicKey)
+                                   decimal amount, decimal price, DateTime timestamp) : base(chainId, senderPublicKey)
         {
             Fee = fee;
 

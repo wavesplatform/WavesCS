@@ -223,7 +223,7 @@ namespace WavesCS
             string message = "")
         {
             var fee = 0.001m + (asset.Script != null ?  0.004m : 0);
-            var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, message);
+            var tx = new TransferTransaction(ChainId, sender.PublicKey, recipient, asset, amount, message);
             tx.Sign(sender);
             return Broadcast(tx);
         }
@@ -231,7 +231,7 @@ namespace WavesCS
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
                                decimal fee, Asset feeAsset = null, byte[] message = null)
         {
-            var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, fee, feeAsset, message);           
+            var tx = new TransferTransaction(ChainId, sender.PublicKey, recipient, asset, amount, fee, feeAsset, message);           
             tx.Sign(sender);
             return Broadcast(tx);
         }
@@ -239,7 +239,7 @@ namespace WavesCS
         public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers,
             string message = "", decimal? fee = null)
         {
-            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message, fee);
+            var tx = new MassTransferTransaction(ChainId, sender.PublicKey, asset, transfers, message, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
@@ -260,21 +260,21 @@ namespace WavesCS
             }
             file.Close();
             
-            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message, fee);
+            var tx = new MassTransferTransaction(ChainId, sender.PublicKey, asset, transfers, message, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
 
         public string Lease(PrivateKeyAccount sender, string recipient, decimal amount, decimal fee = 0.001m)
         {
-            var tx = new LeaseTransaction(sender.PublicKey, recipient, amount, fee);
+            var tx = new LeaseTransaction(ChainId, sender.PublicKey, recipient, amount, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
        
         public string CancelLease(PrivateKeyAccount account, string transactionId, decimal fee = 0.001m)
         {
-            var tx = new CancelLeasingTransaction(account.PublicKey, transactionId, fee);
+            var tx = new CancelLeasingTransaction(ChainId, account.PublicKey, transactionId, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
@@ -291,14 +291,14 @@ namespace WavesCS
 
         public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m)
         {
-            var tx = new ReissueTransaction(account.PublicKey, asset, quantity, reissuable, fee);
+            var tx = new ReissueTransaction(ChainId, account.PublicKey, asset, quantity, reissuable, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public string BurnAsset(PrivateKeyAccount account, Asset asset, decimal amount, decimal fee = 0.001m)
         {
-            var tx = new BurnTransaction(account.PublicKey, asset, amount, fee).Sign(account);
+            var tx = new BurnTransaction(ChainId, account.PublicKey, asset, amount, fee).Sign(account);
             tx.Sign(account);
             return Broadcast(tx);
         }
@@ -312,28 +312,28 @@ namespace WavesCS
 
         public string SponsoredFeeForAsset(PrivateKeyAccount account, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m)
         {
-            var tx = new SponsoredFeeTransaction(account.PublicKey, asset, minimalFeeInAssets, fee);
+            var tx = new SponsoredFeeTransaction(ChainId, account.PublicKey, asset, minimalFeeInAssets, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public string SetAssetScript(PrivateKeyAccount account, Asset asset, byte[] script, char chainId, decimal fee = 1m)
         {
-            var tx = new SetAssetScriptTransaction(account.PublicKey, asset, script, chainId, fee = 1m);
+            var tx = new SetAssetScriptTransaction(ChainId, account.PublicKey, asset, script, fee = 1m);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
-        public string SetScript(PrivateKeyAccount account, byte[] script, char chainId, decimal fee = 1m)
+        public string SetScript(PrivateKeyAccount account, byte[] script, decimal fee = 1m)
         {
-            var tx = new SetScriptTransaction(account.PublicKey, script, chainId, fee = 0.014m);
+            var tx = new SetScriptTransaction(account.PublicKey, script, ChainId, fee = 0.014m);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
         {
-            var tx = new DataTransaction(account.PublicKey, entries, fee);
+            var tx = new DataTransaction(ChainId, account.PublicKey, entries, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }

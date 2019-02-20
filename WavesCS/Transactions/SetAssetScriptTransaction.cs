@@ -12,7 +12,7 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 1;
 
-        public SetAssetScriptTransaction(byte[] senderPublicKey, Asset asset, byte[] script, char chainId, decimal fee = 1m) : base(senderPublicKey)
+        public SetAssetScriptTransaction(char chainId, byte[] senderPublicKey, Asset asset, byte[] script, decimal fee = 1m) : base(chainId, senderPublicKey)
         {
             Asset = asset;
             Script = script;

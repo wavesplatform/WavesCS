@@ -11,6 +11,7 @@ namespace WavesCS
         public byte[] SenderPublicKey { get; }
         public string Sender { get; }
         public decimal Fee { get; set; }
+        public char ChainId { get; set; }
 
         public virtual byte Version { get; set; }
 
@@ -22,11 +23,12 @@ namespace WavesCS
 
         public static bool checkId = false;
 
-        protected Transaction(byte[] senderPublicKey)
+        protected Transaction(char chainId, byte[] senderPublicKey)
         {
             Timestamp = DateTime.UtcNow;
             SenderPublicKey = senderPublicKey;
             Proofs = new byte[8][];
+            ChainId = chainId;
         }
 
         protected Transaction(DictionaryObject tx)
@@ -35,6 +37,7 @@ namespace WavesCS
             Sender = tx.ContainsKey("sender") ? tx.GetString("sender") : "";
             SenderPublicKey = tx.GetString("senderPublicKey").FromBase58();
             Version = tx.ContainsKey("version") ? tx.GetByte("version") : (byte)1;
+            ChainId = tx.ContainsKey("chainId") ? tx.GetChar("chainId") : '\0';
 
             if (tx.ContainsKey("proofs"))
             {
