@@ -21,19 +21,14 @@ namespace WavesCS
         
         private Dictionary<string, Asset> AssetsCache;
 
-        public Node(string nodeHost, char nodeChainId = TestNetChainId)
+        public Node(string nodeHost, char nodeChainId)
         {           
             if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
 
             _host = nodeHost;
 
-            if (_host == TestNetHost)
-                ChainId = TestNetChainId;
-            else if (_host == MainNetHost)
-                ChainId = MainNetChainId;
-            else
-                ChainId = nodeChainId;
+            ChainId = nodeChainId;
 
             AssetsCache = new Dictionary<string, Asset>();
         }
@@ -50,12 +45,7 @@ namespace WavesCS
 
             _host = nodeHost;
 
-            if (_host == TestNetHost)
-                ChainId = TestNetChainId;
-            else if (_host == MainNetHost)
-                ChainId = MainNetChainId;
-            else
-                ChainId = nodeChainId;
+            ChainId = nodeChainId;
 
             AssetsCache = new Dictionary<string, Asset>();
         }

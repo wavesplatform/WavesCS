@@ -32,7 +32,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetAsset()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
             var assetId = "725Yv9oceWsB4GsYwyy4A52kEwyVrL5avubkeChSnL46";
 
             var asset = node.GetAsset(assetId);
@@ -50,7 +50,7 @@ namespace WavesCSTests
         {
             Http.Tracing = false;
             
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
  
             var portfolio = node.GetAssetBalances("3PPF1JfQLJLVd6v4ewmuDbjDLcxBCUe5GSu");
             
@@ -65,7 +65,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestBalance()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
  
             var balance = node.GetBalance("3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3", Assets.WAVES);            
             
