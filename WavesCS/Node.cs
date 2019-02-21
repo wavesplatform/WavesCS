@@ -18,12 +18,11 @@ namespace WavesCS
 
         private readonly string _host;
         public readonly char ChainId;
-
-        public static Node DefaultNode { get; private set; }
+        
         private Dictionary<string, Asset> AssetsCache;
 
-        public Node(string nodeHost = TestNetHost, char nodeChainId = TestNetChainId)
-        {
+        public Node(string nodeHost, char nodeChainId = TestNetChainId)
+        {           
             if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
 
@@ -36,8 +35,27 @@ namespace WavesCS
             else
                 ChainId = nodeChainId;
 
-            if (DefaultNode == null)
-                DefaultNode = this;
+            AssetsCache = new Dictionary<string, Asset>();
+        }
+
+        public Node(char nodeChainId = TestNetChainId)
+        {
+            string nodeHost = "";
+            if (nodeChainId == TestNetChainId)
+                nodeHost = TestNetHost;
+            else
+                nodeHost = MainNetHost;
+            if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
+                nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
+
+            _host = nodeHost;
+
+            if (_host == TestNetHost)
+                ChainId = TestNetChainId;
+            else if (_host == MainNetHost)
+                ChainId = MainNetChainId;
+            else
+                ChainId = nodeChainId;
 
             AssetsCache = new Dictionary<string, Asset>();
         }
@@ -368,7 +386,7 @@ namespace WavesCS
         public string BroadcastAndWait(DictionaryObject transaction)
         {
             var response = Broadcast(transaction);
-            while (DefaultNode.GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null) 
+            while (GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null) 
             {
                 Thread.Sleep(1000);
             }
@@ -378,7 +396,7 @@ namespace WavesCS
         public string BroadcastAndWait(Transaction transaction)
         {
             var response = Broadcast(transaction);
-            while (DefaultNode.GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null)
+            while (GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null)
             {
                 Thread.Sleep(1000);
             }
