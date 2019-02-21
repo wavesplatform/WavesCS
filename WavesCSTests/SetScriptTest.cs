@@ -29,7 +29,7 @@ namespace WavesCSTests
             Thread.Sleep(10000);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
-            Assert.AreEqual("true", scriptInfo["scriptText"]);
+            Assert.AreEqual("TRUE", scriptInfo["scriptText"]);
             Assert.AreEqual(compiledScript.ToBase64(), scriptInfo["script"]);
             Assert.IsTrue(scriptInfo.GetInt("complexity") > 0);
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);

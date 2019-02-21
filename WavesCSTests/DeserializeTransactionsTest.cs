@@ -457,7 +457,8 @@ namespace WavesCSTests
               'price': 10000,
               'amount': 1000000,
               'buyMatcherFee': 300000,
-              'sellMatcherFee': 300000
+              'sellMatcherFee': 300000,
+              'chainId': 'W'
             }";
 
             var tx = Transaction.FromJson(json.ParseJsonObject()).Sign(Accounts.Alice);

@@ -36,13 +36,14 @@ namespace WavesCS
 
         public IssueTransaction(DictionaryObject tx): base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Name = tx.GetString("name");
             Description = tx.GetString("description");
             Decimals = (byte)tx.GetInt("decimals");
             Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId"));
+            Asset = node.GetAsset(tx.GetString("assetId"));
             Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
 

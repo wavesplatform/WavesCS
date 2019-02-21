@@ -22,10 +22,11 @@ namespace WavesCS
 
         public SetAssetScriptTransaction(DictionaryObject tx) : base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Script = tx.GetString("script").FromBase64();
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             ChainId = tx.GetChar("chainId");
-            Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId"));
+            Asset = node.GetAsset(tx.GetString("assetId"));
         }
 
         public override byte[] GetBody()

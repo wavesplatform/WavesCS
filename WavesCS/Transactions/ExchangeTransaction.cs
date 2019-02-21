@@ -43,13 +43,14 @@ namespace WavesCS
 
         public ExchangeTransaction(DictionaryObject tx) : base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
 
             BuyMatcherFee = Assets.WAVES.LongToAmount(tx.GetLong("buyMatcherFee"));
             SellMatcherFee = Assets.WAVES.LongToAmount(tx.GetLong("sellMatcherFee"));
 
-            AmountAsset = Node.DefaultNode.GetAsset((tx.GetValue("order1.assetPair.amountAsset") ?? Assets.WAVES.Id).ToString());
-            PriceAsset = Node.DefaultNode.GetAsset((tx.GetValue("order1.assetPair.priceAsset") ?? Assets.WAVES.Id).ToString());
+            AmountAsset = node.GetAsset((tx.GetValue("order1.assetPair.amountAsset") ?? Assets.WAVES.Id).ToString());
+            PriceAsset = node.GetAsset((tx.GetValue("order1.assetPair.priceAsset") ?? Assets.WAVES.Id).ToString());
 
             BuyOrder = Order.CreateFromJson(tx.GetObject("order1"), AmountAsset, PriceAsset);
             SellOrder = Order.CreateFromJson(tx.GetObject("order2"), AmountAsset, PriceAsset);

@@ -41,16 +41,17 @@ namespace WavesCS
 
         public TransferTransaction(DictionaryObject tx): base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Asset = Assets.WAVES;
             if (tx.ContainsKey("assetId") && tx.GetString("assetId") != null)
-                Asset = Node.DefaultNode.GetAsset(tx.GetString("assetId"));
+                Asset = node.GetAsset(tx.GetString("assetId"));
 
             FeeAsset = Assets.WAVES;
             if (tx.ContainsKey("feeAssetId")
                 && tx.GetString("feeAssetId") != null
                 && tx.GetString("feeAssetId") != "")
             {
-                FeeAsset = Node.DefaultNode.GetAsset(tx.GetString("feeAssetId"));
+                FeeAsset = node.GetAsset(tx.GetString("feeAssetId"));
             }
 
             Amount = Asset.LongToAmount(tx.GetLong("amount"));
