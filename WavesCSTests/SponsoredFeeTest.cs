@@ -17,7 +17,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSponsoredFeeTransaction()
         {
-            var node = new Node(Node.TestNetHost, 'T');
+            var node = new Node(Node.TestNetChainId);
 
             Asset asset = null;
             try

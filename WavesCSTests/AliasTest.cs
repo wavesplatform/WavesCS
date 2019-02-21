@@ -32,7 +32,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestTransferToAlias()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
@@ -57,7 +57,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMassTransferToAlias()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');

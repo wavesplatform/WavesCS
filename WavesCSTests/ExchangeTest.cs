@@ -17,7 +17,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestExchangeTransaction()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             Asset amountAsset = null;
             try
