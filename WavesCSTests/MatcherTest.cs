@@ -102,7 +102,6 @@ namespace WavesCSTests
 
             orders = matcher.GetOrders(Accounts.Carol, amountAsset, priceAsset);
 
-
             Assert.IsTrue(orders.All(o => o.Status == OrderStatus.Cancelled));
         }
     }
