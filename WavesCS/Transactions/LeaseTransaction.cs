@@ -8,6 +8,7 @@ namespace WavesCS
         public string Recipient { get; }
         public decimal Amount { get; }
         public bool IsActive { get; }
+        public override byte Version { get; set; } = 2;
 
         public LeaseTransaction(char chainId, byte[] senderPublicKey, string recipient, decimal amount, decimal fee = 0.001m) : 
             base(chainId, senderPublicKey)

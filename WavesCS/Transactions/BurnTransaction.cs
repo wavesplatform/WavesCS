@@ -7,6 +7,7 @@ namespace WavesCS
     {
         public Asset Asset { get; }
         public decimal Quantity { get; }
+        public override byte Version { get; set; } = 2;
 
         public BurnTransaction(char chainId, byte[] senderPublicKey, Asset asset, decimal quantity, decimal fee = 0.001m) : base(chainId, senderPublicKey)
         {

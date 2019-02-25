@@ -17,6 +17,7 @@ namespace WavesCS
 
         public Order BuyOrder;
         public Order SellOrder;
+        public override byte Version { get; set; } = 2;
 
         public ExchangeTransaction(char chainId, byte[] senderPublicKey,
                                    decimal fee, decimal buyMatcherFee,

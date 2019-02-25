@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -17,7 +16,7 @@ namespace WavesCS
         public const char MainNetChainId = 'W';
 
         private readonly string _host;
-        public readonly char ChainId;
+        public char ChainId;
         
         private Dictionary<string, Asset> AssetsCache;
 
@@ -108,10 +107,10 @@ namespace WavesCS
         {
             switch (o.GetString("type"))
             {
-                case "string": return (object)o.GetString("value");
-                case "binary": return (object)o.GetString("value").FromBase64();
-                case "integer": return (object)o.GetLong("value");
-                case "boolean": return (object)o.GetBool("value");
+                case "string": return o.GetString("value");
+                case "binary": return o.GetString("value").FromBase64();
+                case "integer": return o.GetLong("value");
+                case "boolean": return o.GetBool("value");
                 default: throw new Exception("Unknown value type");
             }
         }
@@ -287,7 +286,7 @@ namespace WavesCS
         {
             var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, fee, script, scripted);
             tx.Sign(account);
-            var response = Broadcast(tx);
+            var response = BroadcastAndWait(tx);
             var assetId = response.ParseJsonObject().GetString("id");
             return new Asset(assetId, name, decimals, script);
         }

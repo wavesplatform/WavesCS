@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -8,7 +7,6 @@ namespace WavesCS
     {
         public Asset Asset;
         public byte[] Script { get; }
-        public char ChainId { get; }
 
         public override byte Version { get; set; } = 1;
 
@@ -16,7 +14,6 @@ namespace WavesCS
         {
             Asset = asset;
             Script = script;
-            ChainId = chainId;
             Fee = fee;
         }
 
