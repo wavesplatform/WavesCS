@@ -7,13 +7,12 @@ namespace WavesCS
     public class AliasTransaction : Transaction
     {
         public string Alias { get; }
-        public char ChainId { get; set; }
- 
+        public override byte Version { get; set; } = 2;
+
         public AliasTransaction(byte[] senderPublicKey, string alias, char chainId, decimal fee = 0.001m) : 
             base(chainId, senderPublicKey)
         {
             Alias = alias;
-            ChainId = chainId;
             Fee = fee;
         }
 

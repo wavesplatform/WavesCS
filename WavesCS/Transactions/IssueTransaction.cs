@@ -15,7 +15,6 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 2;
 
-        public char ChainId { get; }
         public byte[] Script { get; }
         public bool Scripted { get; }
 
@@ -30,7 +29,6 @@ namespace WavesCS
             Fee = fee;
             Asset = new Asset("", "", Decimals, script);
             Script = script;
-            ChainId = chainId;
             Scripted = scripted;
         }
 
