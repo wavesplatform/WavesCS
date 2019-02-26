@@ -47,6 +47,12 @@ namespace WavesCS
             return json.ParseJsonObjects();
         }
 
+        public static DictionaryObject[] GetFlatObjectsWithHeaders(string url, NameValueCollection headers)
+        {
+            var json = GetJson(url, headers);
+            return json.ParseFlatObjects();
+        }
+
         public static string GetJson(string url, NameValueCollection headers = null)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;

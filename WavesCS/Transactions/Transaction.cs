@@ -113,5 +113,11 @@ namespace WavesCS
             var bodyBytes = transaction.GetIdBytes();
             return AddressEncoding.FastHash(bodyBytes, 0, bodyBytes.Length).ToBase58();
         }
+
+        public static byte[] GenerateBinaryId<T>(this T transaction) where T : Transaction
+        {
+            var bodyBytes = transaction.GetIdBytes();
+            return AddressEncoding.FastHash(bodyBytes, 0, bodyBytes.Length);
+        }
     }
 }
