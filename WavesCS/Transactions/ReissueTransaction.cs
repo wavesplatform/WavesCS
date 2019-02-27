@@ -8,9 +8,10 @@ namespace WavesCS
         public Asset Asset { get; }
         public decimal Quantity { get; }
         public bool Reissuable { get; }
+        public override byte Version { get; set; } = 2;
 
-        public ReissueTransaction(byte[] senderPublicKey, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
-            base(senderPublicKey)
+        public ReissueTransaction(char chainId, byte[] senderPublicKey, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m) : 
+            base(chainId, senderPublicKey)
         {
             Asset = asset;
             Quantity = quantity;
@@ -20,7 +21,8 @@ namespace WavesCS
 
         public ReissueTransaction(DictionaryObject tx) : base(tx)
         {
-            Asset = Assets.GetById(tx.GetString("assetId"));
+            var node = new Node(tx.GetChar("chainId"));
+            Asset = node.GetAsset(tx.GetString("assetId"));
             Quantity = Asset.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee")); 

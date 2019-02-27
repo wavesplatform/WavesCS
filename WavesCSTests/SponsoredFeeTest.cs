@@ -17,12 +17,12 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSponsoredFeeTransaction()
         {
-            var node = new Node(Node.TestNetHost, 'T');
+            var node = new Node(Node.TestNetChainId);
 
             Asset asset = null;
             try
             {
-                asset = Assets.GetById("HkNSgxYpBLkzLb2vGYFFDrRT3gD5aoUnFV9eFav5DWpB", node);
+                asset = node.GetAsset("HkNSgxYpBLkzLb2vGYFFDrRT3gD5aoUnFV9eFav5DWpB");
 
                 if (node.GetBalance(Accounts.Alice.Address, asset) < 0.2001m)
                     throw new Exception();

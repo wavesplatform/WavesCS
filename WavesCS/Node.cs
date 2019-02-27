@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -15,27 +16,35 @@ namespace WavesCS
         public const char MainNetChainId = 'W';
 
         private readonly string _host;
-        public readonly char ChainId;
-
-        public static Node DefaultNode { get; private set; }
+        public char ChainId;
+        
         private Dictionary<string, Asset> AssetsCache;
 
-        public Node(string nodeHost = TestNetHost, char nodeChainId = TestNetChainId)
-        {
+        public Node(string nodeHost, char nodeChainId)
+        {           
             if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
                 nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
 
             _host = nodeHost;
 
-            if (_host == TestNetHost)
-                ChainId = TestNetChainId;
-            else if (_host == MainNetHost)
-                ChainId = MainNetChainId;
-            else
-                ChainId = nodeChainId;
+            ChainId = nodeChainId;
 
-            if (DefaultNode == null)
-                DefaultNode = this;
+            AssetsCache = new Dictionary<string, Asset>();
+        }
+
+        public Node(char nodeChainId = TestNetChainId)
+        {
+            string nodeHost = "";
+            if (nodeChainId == TestNetChainId)
+                nodeHost = TestNetHost;
+            else
+                nodeHost = MainNetHost;
+            if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
+                nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
+
+            _host = nodeHost;
+
+            ChainId = nodeChainId;
 
             AssetsCache = new Dictionary<string, Asset>();
         }
@@ -98,10 +107,10 @@ namespace WavesCS
         {
             switch (o.GetString("type"))
             {
-                case "string": return (object)o.GetString("value");
-                case "binary": return (object)o.GetString("value").FromBase64();
-                case "integer": return (object)o.GetLong("value");
-                case "boolean": return (object)o.GetBool("value");
+                case "string": return o.GetString("value");
+                case "binary": return o.GetString("value").FromBase64();
+                case "integer": return o.GetLong("value");
+                case "boolean": return o.GetBool("value");
                 default: throw new Exception("Unknown value type");
             }
         }
@@ -189,6 +198,21 @@ namespace WavesCS
             return Transaction.FromJson(tx);
         }
 
+        public Transaction GetTransactionByIdOrNull(string transactionId)
+        {
+            try
+            {
+                var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
+                             .ParseJsonObject();
+
+                tx["chainId"] = ChainId;
+                return Transaction.FromJson(tx);
+            }
+            catch(Exception e){
+                return null;
+            }           
+        }
+
         public Transaction[] GetBlockTransactionsAtHeight(int height)
         {
             var block = GetObject($"blocks/at/{height}");
@@ -201,7 +225,7 @@ namespace WavesCS
             string message = "")
         {
             var fee = 0.001m + (asset.Script != null ?  0.004m : 0);
-            var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, message);
+            var tx = new TransferTransaction(ChainId, sender.PublicKey, recipient, asset, amount, message);
             tx.Sign(sender);
             return Broadcast(tx);
         }
@@ -209,7 +233,7 @@ namespace WavesCS
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
                                decimal fee, Asset feeAsset = null, byte[] message = null)
         {
-            var tx = new TransferTransaction(sender.PublicKey, recipient, asset, amount, fee, feeAsset, message);           
+            var tx = new TransferTransaction(ChainId, sender.PublicKey, recipient, asset, amount, fee, feeAsset, message);           
             tx.Sign(sender);
             return Broadcast(tx);
         }
@@ -217,21 +241,42 @@ namespace WavesCS
         public string MassTransfer(PrivateKeyAccount sender, Asset asset, IEnumerable<MassTransferItem> transfers,
             string message = "", decimal? fee = null)
         {
-            var tx = new MassTransferTransaction(sender.PublicKey, asset, transfers, message, fee);
+            var tx = new MassTransferTransaction(ChainId, sender.PublicKey, asset, transfers, message, fee);
+            tx.Sign(sender);
+            return Broadcast(tx);
+        }
+
+        public string MassTransfer(PrivateKeyAccount sender, Asset asset, string recipientsListFile,
+           string message = "", decimal? fee = null)
+        {
+            string line;
+            List<MassTransferItem> transfers = new List<MassTransferItem>();
+ 
+            System.IO.StreamReader file =
+                new System.IO.StreamReader(recipientsListFile);
+            while ((line = file.ReadLine()) != null)
+            {
+                var item = line.Split(new char[] { ',' });
+                var amount = decimal.Parse(item[1], CultureInfo.GetCultureInfo("en-US"));
+                transfers.Add(new MassTransferItem(item[0], amount));
+            }
+            file.Close();
+            
+            var tx = new MassTransferTransaction(ChainId, sender.PublicKey, asset, transfers, message, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
 
         public string Lease(PrivateKeyAccount sender, string recipient, decimal amount, decimal fee = 0.001m)
         {
-            var tx = new LeaseTransaction(sender.PublicKey, recipient, amount, fee);
+            var tx = new LeaseTransaction(ChainId, sender.PublicKey, recipient, amount, fee);
             tx.Sign(sender);
             return Broadcast(tx);
         }
        
         public string CancelLease(PrivateKeyAccount account, string transactionId, decimal fee = 0.001m)
         {
-            var tx = new CancelLeasingTransaction(account.PublicKey, transactionId, fee);
+            var tx = new CancelLeasingTransaction(ChainId, account.PublicKey, transactionId, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
@@ -241,21 +286,21 @@ namespace WavesCS
         {
             var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, fee, script, scripted);
             tx.Sign(account);
-            var response = Broadcast(tx);
+            var response = BroadcastAndWait(tx);
             var assetId = response.ParseJsonObject().GetString("id");
             return new Asset(assetId, name, decimals, script);
         }
 
         public string ReissueAsset(PrivateKeyAccount account, Asset asset, decimal quantity, bool reissuable, decimal fee = 1m)
         {
-            var tx = new ReissueTransaction(account.PublicKey, asset, quantity, reissuable, fee);
+            var tx = new ReissueTransaction(ChainId, account.PublicKey, asset, quantity, reissuable, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public string BurnAsset(PrivateKeyAccount account, Asset asset, decimal amount, decimal fee = 0.001m)
         {
-            var tx = new BurnTransaction(account.PublicKey, asset, amount, fee).Sign(account);
+            var tx = new BurnTransaction(ChainId, account.PublicKey, asset, amount, fee).Sign(account);
             tx.Sign(account);
             return Broadcast(tx);
         }
@@ -269,14 +314,28 @@ namespace WavesCS
 
         public string SponsoredFeeForAsset(PrivateKeyAccount account, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m)
         {
-            var tx = new SponsoredFeeTransaction(account.PublicKey, asset, minimalFeeInAssets, fee);
+            var tx = new SponsoredFeeTransaction(ChainId, account.PublicKey, asset, minimalFeeInAssets, fee);
+            tx.Sign(account);
+            return Broadcast(tx);
+        }
+
+        public string SetAssetScript(PrivateKeyAccount account, Asset asset, byte[] script, char chainId, decimal fee = 1m)
+        {
+            var tx = new SetAssetScriptTransaction(ChainId, account.PublicKey, asset, script, fee = 1m);
+            tx.Sign(account);
+            return Broadcast(tx);
+        }
+
+        public string SetScript(PrivateKeyAccount account, byte[] script, decimal fee = 1m)
+        {
+            var tx = new SetScriptTransaction(account.PublicKey, script, ChainId, fee = 0.014m);
             tx.Sign(account);
             return Broadcast(tx);
         }
 
         public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
         {
-            var tx = new DataTransaction(account.PublicKey, entries, fee);
+            var tx = new DataTransaction(ChainId, account.PublicKey, entries, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
@@ -284,6 +343,23 @@ namespace WavesCS
         public byte[] CompileScript(string script)
         {
             return Post("/utils/script/compile", script).ParseJsonObject().Get<string>("script").FromBase64();
+        }
+
+        public byte[] SecureHash(string message)
+        {
+            return Post("/utils/hash/secure", message).ParseJsonObject().Get<string>("hash").FromBase58();
+        }
+
+        public byte[] FastHash(string message)
+        {
+            return Post("/utils/hash/fast", message).ParseJsonObject().Get<string>("hash").FromBase58();
+        }
+
+        public Transaction[] GetUnconfirmedTransactions()
+        {
+            var response = Http.GetObjects($"{_host}/transactions/unconfirmed").Select(tx => Transaction.FromJson(tx)).ToArray();
+
+            return response;
         }
 
         public string Post(string url, string data)
@@ -296,6 +372,26 @@ namespace WavesCS
             return Http.Post($"{_host}/transactions/broadcast", transaction.GetJsonWithSignature());
         }
         
+        public string BroadcastAndWait(DictionaryObject transaction)
+        {
+            var response = Broadcast(transaction);
+            while (GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null) 
+            {
+                Thread.Sleep(1000);
+            }
+            return response;
+        }
+
+        public string BroadcastAndWait(Transaction transaction)
+        {
+            var response = Broadcast(transaction);
+            while (GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null)
+            {
+                Thread.Sleep(1000);
+            }
+            return response;
+        }
+
         public string Broadcast(DictionaryObject transaction)
         {
             return Http.Post($"{_host}/transactions/broadcast", transaction);
@@ -310,6 +406,17 @@ namespace WavesCS
         public DictionaryObject[] GetTransactionsByAddress(string address, int limit)
         {
             return Http.GetFlatObjects($"{_host}/transactions/address/{address}/limit/{limit}");
+        }
+
+        public decimal CalculateFee(Transaction transaction)
+        {
+            var response =  Http.Post($"{_host}/transactions/calculateFee", transaction.GetJsonWithSignature()).ParseJsonObject().GetInt("feeAmount");
+            return response;
+        }
+
+        public string CalculateFee(DictionaryObject transaction)
+        {
+            return Http.Post($"{_host}/transactions/calculateFee", transaction);
         }
     }
 }

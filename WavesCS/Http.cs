@@ -47,6 +47,12 @@ namespace WavesCS
             return json.ParseJsonObjects();
         }
 
+        public static DictionaryObject[] GetFlatObjectsWithHeaders(string url, NameValueCollection headers)
+        {
+            var json = GetJson(url, headers);
+            return json.ParseFlatObjects();
+        }
+
         public static string GetJson(string url, NameValueCollection headers = null)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
@@ -68,7 +74,11 @@ namespace WavesCS
 
                 }
             }
-            while (remainingTries > 0);
+            while (remainingTries > 0 && result == "");
+            if(result == "")
+            {
+                result = client.DownloadString(url);
+            }
 
             Trace($"Received: {result}");
             return result;
@@ -101,8 +111,8 @@ namespace WavesCS
             }
             catch (WebException e)
             {
-                Console.WriteLine(e);
-                Console.WriteLine(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
+                Trace($"Exception: {e}");
+                Trace(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
                 throw;
             }
         }
