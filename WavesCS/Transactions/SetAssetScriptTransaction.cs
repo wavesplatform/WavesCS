@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -8,24 +7,23 @@ namespace WavesCS
     {
         public Asset Asset;
         public byte[] Script { get; }
-        public char ChainId { get; }
 
         public override byte Version { get; set; } = 1;
 
-        public SetAssetScriptTransaction(byte[] senderPublicKey, Asset asset, byte[] script, char chainId, decimal fee = 1m) : base(senderPublicKey)
+        public SetAssetScriptTransaction(char chainId, byte[] senderPublicKey, Asset asset, byte[] script, decimal fee = 1m) : base(chainId, senderPublicKey)
         {
             Asset = asset;
             Script = script;
-            ChainId = chainId;
             Fee = fee;
         }
 
         public SetAssetScriptTransaction(DictionaryObject tx) : base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Script = tx.GetString("script").FromBase64();
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             ChainId = tx.GetChar("chainId");
-            Asset = Assets.GetById(tx.GetString("assetId"));
+            Asset = node.GetAsset(tx.GetString("assetId"));
         }
 
         public override byte[] GetBody()

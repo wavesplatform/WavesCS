@@ -15,12 +15,11 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 2;
 
-        public char ChainId { get; }
         public byte[] Script { get; }
         public bool Scripted { get; }
 
         public IssueTransaction(byte[] senderPublicKey,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null, bool scripted = false) : base(senderPublicKey)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null, bool scripted = false) : base(chainId, senderPublicKey)
         {
             Name = name ?? "";
             Description = description ?? "";
@@ -30,19 +29,19 @@ namespace WavesCS
             Fee = fee;
             Asset = new Asset("", "", Decimals, script);
             Script = script;
-            ChainId = chainId;
             Scripted = scripted;
         }
 
         public IssueTransaction(DictionaryObject tx): base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Name = tx.GetString("name");
             Description = tx.GetString("description");
             Decimals = (byte)tx.GetInt("decimals");
             Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            Asset = Assets.GetById(tx.GetString("assetId"));
+            Asset = node.GetAsset(tx.GetString("assetId"));
             Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
 

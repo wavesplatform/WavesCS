@@ -6,14 +6,12 @@ namespace WavesCS
     public class SetScriptTransaction : Transaction
     {
         public byte[] Script { get; }
-        public char ChainId { get; }
 
         public override byte Version { get; set; } = 1;
 
-        public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.01m) : base(senderPublicKey)
+        public SetScriptTransaction(byte[] senderPublicKey, byte[] script, char chainId, decimal fee = 0.01m) : base(chainId, senderPublicKey)
         {
             Script = script;
-            ChainId = chainId;
             Fee = fee;
         }
 

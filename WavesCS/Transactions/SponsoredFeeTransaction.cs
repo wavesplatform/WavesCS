@@ -10,8 +10,8 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 1;
 
-        public SponsoredFeeTransaction(byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m) :
-            base(senderPublicKey)
+        public SponsoredFeeTransaction(char chainId, byte[] senderPublicKey, Asset asset, decimal minimalFeeInAssets, decimal fee = 1m) :
+            base(chainId, senderPublicKey)
         {
             Fee = fee;
             Asset = asset;
@@ -20,7 +20,8 @@ namespace WavesCS
 
         public SponsoredFeeTransaction(DictionaryObject tx) : base(tx)
         {
-            Asset = Assets.GetById(tx.GetString("assetId"));
+            var node = new Node(tx.GetChar("chainId"));
+            Asset = node.GetAsset(tx.GetString("assetId"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             MinimalFeeInAssets = Asset.LongToAmount(tx.GetLong("minSponsoredAssetFee"));
         }

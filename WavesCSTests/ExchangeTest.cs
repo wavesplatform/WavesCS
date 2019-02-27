@@ -17,12 +17,12 @@ namespace WavesCSTests
         [TestMethod]
         public void TestExchangeTransaction()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             Asset amountAsset = null;
             try
             {
-                amountAsset = Assets.GetById("CVRciuSiK8xiNJSRitAG9dGqcmfFPHvn9bcXtntnpuvp", node);
+                amountAsset = node.GetAsset("CVRciuSiK8xiNJSRitAG9dGqcmfFPHvn9bcXtntnpuvp");
 
                 if (node.GetBalance(Accounts.Alice.Address, amountAsset) < 0.1m)
                     throw new Exception();
@@ -59,7 +59,7 @@ namespace WavesCSTests
             sellOrder.Sign(Accounts.Alice);
             buyOrder.Sign(Accounts.Bob);
 
-            var exchangeTx = new ExchangeTransaction(Accounts.Carol.PublicKey,
+            var exchangeTx = new ExchangeTransaction(node.ChainId, Accounts.Carol.PublicKey,
                                                      0.003m,
                                                      0.003m, 0.003m,
                                                      amountAsset,priceAsset,
@@ -68,14 +68,12 @@ namespace WavesCSTests
                                                      DateTime.UtcNow.AddSeconds(10));
 
             Http.Tracing = true;
-            var matcher = new Matcher("https://testnode1.wavesnodes.com");
+            var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
             var aliceBalanceBefore = matcher.GetTradableBalance(Accounts.Alice.Address, amountAsset, priceAsset)[amountAsset];
             var bobBalanceBefore = matcher.GetTradableBalance(Accounts.Bob.Address, amountAsset, priceAsset)[amountAsset];
 
             exchangeTx.Sign(Accounts.Carol);
-            node.Broadcast(exchangeTx);
-
-            Thread.Sleep(15000);
+            node.BroadcastAndWait(exchangeTx);
 
 
             var aliceBalanceAfter = matcher.GetTradableBalance(Accounts.Alice.Address, amountAsset, priceAsset)[amountAsset];

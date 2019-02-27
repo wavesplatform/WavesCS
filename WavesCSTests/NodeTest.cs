@@ -2,6 +2,8 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
+using System.Threading;
+using System.Text;
 
 namespace WavesCSTests
 {
@@ -30,7 +32,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetAsset()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
             var assetId = "725Yv9oceWsB4GsYwyy4A52kEwyVrL5avubkeChSnL46";
 
             var asset = node.GetAsset(assetId);
@@ -48,7 +50,7 @@ namespace WavesCSTests
         {
             Http.Tracing = false;
             
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
  
             var portfolio = node.GetAssetBalances("3PPF1JfQLJLVd6v4ewmuDbjDLcxBCUe5GSu");
             
@@ -63,7 +65,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestBalance()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
  
             var balance = node.GetBalance("3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3", Assets.WAVES);            
             
@@ -86,13 +88,37 @@ namespace WavesCSTests
         {
             var node = new Node();
             
-            string transactionId = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
-            Assert.IsNotNull(transactionId);
+            var transferResponse = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
+            Assert.IsNotNull(transferResponse);
 
             // transfer back so that Alice's balance is not drained
-            transactionId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice");
-            Assert.IsNotNull(transactionId);
-        }        
+            var transferTxId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice").ParseJsonObject().GetString("id");
+            Thread.Sleep(10000);
+            var fee = node.CalculateFee(node.GetTransactionById(transferTxId));
+            Assert.IsNotNull(fee);            
+        }
+        
+        [TestMethod]
+        public void TestHash()
+        {
+            var node = new Node();
+            var message = "lalala";
+            var messageBytes = Encoding.UTF8.GetBytes(message);
+
+            var hashedByNodeMessage = node.SecureHash(message);
+            var hashedMessage = AddressEncoding.SecureHash(messageBytes, 0, messageBytes.Length);
+            Assert.IsTrue(hashedByNodeMessage.SequenceEqual(hashedMessage));
+            var fastHashedByNodeMessage = node.FastHash(message);
+            var fasthashedMessage = AddressEncoding.FastHash(messageBytes, 0, messageBytes.Length);
+            Assert.IsTrue(fastHashedByNodeMessage.SequenceEqual(fasthashedMessage));
+        }
+
+        [TestMethod]
+        public void TestUnconfirmed()
+        {
+            var node = new Node();
+            node.GetUnconfirmedTransactions();
+        }
 
         [TestMethod]
         public void TestBatchBroadcast()
@@ -101,8 +127,8 @@ namespace WavesCSTests
 
             var transactons = new[]
             {
-                new TransferTransaction(Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
-                new TransferTransaction(Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
+                new TransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
+                new TransferTransaction(node.ChainId, Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
             };
             
             var result = node.BatchBroadcast(transactons);

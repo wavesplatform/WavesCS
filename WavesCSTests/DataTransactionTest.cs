@@ -29,10 +29,17 @@ namespace WavesCSTests
                 { "test russian", "Привет" }
             };
 
+<<<<<<< HEAD
             var tx = new DataTransaction(Accounts.Alice.PublicKey, data).Sign(Accounts.Alice);
 
             Console.WriteLine("Tx size: " + tx.GetBody().Length);
             Console.WriteLine("Response tx id: " + node.Broadcast(tx.GetJsonWithSignature()));
+=======
+            var tx = new DataTransaction(node.ChainId, Accounts.Alice.PublicKey, data).Sign(Accounts.Alice);            
+            
+            Console.WriteLine("Tx size: " + tx.GetBody().Length);            
+            Console.WriteLine("Response tx id: " + node.BroadcastAndWait(tx.GetJsonWithSignature()));
+>>>>>>> 452ac2473d7cf493a4e6748e9bad3757cb2d73a1
 
             var addressData = node.GetAddressData(Accounts.Alice.Address);
 

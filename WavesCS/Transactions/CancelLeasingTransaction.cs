@@ -6,9 +6,10 @@ namespace WavesCS
     public class CancelLeasingTransaction : Transaction
     {
         public string LeaseId { get; }
-      
-        public CancelLeasingTransaction(byte[] senderPublicKey, string leaseId, decimal fee = 0.001m) : 
-            base(senderPublicKey)
+        public override byte Version { get; set; } = 2;
+
+        public CancelLeasingTransaction(char chainId, byte[] senderPublicKey, string leaseId, decimal fee = 0.001m) : 
+            base(chainId, senderPublicKey)
         {
             LeaseId = leaseId;
             Fee = fee;

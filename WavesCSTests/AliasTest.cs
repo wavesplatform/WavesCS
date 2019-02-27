@@ -32,7 +32,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestTransferToAlias()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
@@ -57,7 +57,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMassTransferToAlias()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
@@ -81,11 +81,9 @@ namespace WavesCSTests
                 new MassTransferItem("alias:T:" + alias, amount)
             };
 
-            var tx = new MassTransferTransaction(Accounts.Alice.PublicKey, Assets.WAVES, recipients);
+            var tx = new MassTransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Assets.WAVES, recipients);
             tx.Sign(Accounts.Alice);
-            node.Broadcast(tx.GetJsonWithSignature());
-
-            Thread.Sleep(20000);
+            node.BroadcastAndWait(tx.GetJsonWithSignature());
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount * recipients.Count, balanceAfter);

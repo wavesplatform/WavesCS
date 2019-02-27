@@ -18,7 +18,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetTransactions()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var limit = 100;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
@@ -31,7 +31,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetTransactionsOfType()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var limit = 10;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
@@ -76,7 +76,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestIssueTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq";
             var tx = node.GetTransactionById(transactionId);
@@ -101,7 +101,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestTransferTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "9jpwy6aYJRFnFWoArQxLywMSF8GRGyW42JT1KzHJD9sL";
             var tx = node.GetTransactionById(transactionId);
@@ -117,7 +117,7 @@ namespace WavesCSTests
             Assert.AreEqual(transferTx.Proofs[0].ToBase58(), "47vBFvnu2jcYEUEvhVSJcsZcC1LmiDC31joS8PuftT2CpvrT5nm9gxjxuP4MFeogBgDhStzxKndQbh6P4ejaqtUs");
             Assert.AreEqual(transferTx.Recipient, "3PPsHUKZ8WLU7sLm9sV5Sb75RNKnMinqU58");
 
-            Asset asset = Assets.GetById("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
+            Asset asset = node.GetAsset("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
             Assert.AreEqual(transferTx.Asset, asset);
             Assert.AreEqual(transferTx.Amount, asset.LongToAmount(1097948));
 
@@ -127,7 +127,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestReissueTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "HqtDBXsbz3ztNHheF3DstVKhsEYf3rtA31tPa784hiyx";
             var tx = node.GetTransactionById(transactionId);
@@ -142,7 +142,7 @@ namespace WavesCSTests
             Assert.AreEqual(reissueTx.Timestamp.ToLong(), 1534335650023);
             Assert.AreEqual(reissueTx.Proofs[0].ToBase58(), "26U7gP4YRAB1YMR7nzSS2wc5CeWKMPWwep6xAFrpLRXhbAWkpszEgdZaFvjYdRGucLVioD1JzpvduHuuyM88fXPM");
 
-            Asset asset = Assets.GetById("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
+            Asset asset = node.GetAsset("37nfgadHFw92hNqzyHFZXmGFo5Wmct6Eik1Y2AdYW1Aq");
             Assert.AreEqual(reissueTx.Asset, asset);
             Assert.AreEqual(reissueTx.Quantity, asset.LongToAmount(1838160000000000000));
 
@@ -152,7 +152,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestBurnTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "HXhyvS9f5oQ18QAEeyRg6E9FHvAnLVWGSTGMyamgMe4n";
             var tx = node.GetTransactionById(transactionId);
@@ -167,7 +167,7 @@ namespace WavesCSTests
             Assert.AreEqual(burnTx.Timestamp.ToLong(), 1534497330455);
             Assert.AreEqual(burnTx.Proofs[0].ToBase58(), "4UzYadVf4Gz9udZL5eZ1SHYVXF3XhjcCi46mBc6aP5zCuvxtS41sNUzBeTirggjVuU9P3cYzwNh1gDjDRQYZVY1t");
 
-            Asset asset = Assets.GetById("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
+            Asset asset = node.GetAsset("4uK8i4ThRGbehENwa6MxyLtxAjAo1Rj9fduborGExarC");
             Assert.AreEqual(burnTx.Asset, asset);
             Assert.AreEqual(asset.AmountToLong(burnTx.Quantity), 274487);
         }
@@ -175,7 +175,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestLeaseTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "8feDmqySpSLJxfPYmnKCb99jf2g7oFGEY5Lu8DofqBCU";
             var tx = node.GetTransactionById(transactionId);
@@ -197,7 +197,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestCancelLeasingTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "8LkSyfgyuekjCherhjmhKR1gbYKJPAhfKSYLetSN93YW";
             var tx = node.GetTransactionById(transactionId);
@@ -217,7 +217,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestAliasTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "5JeRnELGEsT1bTZgbNETeJ6rVqhRvrbpMz82nh3qynpH";
             var tx = node.GetTransactionById(transactionId);
@@ -237,7 +237,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMassTransferTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "EKPLV5vjsa2T8ijpjNNumikDrM1r6Yi6MXpNsbsdPM8i";
             var tx = node.GetTransactionById(transactionId);
@@ -252,7 +252,7 @@ namespace WavesCSTests
             Assert.AreEqual(massTransferTx.Timestamp.ToLong(), 1534263320261);
             Assert.AreEqual(massTransferTx.Proofs[0].ToBase58(), "V9U4CCkcn5Br73ZHGtgFbDWFF9fYjHFcxiynEgEci5s2WkNEVr4h7mDBB9hqLMvRfkLLLaF6KyNehguJuBMer2a");
 
-            Asset asset = Assets.GetById("9GGTr8sRMbyb8wWi6dcJGDQR5qChdJxJqgzreMTAf716");
+            Asset asset = node.GetAsset("9GGTr8sRMbyb8wWi6dcJGDQR5qChdJxJqgzreMTAf716");
             Assert.AreEqual(massTransferTx.Asset, asset);
 
             Assert.AreEqual(massTransferTx.Attachment.ToBase58(), "eS1N");
@@ -266,7 +266,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestDataTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "BDBZWsarzShKoqmYUUiuFYZ3zewjvap6Laa7ctEutaP6";
             var tx = node.GetTransactionById(transactionId);
@@ -294,7 +294,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetScriptTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "8Nwjd2tcQWff3S9WAhBa7vLRNpNnigWqrTbahvyfMVrU";
             var tx = node.GetTransactionById(transactionId);
@@ -314,7 +314,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSponsoredFeeTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "7EL2XEGP1By427BeLcHPYeVnBzGsXen4egMAwQpWGBVR";
             var tx = node.GetTransactionById(transactionId);
@@ -329,7 +329,7 @@ namespace WavesCSTests
             Assert.AreEqual(sponsoredFeeTx.Timestamp.ToLong(), 1534448057070);
             Assert.AreEqual(sponsoredFeeTx.Proofs[0].ToBase58(), "3Q4JS4ujrGxAqp8LMXR9zZJC4tJ7YHiTo4SvMgrPhufo2UtR5x9JAaCGDjEr7qWXFDPJk7vWL8eapQkS45Dx1kcb");
 
-            Asset asset = Assets.GetById("FN76goSi7hQn6gQ8aezKVwyDvhkWx5ekXbP3sNLWqavN");
+            Asset asset = node.GetAsset("FN76goSi7hQn6gQ8aezKVwyDvhkWx5ekXbP3sNLWqavN");
             Assert.AreEqual(sponsoredFeeTx.Asset, asset);
             Assert.AreEqual(sponsoredFeeTx.MinimalFeeInAssets, asset.LongToAmount(10));
         }
@@ -337,7 +337,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestExchangeTransactionDeserialize()
         {
-            var node = new Node(Node.MainNetHost);
+            var node = new Node(Node.MainNetChainId);
 
             var transactionId = "G4wGLw9XtnScqk5eWoLb7r3GXEf1FFg4CMmSX7du1wmg";
             var tx = node.GetTransactionById(transactionId);
@@ -389,10 +389,11 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetAssetScriptTransactionDeserialize()
         {
-            var node = new Node(Node.TestNetHost);
+            var node = new Node(Node.TestNetChainId);
 
             var transactionId = "CL1xVnX93Wyq8c6N2X5ER8UkR49uZJofGwx9YVB7Deny";
             var tx = node.GetTransactionById(transactionId);
+            tx.ChainId = node.ChainId;
 
             Assert.IsInstanceOfType(tx, typeof(SetAssetScriptTransaction));
             Assert.AreEqual(tx.GenerateId(), transactionId);
@@ -412,7 +413,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestExchangeTransactionV2Deserialize()
         {
-            var node = new Node(Node.MainNetHost, 'W');
+            var node = new Node(Node.MainNetChainId);
 
             var json = @"
             {
@@ -456,7 +457,8 @@ namespace WavesCSTests
               'price': 10000,
               'amount': 1000000,
               'buyMatcherFee': 300000,
-              'sellMatcherFee': 300000
+              'sellMatcherFee': 300000,
+              'chainId': 'W'
             }";
 
             var tx = Transaction.FromJson(json.ParseJsonObject()).Sign(Accounts.Alice);
