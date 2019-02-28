@@ -105,7 +105,7 @@ namespace WavesCS
             return stream.ToArray();
         }
 
-        public override byte[] GetIdBytes()
+        internal override byte[] GetIdBytes()
         {
             var asset = new Asset("", "", Decimals);
             var stream = new MemoryStream();

@@ -48,6 +48,6 @@ namespace WavesCSTests
             
             Assert.AreEqual(asset.Id, txInfo["assetId"]);
             Assert.AreEqual(asset.Id, txInfo["feeAssetId"]);
-        }
+        }     
     }
 }
