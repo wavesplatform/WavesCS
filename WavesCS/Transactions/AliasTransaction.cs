@@ -41,7 +41,7 @@ namespace WavesCS
             }
         }
 
-        public override byte[] GetIdBytes()
+        internal override byte[] GetIdBytes()
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))

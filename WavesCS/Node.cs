@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -155,6 +156,57 @@ namespace WavesCS
                 .ToArray();
         }
 
+        public Transaction[] GetTransactionsByAddressAfterId(string address, string afterId, int limit = 100)
+        {
+            string path = $"{_host}/transactions/address/{address}/limit/{limit}";
+
+            var header = new NameValueCollection{ {"after", afterId } };
+            return Http.GetFlatObjectsWithHeaders(path, header).Select(tx => { tx["chainId"] = ChainId; return tx; })
+                .Select(Transaction.FromJson)
+                .ToArray();
+        }
+
+        public Transaction[] GetTransactionsByAddressAfterTimestamp(string address, long timestamp, int limit)
+        {
+            var height = GetHeight();
+            List<Transaction> txs = new List<Transaction>();
+            var initialTxs = GetBlockTransactionsAtHeight(height);
+            while (initialTxs.Length == 0)
+            {
+                height--;
+                initialTxs = GetBlockTransactionsAtHeight(height);
+            }
+            string afterId = initialTxs.Last().GenerateId();
+            txs.AddRange(GetTransactionsByAddressAfterId(address, afterId, limit));
+            while (height > 0)
+            {
+                height -= limit;
+                Transaction[] blockTxs = GetBlockTransactionsAtHeight(height);
+                while(blockTxs.Length == 0)
+                {
+                    height--;
+                    blockTxs = GetBlockTransactionsAtHeight(height);
+                }
+                afterId = blockTxs.First().GenerateId();
+                foreach (var tx in blockTxs)
+                {
+                    if (tx.Timestamp.ToLong() <= timestamp)
+                    {
+                        afterId = tx.GenerateId();
+                        height = 0;
+                        break;
+                    }
+                }
+                txs.AddRange(GetTransactionsByAddressAfterId(address, afterId, limit));
+            }
+            return txs.ToArray();
+          }
+
+        public long TransactionsCount(long height)
+        {
+            return Http.GetObject($"{_host}/blocks/headers/at/{height}").GetInt("transactionCount");
+        }
+
         public TransactionType TransactionTypeId(Type transactionType)
         {
             switch (transactionType.Name)
@@ -213,11 +265,14 @@ namespace WavesCS
             }           
         }
 
-        public Transaction[] GetBlockTransactionsAtHeight(int height)
+        public Transaction[] GetBlockTransactionsAtHeight(long height)
         {
             var block = GetObject($"blocks/at/{height}");
             var transactions = block.ContainsKey("transactions") ? block
-                .GetObjects("transactions").Select(tx => Transaction.FromJson(tx)).ToArray() : null;
+                .GetObjects("transactions").Select(tx => {
+                    tx["chainId"] = ChainId;
+                    return Transaction.FromJson(tx);
+                    }).ToArray() : null;
             return transactions;
         }
 

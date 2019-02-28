@@ -49,7 +49,7 @@ namespace WavesCS
             }
         }
 
-        public override byte[] GetIdBytes()
+        internal override byte[] GetIdBytes()
         {
             return GetBody();
         }
