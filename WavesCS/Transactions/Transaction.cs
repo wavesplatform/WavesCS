@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
-    public abstract class Transaction
+    public abstract class Transaction 
     {
         public DateTime Timestamp { get; set; }
 
@@ -16,7 +18,7 @@ namespace WavesCS
         public virtual byte Version { get; set; }
 
         public abstract byte[] GetBody();
-        public abstract byte[] GetIdBytes();
+        internal abstract byte[] GetIdBytes();
         public abstract DictionaryObject GetJson();
 
         public byte[][] Proofs { get; }
@@ -99,6 +101,7 @@ namespace WavesCS
             }
         }
     }
+
 
     public static class TransactionExtensons
     {
