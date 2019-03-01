@@ -23,7 +23,7 @@ namespace WavesCS
             var node = new Node(tx.GetChar("chainId"));
             Asset = node.GetAsset(tx.GetString("assetId"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            MinimalFeeInAssets = Asset.LongToAmount(tx.GetLong("minSponsoredAssetFee"));
+            MinimalFeeInAssets = tx["minSponsoredAssetFee"] != null ? Asset.LongToAmount(tx.GetLong("minSponsoredAssetFee")) : 0;
         }
 
         public override byte[] GetBody()
@@ -43,7 +43,7 @@ namespace WavesCS
             }
         }
 
-        public override byte[] GetIdBytes()
+        internal override byte[] GetIdBytes()
         {
             return GetBody();
         }
@@ -60,7 +60,7 @@ namespace WavesCS
                 {"type", (byte) TransactionType.SponsoredFee},
                 {"version", Version},
                 {"senderPublicKey", Base58.Encode(SenderPublicKey)},
-               
+
                 {"assetId", Asset.IdOrNull},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
                 {"timestamp", Timestamp.ToLong()},

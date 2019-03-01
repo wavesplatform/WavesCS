@@ -134,5 +134,39 @@ namespace WavesCSTests
             var result = node.BatchBroadcast(transactons);
             Assert.IsNotNull(result);
         }
+
+        [TestMethod]
+        public void TestGetTransactionsFromTimestamp()
+        {
+            var node = new Node();
+            var address = "3NAqFmMtm2msHcnFDCLFJRn3MbfFwGM3ZHo";
+            var timestamp = node.GetBlockTransactionsAtHeight(node.GetHeight() - 5).Last().Timestamp.ToLong();
+            var packageSize = 2;
+            var txs = node.GetTransactionsByAddressAfterTimestamp(address, timestamp, packageSize);
+            bool test = false;
+            foreach (var tx in txs.Reverse().Take(packageSize))
+            {
+                if (tx.Timestamp.ToLong() <= timestamp)
+                {
+                    test = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(test);
+            Assert.IsNotNull(txs);
+        }
+
+        [TestMethod]
+        public void TestGetTransactionsByAddressAfterId()
+        {
+            var node = new Node();
+            var address = "3NAqFmMtm2msHcnFDCLFJRn3MbfFwGM3ZHo";
+            var txId = "13v6hDYxkGgR3NWwTzC75UhK3kEdT4KHuH51qnBMz88Z";
+            var count = 10;
+            
+            var result = node.GetTransactionsByAddressAfterId(address, txId, count);
+            Assert.IsTrue(result.Length == count);
+            Assert.IsNotNull(result.Select(tx => tx.GenerateId() == txId));
+        }
     }
 }
