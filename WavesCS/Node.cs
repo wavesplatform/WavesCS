@@ -388,6 +388,11 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string InvokeScript()
+        {
+            throw new NotImplementedException();
+        }
+
         public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
         {
             var tx = new DataTransaction(ChainId, account.PublicKey, entries, fee);
