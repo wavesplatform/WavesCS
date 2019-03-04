@@ -17,6 +17,6 @@ namespace WavesCS
         SetScript = 13,
         SponsoredFee = 14,
         SetAssetScript = 15,
-        InvokeScriptTransaction = 16
+        InvokeScript = 16
     }
 }
