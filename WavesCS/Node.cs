@@ -207,6 +207,11 @@ namespace WavesCS
             return Http.GetObject($"{_host}/blocks/headers/at/{height}").GetInt("transactionCount");
         }
 
+        public long GetBlockTimestamp(long height)
+        {
+            return Http.GetObject($"{_host}/blocks/headers/at/{height}").GetLong("timestamp");
+        }
+
         public TransactionType TransactionTypeId(Type transactionType)
         {
             switch (transactionType.Name)
@@ -260,7 +265,7 @@ namespace WavesCS
                 tx["chainId"] = ChainId;
                 return Transaction.FromJson(tx);
             }
-            catch(Exception e){
+            catch(Exception){
                 return null;
             }           
         }

@@ -2,6 +2,7 @@
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
+using System;
 
 namespace WavesCSTests
 {
@@ -332,6 +333,12 @@ namespace WavesCSTests
             Asset asset = node.GetAsset("FN76goSi7hQn6gQ8aezKVwyDvhkWx5ekXbP3sNLWqavN");
             Assert.AreEqual(sponsoredFeeTx.Asset, asset);
             Assert.AreEqual(sponsoredFeeTx.MinimalFeeInAssets, asset.LongToAmount(10));
+        }
+
+        [TestMethod]
+        public void TestInvokeScriptTransactionDeserialize()
+        {
+            throw new NotImplementedException();
         }
 
         [TestMethod]
