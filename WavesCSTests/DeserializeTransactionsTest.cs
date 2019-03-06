@@ -363,7 +363,8 @@ namespace WavesCSTests
                         }
                     }";
 
-            var tx = new InvokeScriptTransaction
+            var json1 = new InvokeScriptTransaction(json.ParseJsonObject()).GetJson();
+            var json2 = new InvokeScriptTransaction
             (
                 chainId: 'D',
                 senderPublicKey: "73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK".FromBase58(),
@@ -373,9 +374,23 @@ namespace WavesCSTests
                 paymentAmount: 7m,
                 paymentAsset: new Asset("73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK", "asset", 0),
                 fee: 0.001m
-            );
+            ).GetJson();
 
-            Assert.AreEqual(tx.GetJson().ToJson(), json);
+            foreach (var pair in json1)
+            {
+                var key = pair.Key;
+                var value1 = pair.Value;
+
+                try
+                {
+                    var value2 = json2[key];
+                    Assert.AreEqual(value1, value2);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
         }
 
         [TestMethod]
