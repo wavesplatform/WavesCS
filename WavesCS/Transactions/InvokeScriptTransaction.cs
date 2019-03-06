@@ -14,18 +14,48 @@ namespace WavesCS
         public string FunctionHeader; // Native(Short) | User(String)
         public List<object> FunctionCallArguments;
 
-        public long PaymentAmount;
+        public decimal PaymentAmount;
         public Asset PaymentAsset;
+        // public Asset FeeAsset;
 
         public override byte Version { get; set; } = 1;
 
-        public InvokeScriptTransaction(DictionaryObject tx) : base(tx) => throw new NotImplementedException();
-        public InvokeScriptTransaction(char chainId, byte[] senderPublicKey, string contractAddress,
-                                       string FunctionHeader, List<string> functionCallArguments,
-                                       long PaymentAmount, Asset PaymentAsset, decimal fee) : base(chainId, senderPublicKey) => throw new NotImplementedException();
+        public InvokeScriptTransaction(DictionaryObject tx) : base(tx)
+        {
+            var node = new Node(tx.GetChar("chainId"));
+
+            ContractAddress = tx.GetString("contractAddress");
+            FunctionHeader = tx.GetString("call.function");
+
+            FunctionCallArguments = (List<object>) tx.GetValue("call.args");
+            PaymentAsset = Assets.WAVES;
+
+            if (tx.ContainsKey("payment.assetId")
+                && tx.GetString("payment.assetId") != null
+                && tx.GetString("payment.assetId") != "")
+            {
+                PaymentAsset = node.GetAsset(tx.GetString("payment.assetId"));
+            }
+
+            PaymentAmount = PaymentAsset.LongToAmount(tx.GetLong("paymentAmount"));
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+        }
+
+        public InvokeScriptTransaction(char chainId, byte[] senderPublicKey,
+            string contractAddress, string functionHeader, List<object> functionCallArguments,
+            decimal paymentAmount, Asset paymentAsset, decimal fee) : base(chainId, senderPublicKey)
+        {
+            ContractAddress = contractAddress;
+            FunctionHeader = functionHeader;
+            FunctionCallArguments = functionCallArguments;
+            PaymentAmount = paymentAmount;
+            PaymentAsset = paymentAsset;
+            Fee = fee;
+        }
 
         public override byte[] GetBody() => throw new NotImplementedException();
         internal override byte[] GetIdBytes() => throw new NotImplementedException();
+
         public override DictionaryObject GetJson()
         {
             return new DictionaryObject {
@@ -44,7 +74,7 @@ namespace WavesCS
                         {"value", arg is byte[] bytes ? bytes.ToBase64() : arg }
                     })}
                 }},
-                { "payment", PaymentAmount > 0 ? new DictionaryObject { { "amount", PaymentAmount }, { "assetId", PaymentAsset.IdOrNull } } : null}
+                { "payment", PaymentAmount > 0 ? new DictionaryObject { { "amount", PaymentAsset.AmountToLong(PaymentAmount) }, { "assetId", PaymentAsset.IdOrNull } } : null}
             };
         }
 
