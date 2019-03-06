@@ -3,6 +3,7 @@ using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System;
+using System.Collections.Generic;
 
 namespace WavesCSTests
 {
@@ -338,7 +339,43 @@ namespace WavesCSTests
         [TestMethod]
         public void TestInvokeScriptTransactionDeserialize()
         {
-            throw new NotImplementedException();
+            var json = @"{
+                     'type': 16,
+                     'id': '3RRmhhMxbD9SUGUEokaBFmdWqT42vKRiM94tqxuXHE9q',
+                     'sender': '3FX9SibfqAWcdnhrmFzqM1mGqya6DkVVnps',
+                     'senderPublicKey': '73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK',
+                     'fee': 100000,
+                     'timestamp': 1526910778245,
+                     'proofs': ['x7T161SxvUxpubEAKv4UL5ucB5pquAhTryZ8Qrd347TPuQ4yqqpVMQ2B5FpeFXGnpyLvb7wGeoNsyyjh5R61u7F'],
+                     'version': 1,
+                     'contractAddress' : '3Fb641A9hWy63K18KsBJwns64McmdEATgJd',
+                     'call': {
+                         'function' : 'foo',
+                         'args' : [
+                         { 'type' : 'binary',
+                           'value' : 'base64:YWxpY2U='
+                         }
+                        ]
+                      },
+                     'payment' : {
+                        'amount' : 7,
+                        'assetId' : '73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK'
+                        }
+                    }";
+
+            var tx = new InvokeScriptTransaction
+            (
+                chainId: 'D',
+                senderPublicKey: "73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK".FromBase58(),
+                contractAddress: "3Fb641A9hWy63K18KsBJwns64McmdEATgJd",
+                functionHeader: "foo",
+                functionCallArguments: new List<object> { "YWxpY2U=".FromBase64() },
+                paymentAmount: 7m,
+                paymentAsset: new Asset("73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK", "asset", 0),
+                fee: 0.001m
+            );
+
+            Assert.AreEqual(tx.GetJson().ToJson(), json);
         }
 
         [TestMethod]
