@@ -151,8 +151,7 @@ namespace WavesCS
         public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
-                .Select(tx => { tx["chainId"] = ChainId; return tx; })
-                .Select(Transaction.FromJson)
+                .Select(tx => Transaction.FromJson(ChainId, tx))
                 .ToArray();
         }
 
@@ -161,8 +160,8 @@ namespace WavesCS
             string path = $"{_host}/transactions/address/{address}/limit/{limit}";
 
             var header = new NameValueCollection{ {"after", afterId } };
-            return Http.GetFlatObjectsWithHeaders(path, header).Select(tx => { tx["chainId"] = ChainId; return tx; })
-                .Select(Transaction.FromJson)
+            return Http.GetFlatObjectsWithHeaders(path, header)
+                .Select(tx => Transaction.FromJson(ChainId, tx))
                 .ToArray();
         }
 
@@ -233,8 +232,7 @@ namespace WavesCS
 
             return GetTransactionsByAddress(address, limit)
                 .Where(tx => (TransactionType)tx.GetByte("type") == typeId)
-                .Select(tx => { tx["chainId"] = ChainId; return tx; })
-                .Select(Transaction.FromJson)
+                .Select(tx => Transaction.FromJson(ChainId, tx))
                 .Cast<T>()
                 .ToArray();
         }
@@ -245,9 +243,7 @@ namespace WavesCS
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
                          .ParseJsonObject();
 
-            tx["chainId"] = ChainId;
-
-            return Transaction.FromJson(tx);
+            return Transaction.FromJson(ChainId, tx);
         }
 
         public Transaction GetTransactionByIdOrNull(string transactionId)
@@ -256,9 +252,7 @@ namespace WavesCS
             {
                 var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
                              .ParseJsonObject();
-
-                tx["chainId"] = ChainId;
-                return Transaction.FromJson(tx);
+                return Transaction.FromJson(ChainId, tx);
             }
             catch(Exception e){
                 return null;
@@ -270,8 +264,7 @@ namespace WavesCS
             var block = GetObject($"blocks/at/{height}");
             var transactions = block.ContainsKey("transactions") ? block
                 .GetObjects("transactions").Select(tx => {
-                    tx["chainId"] = ChainId;
-                    return Transaction.FromJson(tx);
+                    return Transaction.FromJson(ChainId, tx);
                     }).ToArray() : null;
             return transactions;
         }
@@ -412,7 +405,9 @@ namespace WavesCS
 
         public Transaction[] GetUnconfirmedTransactions()
         {
-            var response = Http.GetObjects($"{_host}/transactions/unconfirmed").Select(tx => Transaction.FromJson(tx)).ToArray();
+            var response = Http.GetObjects($"{_host}/transactions/unconfirmed").Select(tx => {
+                return Transaction.FromJson(ChainId, tx);
+            }).ToArray();
 
             return response;
         }
