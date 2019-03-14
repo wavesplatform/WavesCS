@@ -393,9 +393,15 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string InvokeScript()
+        public string InvokeScript(PrivateKeyAccount caller, string contractAddress,
+                string functionHeader, List<object> functionCallArguments,
+                decimal paymentAmount, Asset paymentAsset, decimal fee = 1m)
         {
-            throw new NotImplementedException();
+            var tx = new InvokeScriptTransaction(ChainId, caller.PublicKey, contractAddress,
+            functionHeader, functionCallArguments,
+                paymentAmount, paymentAsset, fee);
+            tx.Sign(caller);
+            return Broadcast(tx);
         }
 
         public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
