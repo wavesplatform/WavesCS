@@ -53,8 +53,15 @@ namespace WavesCS
             Fee = fee;
         }
 
-        public override byte[] GetBody() => throw new NotImplementedException();
-        internal override byte[] GetIdBytes() => throw new NotImplementedException();
+        public override byte[] GetBody()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override byte[] GetIdBytes()
+        {
+            throw new NotImplementedException();
+        }
 
         public override DictionaryObject GetJson()
         {
