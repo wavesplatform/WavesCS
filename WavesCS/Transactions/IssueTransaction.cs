@@ -44,20 +44,7 @@ namespace WavesCS
             Asset = node.GetAsset(tx.GetString("assetId"));
             Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
-
         }
-
-        public void WriteType(BinaryWriter writer)
-        {
-            writer.Write(TransactionType.Transfer);
-        }
-
-        public void WriteVersion(BinaryWriter writer)
-        {
-            if (Version > 1)
-                writer.Write(Version);
-        }
-
 
         public void WriteBytes(BinaryWriter writer)
         {
@@ -74,7 +61,6 @@ namespace WavesCS
             writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
             writer.WriteLong(Timestamp.ToLong());
         }
-
 
         public override byte[] GetBody()
         {

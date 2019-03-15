@@ -416,6 +416,11 @@ namespace WavesCS
             return Post("/utils/script/compile", script).ParseJsonObject().Get<string>("script").FromBase64();
         }
 
+        public string DecompileScript(string script)
+        {
+            return Post("/utils/script/decompile", script).ParseJsonObject().Get<string>("script");
+        }
+
         public byte[] SecureHash(string message)
         {
             return Post("/utils/hash/secure", message).ParseJsonObject().Get<string>("hash").FromBase58();
