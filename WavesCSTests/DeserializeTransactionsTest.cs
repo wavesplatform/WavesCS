@@ -373,7 +373,8 @@ namespace WavesCSTests
                 functionCallArguments: new List<object> { "YWxpY2U=".FromBase64() },
                 paymentAmount: 7m,
                 paymentAsset: new Asset("73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK", "asset", 0),
-                fee: 0.001m
+                fee: 0.001m,
+                feeAsset: Assets.WAVES
             ).GetJson();
 
             foreach (var pair in json1)
