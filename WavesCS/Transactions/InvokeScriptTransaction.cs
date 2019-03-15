@@ -16,7 +16,7 @@ namespace WavesCS
 
         public decimal PaymentAmount;
         public Asset PaymentAsset;
-        // public Asset FeeAsset;
+        public Asset FeeAsset;
 
         public override byte Version { get; set; } = 1;
 
@@ -55,12 +55,68 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {
-            throw new NotImplementedException();
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(TransactionType.InvokeScript);
+            writer.Write(Version);
+            writer.Write((byte)ChainId);
+
+            writer.Write(SenderPublicKey);
+            writer.Write(ContractAddress);
+
+            writer.WriteByte((byte)9);
+            writer.Write(FunctionHeader);
+            writer.Write(FunctionCallArguments.Count);
+
+            const byte INTEGER = 0;
+            const byte BOOLEAN = 1;
+            const byte BINARY = 2;
+            const byte STRING = 3;
+
+            foreach (var argument in FunctionCallArguments)
+            {
+                switch (argument)
+                {
+                    case long value:
+                        writer.Write(INTEGER);
+                        writer.WriteLong(value);
+                        break;
+                    case bool value:
+                        writer.Write(BOOLEAN);
+                        writer.Write(value ? (byte)1 : (byte)0);
+                        break;
+                    case byte[] value:
+                        writer.Write(BINARY);
+                        writer.WriteShort((short)value.Length);
+                        writer.Write(value);
+                        break;
+                    case string value:
+                        writer.Write(STRING);
+                        var encoded = Encoding.UTF8.GetBytes(value);
+                        writer.WriteShort((short)encoded.Length);
+                        writer.Write(encoded);
+                        break;
+                    default:
+                        throw new ArgumentException("Only long, bool and byte[] entry values supported",
+                            nameof(FunctionCallArguments));
+                }
+            }
+
+            writer.Write(PaymentAmount);
+            writer.WriteAsset(PaymentAsset.Id);
+
+
+            writer.WriteLong(FeeAsset.AmountToLong(Fee));
+            writer.WriteAsset(FeeAsset.Id);
+            writer.WriteLong(Timestamp.ToLong());
+
+            return stream.ToArray();
         }
 
         internal override byte[] GetIdBytes()
         {
-            throw new NotImplementedException();
+            return GetBody();
         }
 
         public override DictionaryObject GetJson()
