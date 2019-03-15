@@ -395,11 +395,11 @@ namespace WavesCS
 
         public string InvokeScript(PrivateKeyAccount caller, string contractAddress,
                 string functionHeader, List<object> functionCallArguments,
-                decimal paymentAmount, Asset paymentAsset, decimal fee = 1m)
+                decimal paymentAmount, Asset paymentAsset, decimal fee = 1m, Asset feeAsset = null)
         {
             var tx = new InvokeScriptTransaction(ChainId, caller.PublicKey, contractAddress,
             functionHeader, functionCallArguments,
-                paymentAmount, paymentAsset, fee);
+                paymentAmount, paymentAsset, fee, feeAsset);
             tx.Sign(caller);
             return Broadcast(tx);
         }

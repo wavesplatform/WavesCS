@@ -38,12 +38,14 @@ namespace WavesCS
             }
 
             PaymentAmount = PaymentAsset.LongToAmount(tx.GetLong("paymentAmount"));
-            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+
+            FeeAsset = tx.ContainsKey("feeAssetId") ? node.GetAsset(tx.GetString("feeAssetId")) : Assets.WAVES;
+            Fee = FeeAsset.LongToAmount(tx.GetLong("fee"));
         }
 
         public InvokeScriptTransaction(char chainId, byte[] senderPublicKey,
             string contractAddress, string functionHeader, List<object> functionCallArguments,
-            decimal paymentAmount, Asset paymentAsset, decimal fee) : base(chainId, senderPublicKey)
+            decimal paymentAmount, Asset paymentAsset, decimal fee, Asset feeAsset) : base(chainId, senderPublicKey)
         {
             ContractAddress = contractAddress;
             FunctionHeader = functionHeader;
@@ -51,6 +53,7 @@ namespace WavesCS
             PaymentAmount = paymentAmount;
             PaymentAsset = paymentAsset;
             Fee = fee;
+            FeeAsset = feeAsset;
         }
 
         public override byte[] GetBody()
@@ -125,6 +128,7 @@ namespace WavesCS
                 {"type", (byte) TransactionType.InvokeScript},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
+                {"feeAssetId", FeeAsset.Id},
                 {"timestamp", Timestamp.ToLong()},
                 {"version", Version},
                 {"contractAddress", ContractAddress},
