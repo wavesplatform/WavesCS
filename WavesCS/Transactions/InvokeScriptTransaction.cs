@@ -9,13 +9,13 @@ namespace WavesCS
 {
     public class InvokeScriptTransaction : Transaction
     {
-        public string ContractAddress;
+        public string DappAddress;
 
-        public string FunctionHeader; // Native(Short) | User(String)
+        public string FunctionHeader;
         public List<object> FunctionCallArguments;
 
-        public decimal PaymentAmount;
-        public Asset PaymentAsset;
+        public Dictionary<Asset, decimal> Payment;
+
         public Asset FeeAsset;
 
         public override byte Version { get; set; } = 1;
@@ -24,36 +24,29 @@ namespace WavesCS
         {
             var node = new Node(tx.GetChar("chainId"));
 
-            ContractAddress = tx.GetString("contractAddress");
+            DappAddress = tx.GetString("dappAddress");
             FunctionHeader = tx.GetString("call.function");
 
             FunctionCallArguments = (List<object>) tx.GetValue("call.args");
-            PaymentAsset = Assets.WAVES;
 
-            if (tx.ContainsKey("payment.assetId")
-                && tx.GetString("payment.assetId") != null
-                && tx.GetString("payment.assetId") != "")
-            {
-                PaymentAsset = node.GetAsset(tx.GetString("payment.assetId"));
-            }
-
-            PaymentAmount = PaymentAsset.LongToAmount(tx.GetLong("paymentAmount"));
+            Payment = tx.GetObjects("payment")
+                        .ToDictionary(o => node.GetAsset(o.GetString("asset")),
+                                      o => node.GetAsset(o.GetString("asset")).LongToAmount(o.GetLong("amount")));
 
             FeeAsset = tx.ContainsKey("feeAssetId") ? node.GetAsset(tx.GetString("feeAssetId")) : Assets.WAVES;
             Fee = FeeAsset.LongToAmount(tx.GetLong("fee"));
         }
 
         public InvokeScriptTransaction(char chainId, byte[] senderPublicKey,
-            string contractAddress, string functionHeader, List<object> functionCallArguments,
-            decimal paymentAmount, Asset paymentAsset, decimal fee, Asset feeAsset) : base(chainId, senderPublicKey)
+            string dappAddress, string functionHeader, List<object> functionCallArguments,
+             Dictionary<Asset, decimal> payment, decimal fee, Asset feeAsset) : base(chainId, senderPublicKey)
         {
-            ContractAddress = contractAddress;
+            DappAddress = dappAddress;
             FunctionHeader = functionHeader;
             FunctionCallArguments = functionCallArguments;
-            PaymentAmount = paymentAmount;
-            PaymentAsset = paymentAsset;
+            Payment = payment ?? new Dictionary<Asset, decimal>();
             Fee = fee;
-            FeeAsset = feeAsset;
+            FeeAsset = feeAsset ?? Assets.WAVES;
         }
 
         public override byte[] GetBody()
@@ -66,49 +59,27 @@ namespace WavesCS
             writer.Write((byte)ChainId);
 
             writer.Write(SenderPublicKey);
-            writer.Write(ContractAddress);
+            writer.Write(DappAddress.FromBase58());
 
             writer.WriteByte((byte)9);
-            writer.Write(FunctionHeader);
-            writer.Write(FunctionCallArguments.Count);
+            writer.WriteByte((byte)1);
 
-            const byte INTEGER = 0;
-            const byte BOOLEAN = 1;
-            const byte BINARY = 2;
-            const byte STRING = 3;
+            writer.WriteInt(FunctionHeader.Length);
+            writer.Write(Encoding.UTF8.GetBytes(FunctionHeader));
+            writer.WriteInt(FunctionCallArguments.Count);
 
             foreach (var argument in FunctionCallArguments)
             {
-                switch (argument)
-                {
-                    case long value:
-                        writer.Write(INTEGER);
-                        writer.WriteLong(value);
-                        break;
-                    case bool value:
-                        writer.Write(BOOLEAN);
-                        writer.Write(value ? (byte)1 : (byte)0);
-                        break;
-                    case byte[] value:
-                        writer.Write(BINARY);
-                        writer.WriteShort((short)value.Length);
-                        writer.Write(value);
-                        break;
-                    case string value:
-                        writer.Write(STRING);
-                        var encoded = Encoding.UTF8.GetBytes(value);
-                        writer.WriteShort((short)encoded.Length);
-                        writer.Write(encoded);
-                        break;
-                    default:
-                        throw new ArgumentException("Only long, bool and byte[] entry values supported",
-                            nameof(FunctionCallArguments));
-                }
+                writer.WriteObject(argument);
             }
 
-            writer.Write(PaymentAmount);
-            writer.WriteAsset(PaymentAsset.Id);
-
+            writer.WriteShort(Payment.Count);
+                
+            foreach(var p in Payment)
+            {
+                writer.Write(p.Key.AmountToLong(p.Value));
+                writer.WriteAsset(p.Key.Id);
+            }
 
             writer.WriteLong(FeeAsset.AmountToLong(Fee));
             writer.WriteAsset(FeeAsset.Id);
@@ -127,11 +98,11 @@ namespace WavesCS
             return new DictionaryObject {
                 {"type", (byte) TransactionType.InvokeScript},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
-                {"fee", Assets.WAVES.AmountToLong(Fee)},
-                {"feeAssetId", FeeAsset.Id},
+                {"fee", FeeAsset.AmountToLong(Fee)},
+                {"feeAssetId", FeeAsset.IdOrNull},
                 {"timestamp", Timestamp.ToLong()},
                 {"version", Version},
-                {"contractAddress", ContractAddress},
+                {"dappAddress", DappAddress},
                 {"call", new DictionaryObject
                 {
                     {"function", FunctionHeader},
@@ -141,7 +112,12 @@ namespace WavesCS
                         {"value", arg is byte[] bytes ? bytes.ToBase64() : arg }
                     })}
                 }},
-                { "payment", PaymentAmount > 0 ? new DictionaryObject { { "amount", PaymentAsset.AmountToLong(PaymentAmount) }, { "assetId", PaymentAsset.IdOrNull } } : null}
+                { "payment", Payment.Select(p => new DictionaryObject
+                    {
+                        {"amount", p.Key.AmountToLong(p.Value) },
+                        {"asset", p.Key.IdOrNull }
+                    })
+                }
             };
         }
 

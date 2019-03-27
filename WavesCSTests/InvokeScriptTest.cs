@@ -18,13 +18,15 @@ namespace WavesCSTests
         [TestMethod]
         public void TestInvokeScript()
         {
-            var node = new Node("http://1.devnet.wavesnodes.com:6869", 'D');
+            Http.Tracing = true;
+            var node = new Node(Node.TestNetChainId);
 
-            var Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", 'D');
-            var Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", 'D');
+            var Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", node.ChainId);
+            var Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", node.ChainId);
 
             var script = @"{-# STDLIB_VERSION 3 #-}
-{-# CONTENT_TYPE CONTRACT #-}
+{-# CONTENT_TYPE DAPP #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
 
 @Callable(inv)
 func foo (a:ByteVector) = {
@@ -33,21 +35,27 @@ func foo (a:ByteVector) = {
 }";
             var compiledScript = node.CompileScript(script);
 
-            node.SetScript(Accounts.Alice, compiledScript);
-            Thread.Sleep(3000);
+            node.SetScript(Alice, compiledScript);
+            Thread.Sleep(10000);
 
-            node.InvokeScript(Bob, Alice.Address, "foo", new List<object> { 42L }, 0, null);
+            node.InvokeScript(Bob, Alice.Address, "foo", new List<object> { 42L }, null);
 
             Assert.AreEqual((long)node.GetAddressData(Alice.Address)["a"], 42L);
-            Assert.AreEqual(node.GetAddressData(Alice.Address)["sender"], Bob.Address);
+            Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["sender"]).ToBase58(), Bob.Address);
 
-            node.PutData(Alice, new Dictionary<string, object> { { "a", "OOO" } });
+            var dataTx = new DataTransaction(
+                chainId: node.ChainId,
+                senderPublicKey: Alice.PublicKey,
+                entries: new Dictionary<string, object> { { "a", "OOO" } },
+                fee: 0.005m
+            ).Sign(Alice);
 
-            Assert.AreEqual((string)node.GetAddressData(Alice.Address)["a"], "OOO");
+            node.BroadcastAndWait(dataTx);
 
-            node.SetScript(Accounts.Alice, null);
-            Thread.Sleep(3000);
+            Assert.AreEqual(node.GetAddressData(Alice.Address)["a"], "OOO");
 
+            node.SetScript(Alice, null);
+            Thread.Sleep(25000);
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
         }

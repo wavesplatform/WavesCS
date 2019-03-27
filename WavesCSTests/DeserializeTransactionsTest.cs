@@ -348,7 +348,7 @@ namespace WavesCSTests
                      'timestamp': 1526910778245,
                      'proofs': ['x7T161SxvUxpubEAKv4UL5ucB5pquAhTryZ8Qrd347TPuQ4yqqpVMQ2B5FpeFXGnpyLvb7wGeoNsyyjh5R61u7F'],
                      'version': 1,
-                     'contractAddress' : '3Fb641A9hWy63K18KsBJwns64McmdEATgJd',
+                     'dappAddress' : '3Fb641A9hWy63K18KsBJwns64McmdEATgJd',
                      'call': {
                          'function' : 'foo',
                          'args' : [
@@ -368,11 +368,10 @@ namespace WavesCSTests
             (
                 chainId: 'D',
                 senderPublicKey: "73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK".FromBase58(),
-                contractAddress: "3Fb641A9hWy63K18KsBJwns64McmdEATgJd",
+                dappAddress: "3Fb641A9hWy63K18KsBJwns64McmdEATgJd",
                 functionHeader: "foo",
                 functionCallArguments: new List<object> { "YWxpY2U=".FromBase64() },
-                paymentAmount: 7m,
-                paymentAsset: new Asset("73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK", "asset", 0),
+                payment: new Dictionary<Asset, decimal> { { new Asset("73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK", "asset", 0) , 7m} },
                 fee: 0.001m,
                 feeAsset: Assets.WAVES
             ).GetJson();
@@ -392,6 +391,24 @@ namespace WavesCSTests
                     Console.WriteLine(e.Message);
                 }
             }
+
+
+            var transaction = new InvokeScriptTransaction(
+                chainId: 'T',
+                senderPublicKey: "Agcj8mD4KiPKbh8A7BuxJ7nAmrNcZkG4ya4qDu9Yheqq".FromBase58(),
+                dappAddress: "3MxFW8EBmHy4Lsk26Y1k8vaiPLYybEtAgSG",
+                functionHeader: "foo",
+                functionCallArguments: new List<object> { 42L },
+                payment: null,
+                fee: 1m,
+                feeAsset: Assets.WAVES
+            )
+            {
+                Timestamp = 1553595388557L.ToDate()
+            };
+
+            Console.WriteLine(transaction.GetJson().ToJson());
+            Assert.AreEqual("4RqUjZTZNXQQgScDX7BxCXpGcVz29BojWTCRW3yPQdGe", transaction.GenerateId());
         }
 
         [TestMethod]
