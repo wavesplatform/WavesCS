@@ -265,9 +265,10 @@ namespace WavesCS
                 tx["chainId"] = ChainId;
                 return Transaction.FromJson(tx);
             }
-            catch(Exception){
+            catch (Exception)
+            {
                 return null;
-            }           
+            }
         }
 
         public Transaction[] GetBlockTransactionsAtHeight(long height)
@@ -393,13 +394,13 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string InvokeScript(PrivateKeyAccount caller, string contractAddress,
+        public string InvokeScript(PrivateKeyAccount caller, string dappAddress,
                 string functionHeader, List<object> functionCallArguments,
-                decimal paymentAmount, Asset paymentAsset, decimal fee = 1m, Asset feeAsset = null)
+                Dictionary<Asset, decimal> payment, decimal fee = 0.005m, Asset feeAsset = null)
         {
-            var tx = new InvokeScriptTransaction(ChainId, caller.PublicKey, contractAddress,
+            var tx = new InvokeScriptTransaction(ChainId, caller.PublicKey, dappAddress,
             functionHeader, functionCallArguments,
-                paymentAmount, paymentAsset, fee, feeAsset);
+                payment, fee, feeAsset);
             tx.Sign(caller);
             return Broadcast(tx);
         }

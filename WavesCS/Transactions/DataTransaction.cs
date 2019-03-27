@@ -31,45 +31,17 @@ namespace WavesCS
             using(var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
-                const byte INTEGER = 0;
-                const byte BOOLEAN = 1;
-                const byte BINARY = 2;
-                const byte STRING = 3;                
-
                 writer.Write(TransactionType.DataTx);
                 writer.Write(Version);
                 writer.Write(SenderPublicKey);
                 writer.WriteShort((short) Entries.Count);
+
                 foreach (var pair in Entries)
                 {
                     var key = Encoding.UTF8.GetBytes(pair.Key);
                     writer.WriteShort((short) key.Length);
                     writer.Write(key);
-                    switch (pair.Value)
-                    {
-                        case long value:
-                            writer.Write(INTEGER);
-                            writer.WriteLong(value);
-                            break;
-                        case bool value:
-                            writer.Write(BOOLEAN);
-                            writer.Write(value ? (byte) 1 : (byte) 0);
-                            break;
-                        case byte[] value:
-                            writer.Write(BINARY);
-                            writer.WriteShort((short) value.Length);
-                            writer.Write(value);
-                            break;
-                        case string value:
-                            writer.Write(STRING);
-                            var encoded = Encoding.UTF8.GetBytes(value);
-                            writer.WriteShort((short) encoded.Length);
-                            writer.Write(encoded);
-                            break;
-                        default:
-                            throw new ArgumentException("Only long, bool and byte[] entry values supported",
-                                nameof(Entries));
-                    }
+                    writer.WriteObject(pair.Value);
                 }
 
                 writer.WriteLong(Timestamp.ToLong());
