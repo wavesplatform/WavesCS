@@ -27,7 +27,7 @@ namespace WavesCS
             Decimals = decimals;
             Reissuable = reissuable;
             Fee = fee;
-            Asset = new Asset("", "", Decimals, script);
+            Asset = new Asset("", Name, Decimals, script);
             Script = script;
             Scripted = scripted;
         }

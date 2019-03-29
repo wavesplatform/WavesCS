@@ -31,8 +31,7 @@ namespace WavesCSTests
             {
                 amountAsset = node.IssueAsset(Accounts.Alice, "asset", "asset", 1e12m, 6, true);
                 Assert.IsNotNull(amountAsset);
-
-                Thread.Sleep(15000);
+                node.WaitForTransactionConfirmation(amountAsset.Id);
             }
 
             var priceAsset = Assets.WAVES;

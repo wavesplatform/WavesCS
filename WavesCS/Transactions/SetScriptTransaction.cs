@@ -17,7 +17,7 @@ namespace WavesCS
 
         public SetScriptTransaction(DictionaryObject tx) : base(tx)
         {
-            Script = tx.GetString("script").FromBase64();
+            Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             ChainId = tx.GetChar("chainId");
         }

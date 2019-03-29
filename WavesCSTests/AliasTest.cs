@@ -37,18 +37,18 @@ namespace WavesCSTests
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
 
-            node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
-            Thread.Sleep(10000);
+            var response = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var alias = GenerateRandomAlias();
-            node.CreateAlias(account, alias, 'T');
-            Thread.Sleep(10000);
+            response = node.CreateAlias(account, alias, 'T');
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var amount = 0.0001m;
             var balanceBefore = node.GetBalance(account.Address);
 
-            node.Transfer(Accounts.Alice, "alias:T:" + alias, Assets.WAVES, amount);
-            Thread.Sleep(15000);
+            response = node.Transfer(Accounts.Alice, "alias:T:" + alias, Assets.WAVES, amount);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount, balanceAfter);
@@ -62,12 +62,12 @@ namespace WavesCSTests
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
 
-            node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
-            Thread.Sleep(10000);
+            var response = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var alias = GenerateRandomAlias();
-            node.CreateAlias(account, alias, 'T');
-            Thread.Sleep(10000);
+            response = node.CreateAlias(account, alias, 'T');
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var amount = 0.0001m;
             var balanceBefore = node.GetBalance(account.Address);

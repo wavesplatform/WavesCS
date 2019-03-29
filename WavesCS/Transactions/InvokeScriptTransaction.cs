@@ -27,13 +27,15 @@ namespace WavesCS
             DappAddress = tx.GetString("dappAddress");
             FunctionHeader = tx.GetString("call.function");
 
-            FunctionCallArguments = (List<object>) tx.GetValue("call.args");
+            FunctionCallArguments = tx.GetObjects("call.args")
+                                        .Select(Node.DataValue)
+                                        .ToList();
 
             Payment = tx.GetObjects("payment")
                         .ToDictionary(o => node.GetAsset(o.GetString("asset")),
                                       o => node.GetAsset(o.GetString("asset")).LongToAmount(o.GetLong("amount")));
 
-            FeeAsset = tx.ContainsKey("feeAssetId") ? node.GetAsset(tx.GetString("feeAssetId")) : Assets.WAVES;
+            FeeAsset = tx.ContainsKey("feeAssetId") && tx.GetString("feeAssetId") != null ? node.GetAsset(tx.GetString("feeAssetId")) : Assets.WAVES;
             Fee = FeeAsset.LongToAmount(tx.GetLong("fee"));
         }
 

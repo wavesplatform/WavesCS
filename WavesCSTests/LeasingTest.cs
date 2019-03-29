@@ -22,14 +22,12 @@ namespace WavesCSTests
             var leaseTx = new LeaseTransaction(node.ChainId, Accounts.Bob.PublicKey, Accounts.Alice.Address, 0.5m);            
             Assert.AreEqual(0.001m, leaseTx.Fee);
             leaseTx.Sign(Accounts.Bob);
-            
+
             var response = node.BroadcastAndWait(leaseTx.GetJsonWithSignature());
             Console.WriteLine(response);
             Assert.IsFalse(string.IsNullOrEmpty(response));
 
             var leasingId = response.ParseJsonObject().GetString("id");
-            
-            Thread.Sleep(10000);
             
             var cancelTx = new CancelLeasingTransaction(node.ChainId, Accounts.Bob.PublicKey, leasingId);            
             Assert.AreEqual(0.001m, cancelTx.Fee);
