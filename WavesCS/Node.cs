@@ -65,6 +65,13 @@ namespace WavesCS
             return GetObject("blocks/height").GetInt("height");
         }
 
+        public int GetTransactionHeight(string transactionId)
+        {
+            var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
+                         .ParseJsonObject();
+            return (int)(long)tx["height"];
+        }
+
         public decimal GetBalance(string address)
         {
             return GetObject($"addresses/balance/{address}").GetDecimal("balance", Assets.WAVES);
