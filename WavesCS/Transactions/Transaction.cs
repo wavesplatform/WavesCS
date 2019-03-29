@@ -79,6 +79,12 @@ namespace WavesCS
             return json;
         }
 
+        public static Transaction FromJson(char chainId, DictionaryObject tx)
+        {
+            tx["chainId"] = chainId;
+            return FromJson(tx);
+        }
+
         public static Transaction FromJson(DictionaryObject tx)
         {
             switch ((TransactionType)tx.GetByte("type"))
