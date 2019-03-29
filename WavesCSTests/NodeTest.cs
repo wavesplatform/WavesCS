@@ -44,7 +44,15 @@ namespace WavesCSTests
             Assert.AreEqual(200000, asset.AmountToLong(0.002m));
             Assert.AreEqual(0.03m, asset.LongToAmount(3000000));
         }
-        
+
+        [TestMethod]
+        public void TestGetTransactionHeight()
+        {
+            var node = new Node(Node.MainNetChainId);
+            var height = node.GetTransactionHeight("5CZV9RouJs7uaRkZY741WDy9zV69npX1FTZqxo5fsryL");
+            Assert.AreEqual(height, 1371063);
+        }
+
         [TestMethod]
         public void TestAssetBalances()
         {
