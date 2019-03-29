@@ -24,9 +24,8 @@ namespace WavesCSTests
 
             Console.WriteLine("Compiled script: {0}", compiledScript);
 
-            var setScriptTx = node.SetScript(Accounts.Carol, compiledScript, 0.014m);
-
-            Thread.Sleep(10000);
+            var response = node.SetScript(Accounts.Carol, compiledScript, 0.014m);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
             Assert.AreEqual("TRUE", scriptInfo["scriptText"]);
@@ -34,9 +33,8 @@ namespace WavesCSTests
             Assert.IsTrue(scriptInfo.GetInt("complexity") > 0);
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);
 
-            node.SetScript(Accounts.Carol, null, 0.014m);
-
-            Thread.Sleep(10000);
+            response = node.SetScript(Accounts.Carol, null, 0.014m);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
@@ -48,7 +46,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMultisig()
         {
-            // This test works with tranfer transactions of version 2 only
+            // This test works with transfer transactions of version 2 only
             var node = new Node();
 
             var script = $@"                
@@ -62,15 +60,14 @@ namespace WavesCSTests
 
             var multiAccount = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), AddressEncoding.TestNet);
             Console.WriteLine("Account generated: {0}", multiAccount.Address);
-            node.Transfer(Accounts.Alice, multiAccount.Address, Assets.WAVES, 0.1m);
 
-            Thread.Sleep(10000);
+            var response = node.Transfer(Accounts.Alice, multiAccount.Address, Assets.WAVES, 0.1m);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             Assert.IsTrue(node.GetBalance(multiAccount.Address) == 0.1m);
 
-            node.SetScript(multiAccount, compiledScript, node.ChainId);
-
-            Thread.Sleep(10000);
+            response = node.SetScript(multiAccount, compiledScript, node.ChainId);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var tx = new TransferTransaction(node.ChainId, multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.005m) { Version = 2 };
             tx.Sign(Accounts.Alice, 0);

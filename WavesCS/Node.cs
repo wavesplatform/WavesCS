@@ -347,7 +347,7 @@ namespace WavesCS
         {
             var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, fee, script, scripted);
             tx.Sign(account);
-            var response = BroadcastAndWait(tx);
+            var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
             return new Asset(assetId, name, decimals, script);
         }
@@ -434,39 +434,17 @@ namespace WavesCS
 
         public Transaction[] GetUnconfirmedTransactions()
         {
-            var response = Http.GetObjects($"{_host}/transactions/unconfirmed").Select(tx => Transaction.FromJson(tx)).ToArray();
-
-            return response;
+            return Http.GetObjects($"{_host}/transactions/unconfirmed").Select(Transaction.FromJson).ToArray();
         }
 
         public string Post(string url, string data)
         {
             return Http.Post(_host + url, data);
         }
-        
+
         public string Broadcast(Transaction transaction)
         {
             return Http.Post($"{_host}/transactions/broadcast", transaction.GetJsonWithSignature());
-        }
-        
-        public string BroadcastAndWait(DictionaryObject transaction)
-        {
-            var response = Broadcast(transaction);
-            while (GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null) 
-            {
-                Thread.Sleep(1000);
-            }
-            return response;
-        }
-
-        public string BroadcastAndWait(Transaction transaction)
-        {
-            var response = Broadcast(transaction);
-            while (GetTransactionByIdOrNull(response.ParseJsonObject().GetString("id")) == null)
-            {
-                Thread.Sleep(1000);
-            }
-            return response;
         }
 
         public string Broadcast(DictionaryObject transaction)
@@ -474,10 +452,38 @@ namespace WavesCS
             return Http.Post($"{_host}/transactions/broadcast", transaction);
         }
 
+        public string BroadcastAndWait(Transaction transaction)
+        {
+            var response = Broadcast(transaction);
+            WaitForTransactionBroadcastResponseConfirmation(response);
+            return response;
+        }
+
+        public string BroadcastAndWait(DictionaryObject transaction)
+        {
+            var response = Broadcast(transaction);
+            WaitForTransactionBroadcastResponseConfirmation(response);
+            return response;
+        }
+
         public string BatchBroadcast(IEnumerable<Transaction> transactions)
         {
             var data = transactions.Select(t => t.GetJsonWithSignature()).ToArray();
             return Http.Post($"{_host}/assets/broadcast/batch-transfer", data);
+        }
+
+        public void WaitForTransactionConfirmation(string transactionId)
+        {
+            while (GetTransactionByIdOrNull(transactionId) == null)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+
+        public void WaitForTransactionBroadcastResponseConfirmation(string broadcastResponse)
+        {
+            var transactionId = broadcastResponse.ParseJsonObject().GetString("id");
+            WaitForTransactionConfirmation(transactionId);
         }
 
         public DictionaryObject[] GetTransactionsByAddress(string address, int limit)

@@ -96,6 +96,7 @@ namespace WavesCS
                 case TransactionType.Transfer: return new TransferTransaction(tx);
                 case TransactionType.Exchange: return new ExchangeTransaction(tx);
                 case TransactionType.SetAssetScript: return new SetAssetScriptTransaction(tx);
+                case TransactionType.InvokeScript: return new InvokeScriptTransaction(tx);
 
                 default: return new UnknownTransaction(tx);
             }

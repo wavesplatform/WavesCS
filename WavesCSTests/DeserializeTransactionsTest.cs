@@ -24,9 +24,8 @@ namespace WavesCSTests
 
             var limit = 100;
             var address = "3PBmsJXAcgnH9cu81oyW8abNh9jsaNzFQKJ";
-            var transactions = node.GetTransactions(address, limit);
-            Thread.Sleep(1000);
 
+            var transactions = node.GetTransactions(address, limit);
             Assert.AreEqual(transactions.Count(), limit);
         }
 
@@ -339,76 +338,29 @@ namespace WavesCSTests
         [TestMethod]
         public void TestInvokeScriptTransactionDeserialize()
         {
-            var json = @"{
-                     'type': 16,
-                     'id': '3RRmhhMxbD9SUGUEokaBFmdWqT42vKRiM94tqxuXHE9q',
-                     'sender': '3FX9SibfqAWcdnhrmFzqM1mGqya6DkVVnps',
-                     'senderPublicKey': '73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK',
-                     'fee': 100000,
-                     'timestamp': 1526910778245,
-                     'proofs': ['x7T161SxvUxpubEAKv4UL5ucB5pquAhTryZ8Qrd347TPuQ4yqqpVMQ2B5FpeFXGnpyLvb7wGeoNsyyjh5R61u7F'],
-                     'version': 1,
-                     'dappAddress' : '3Fb641A9hWy63K18KsBJwns64McmdEATgJd',
-                     'call': {
-                         'function' : 'foo',
-                         'args' : [
-                         { 'type' : 'binary',
-                           'value' : 'base64:YWxpY2U='
-                         }
-                        ]
-                      },
-                     'payment' : {
-                        'amount' : 7,
-                        'assetId' : '73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK'
-                        }
-                    }";
+            var node = new Node();
 
-            var json1 = new InvokeScriptTransaction(json.ParseJsonObject()).GetJson();
-            var json2 = new InvokeScriptTransaction
-            (
-                chainId: 'D',
-                senderPublicKey: "73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK".FromBase58(),
-                dappAddress: "3Fb641A9hWy63K18KsBJwns64McmdEATgJd",
-                functionHeader: "foo",
-                functionCallArguments: new List<object> { "YWxpY2U=".FromBase64() },
-                payment: new Dictionary<Asset, decimal> { { new Asset("73pu8pHFNpj9tmWuYjqnZ962tXzJvLGX86dxjZxGYhoK", "asset", 0) , 7m} },
-                fee: 0.001m,
-                feeAsset: Assets.WAVES
-            ).GetJson();
+            var transactionId = "86SVgeoQGwYdoQzzdePhBuFW7caNTrgQDLcua4yR9DsH";
+            var tx = node.GetTransactionById(transactionId);
 
-            foreach (var pair in json1)
-            {
-                var key = pair.Key;
-                var value1 = pair.Value;
+            Assert.IsInstanceOfType(tx, typeof(InvokeScriptTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
 
-                try
-                {
-                    var value2 = json2[key];
-                    Assert.AreEqual(value1, value2);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
+            var invokeScriptTx = (InvokeScriptTransaction)tx;
 
-
-            var transaction = new InvokeScriptTransaction(
-                chainId: 'T',
-                senderPublicKey: "Agcj8mD4KiPKbh8A7BuxJ7nAmrNcZkG4ya4qDu9Yheqq".FromBase58(),
-                dappAddress: "3MxFW8EBmHy4Lsk26Y1k8vaiPLYybEtAgSG",
-                functionHeader: "foo",
-                functionCallArguments: new List<object> { 42L },
-                payment: null,
-                fee: 1m,
-                feeAsset: Assets.WAVES
-            )
-            {
-                Timestamp = 1553595388557L.ToDate()
-            };
-
-            Console.WriteLine(transaction.GetJson().ToJson());
-            Assert.AreEqual("4RqUjZTZNXQQgScDX7BxCXpGcVz29BojWTCRW3yPQdGe", transaction.GenerateId());
+            Assert.AreEqual(invokeScriptTx.Sender, "3MrDis17gyNSusZDg8Eo1PuFnm5SQMda3gu");
+            Assert.AreEqual(invokeScriptTx.SenderPublicKey.ToBase58(), "2AqMAWBPbTxYdHoE9vsELWTrCFjhEJdKAACt5UEjFGLu");
+            Assert.AreEqual(invokeScriptTx.FeeAsset, Assets.WAVES);
+            Assert.AreEqual(invokeScriptTx.Fee, invokeScriptTx.FeeAsset.LongToAmount(500000));
+            Assert.AreEqual(invokeScriptTx.Timestamp.ToLong(), 1553874308840L);
+            Assert.AreEqual(invokeScriptTx.Proofs.Length, 1);
+            Assert.AreEqual(invokeScriptTx.Proofs[0].ToBase58(), "4sXVeLLeeY38mHEkrbARG3SGJu5LijgS3YVysX7XggqPkEHWyDCDtzDsPhkdW6o5md9nyYBdsPc1CmecTfS6J6dU");
+            Assert.AreEqual(invokeScriptTx.Version, 1);
+            Assert.AreEqual(invokeScriptTx.DappAddress, "3MqznbvHM2CqEVG6HKpWQmmXrWWHgBmFcAJ");
+            Assert.AreEqual(invokeScriptTx.FunctionHeader, "foo");
+            Assert.AreEqual(invokeScriptTx.FunctionCallArguments.Count, 1);
+            Assert.AreEqual(invokeScriptTx.FunctionCallArguments[0], 42L);
+            Assert.AreEqual(invokeScriptTx.Payment.Count, 0);
         }
 
         [TestMethod]

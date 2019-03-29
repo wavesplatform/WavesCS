@@ -20,21 +20,21 @@ namespace WavesCSTests
 
             Asset asset = node.IssueAsset(Accounts.Alice, "testAsset", "asset for c# issue testing", 2, 6, true);
             Assert.IsNotNull(asset);
-            
-            Thread.Sleep(15000);
-            var quantityIssue = node.GetBalance(Accounts.Alice.Address, asset);
-            string reissue = node.ReissueAsset(Accounts.Alice, asset, 1, true);
-            Assert.IsNotNull(reissue);
+            node.WaitForTransactionConfirmation(asset.Id);
 
-            Thread.Sleep(20000);
+            var quantityIssue = node.GetBalance(Accounts.Alice.Address, asset);
+            string response = node.ReissueAsset(Accounts.Alice, asset, 1, true);
+            Assert.IsNotNull(response);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
+
             var quantityReissue = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreNotEqual(quantityIssue, quantityReissue);
             Assert.AreEqual(quantityReissue, 3);
 
-            string burn = node.BurnAsset(Accounts.Alice, asset, 3);
-            Assert.IsNotNull(burn);
+            response = node.BurnAsset(Accounts.Alice, asset, 3);
+            Assert.IsNotNull(response);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
-            Thread.Sleep(20000);
             var quantityBurn = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreEqual(quantityBurn, 0);
         }

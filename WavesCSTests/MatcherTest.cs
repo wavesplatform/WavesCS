@@ -25,7 +25,6 @@ namespace WavesCSTests
             Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
 
             Console.WriteLine(new Node().GetBalance(Accounts.Carol.Address));
-            Thread.Sleep(3000);
         }
 
         [TestMethod]

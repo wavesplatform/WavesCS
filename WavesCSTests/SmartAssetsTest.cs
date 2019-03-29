@@ -25,6 +25,7 @@ namespace WavesCSTests
                                           "Smart Asset", 100, 4,
                                           true, compiledScript);
             Assert.IsNotNull(smartAsset);
+            node.WaitForTransactionConfirmation(smartAsset.Id);
 
             Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 100);
             Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
@@ -41,7 +42,7 @@ namespace WavesCSTests
                                                "Smart Asset", 100, 8,
                                                true, node.CompileScript("true"));
 
-            Thread.Sleep(10000);
+            node.WaitForTransactionConfirmation(smartAsset.Id);
 
             var script = $@"                
                 match tx {{
@@ -52,9 +53,8 @@ namespace WavesCSTests
 
             var compiledScript = node.CompileScript(script);
 
-            node.SetAssetScript(Accounts.Alice, smartAsset, compiledScript, 'T', 1);
-
-            Thread.Sleep(10000);
+            var response = node.SetAssetScript(Accounts.Alice, smartAsset, compiledScript, 'T', 1);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             var aliceBalanceBefore = node.GetBalance(Accounts.Alice.Address, smartAsset);
             var bobBalanceBefore = node.GetBalance(Accounts.Bob.Address, smartAsset);
@@ -63,15 +63,14 @@ namespace WavesCSTests
             {
                 try
                 {
-                    node.Transfer(Accounts.Alice, Accounts.Bob.Address, smartAsset, amount, 0.005m);
-                    Thread.Sleep(4000);
+                    response = node.Transfer(Accounts.Alice, Accounts.Bob.Address, smartAsset, amount, 0.005m);
+                    node.WaitForTransactionBroadcastResponseConfirmation(response);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
-            Thread.Sleep(10000);
 
             var aliceBalanceAfter = node.GetBalance(Accounts.Alice.Address, smartAsset);
             var bobBalanceAfter = node.GetBalance(Accounts.Bob.Address, smartAsset);
@@ -79,9 +78,8 @@ namespace WavesCSTests
             Assert.AreEqual(aliceBalanceBefore - aliceBalanceAfter, 0.01m + 0.11m + 0.21m);
             Assert.AreEqual(bobBalanceAfter - bobBalanceBefore, 0.01m + 0.11m + 0.21m);
 
-            node.SetAssetScript(Accounts.Alice, smartAsset, node.CompileScript("false"), 'T', 1);
-            
-            Thread.Sleep(12000);
+            response = node.SetAssetScript(Accounts.Alice, smartAsset, node.CompileScript("false"), 'T', 1);
+            node.WaitForTransactionBroadcastResponseConfirmation(response);
 
             Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());
 

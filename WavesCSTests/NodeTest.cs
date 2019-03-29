@@ -93,7 +93,8 @@ namespace WavesCSTests
 
             // transfer back so that Alice's balance is not drained
             var transferTxId = node.Transfer(Accounts.Bob, Accounts.Alice.Address, Assets.WAVES, 0.2m, "Thanks, Alice").ParseJsonObject().GetString("id");
-            Thread.Sleep(10000);
+            node.WaitForTransactionConfirmation(transferTxId);
+
             var fee = node.CalculateFee(node.GetTransactionById(transferTxId));
             Assert.IsNotNull(fee);            
         }
