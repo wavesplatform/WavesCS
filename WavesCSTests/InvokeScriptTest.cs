@@ -36,10 +36,10 @@ func foo (a:ByteVector) = {
             var compiledScript = node.CompileScript(script);
 
             var response = node.SetScript(Alice, compiledScript);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             response = node.InvokeScript(Bob, Alice.Address, "foo", new List<object> { 42L }, null);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             Assert.AreEqual((long)node.GetAddressData(Alice.Address)["a"], 42L);
             Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["sender"]).ToBase58(), Bob.Address);
@@ -56,7 +56,7 @@ func foo (a:ByteVector) = {
             Assert.AreEqual(node.GetAddressData(Alice.Address)["a"], "OOO");
 
             response = node.SetScript(Alice, null);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));

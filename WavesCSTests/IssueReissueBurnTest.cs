@@ -20,12 +20,12 @@ namespace WavesCSTests
 
             Asset asset = node.IssueAsset(Accounts.Alice, "testAsset", "asset for c# issue testing", 2, 6, true);
             Assert.IsNotNull(asset);
-            node.WaitForTransactionConfirmation(asset.Id);
+            node.WaitTransactionConfirmation(asset.Id);
 
             var quantityIssue = node.GetBalance(Accounts.Alice.Address, asset);
             string response = node.ReissueAsset(Accounts.Alice, asset, 1, true);
             Assert.IsNotNull(response);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var quantityReissue = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreNotEqual(quantityIssue, quantityReissue);
@@ -33,7 +33,7 @@ namespace WavesCSTests
 
             response = node.BurnAsset(Accounts.Alice, asset, 3);
             Assert.IsNotNull(response);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var quantityBurn = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreEqual(quantityBurn, 0);

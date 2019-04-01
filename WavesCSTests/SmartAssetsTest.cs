@@ -25,7 +25,7 @@ namespace WavesCSTests
                                           "Smart Asset", 100, 4,
                                           true, compiledScript);
             Assert.IsNotNull(smartAsset);
-            node.WaitForTransactionConfirmation(smartAsset.Id);
+            node.WaitTransactionConfirmation(smartAsset.Id);
 
             Assert.AreEqual(node.GetBalance(Accounts.Alice.Address, smartAsset), 100);
             Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), compiledScript.ToBase64());
@@ -42,7 +42,7 @@ namespace WavesCSTests
                                                "Smart Asset", 100, 8,
                                                true, node.CompileScript("true"));
 
-            node.WaitForTransactionConfirmation(smartAsset.Id);
+            node.WaitTransactionConfirmation(smartAsset.Id);
 
             var script = $@"                
                 match tx {{
@@ -54,7 +54,7 @@ namespace WavesCSTests
             var compiledScript = node.CompileScript(script);
 
             var response = node.SetAssetScript(Accounts.Alice, smartAsset, compiledScript, 'T', 1);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var aliceBalanceBefore = node.GetBalance(Accounts.Alice.Address, smartAsset);
             var bobBalanceBefore = node.GetBalance(Accounts.Bob.Address, smartAsset);
@@ -64,7 +64,7 @@ namespace WavesCSTests
                 try
                 {
                     response = node.Transfer(Accounts.Alice, Accounts.Bob.Address, smartAsset, amount, 0.005m);
-                    node.WaitForTransactionBroadcastResponseConfirmation(response);
+                    node.WaitTransactionConfirmationByResponse(response);
                 }
                 catch (Exception e)
                 {
@@ -79,7 +79,7 @@ namespace WavesCSTests
             Assert.AreEqual(bobBalanceAfter - bobBalanceBefore, 0.01m + 0.11m + 0.21m);
 
             response = node.SetAssetScript(Accounts.Alice, smartAsset, node.CompileScript("false"), 'T', 1);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());
 
