@@ -25,7 +25,7 @@ namespace WavesCSTests
             Console.WriteLine("Compiled script: {0}", compiledScript);
 
             var response = node.SetScript(Accounts.Carol, compiledScript, 0.014m);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
             Assert.AreEqual("TRUE", scriptInfo["scriptText"]);
@@ -34,7 +34,7 @@ namespace WavesCSTests
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);
 
             response = node.SetScript(Accounts.Carol, null, 0.014m);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
@@ -62,12 +62,12 @@ namespace WavesCSTests
             Console.WriteLine("Account generated: {0}", multiAccount.Address);
 
             var response = node.Transfer(Accounts.Alice, multiAccount.Address, Assets.WAVES, 0.1m);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             Assert.IsTrue(node.GetBalance(multiAccount.Address) == 0.1m);
 
             response = node.SetScript(multiAccount, compiledScript, node.ChainId);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var tx = new TransferTransaction(node.ChainId, multiAccount.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.07m, 0.005m) { Version = 2 };
             tx.Sign(Accounts.Alice, 0);

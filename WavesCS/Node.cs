@@ -457,14 +457,14 @@ namespace WavesCS
         public string BroadcastAndWait(Transaction transaction)
         {
             var response = Broadcast(transaction);
-            WaitForTransactionBroadcastResponseConfirmation(response);
+            WaitTransactionConfirmationByResponse(response);
             return response;
         }
 
         public string BroadcastAndWait(DictionaryObject transaction)
         {
             var response = Broadcast(transaction);
-            WaitForTransactionBroadcastResponseConfirmation(response);
+            WaitTransactionConfirmationByResponse(response);
             return response;
         }
 
@@ -474,7 +474,7 @@ namespace WavesCS
             return Http.Post($"{_host}/assets/broadcast/batch-transfer", data);
         }
 
-        public void WaitForTransactionConfirmation(string transactionId)
+        public void WaitTransactionConfirmation(string transactionId)
         {
             while (GetTransactionByIdOrNull(transactionId) == null)
             {
@@ -482,10 +482,10 @@ namespace WavesCS
             }
         }
 
-        public void WaitForTransactionBroadcastResponseConfirmation(string broadcastResponse)
+        public void WaitTransactionConfirmationByResponse(string broadcastResponse)
         {
             var transactionId = broadcastResponse.ParseJsonObject().GetString("id");
-            WaitForTransactionConfirmation(transactionId);
+            WaitTransactionConfirmation(transactionId);
         }
 
         public DictionaryObject[] GetTransactionsByAddress(string address, int limit)

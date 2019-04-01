@@ -31,18 +31,18 @@ namespace WavesCSTests
             {
                 asset = node.IssueAsset(Accounts.Alice, "testAsset", "asset for c# issue testing", 2, 6, true);
                 Assert.IsNotNull(asset);
-                node.WaitForTransactionConfirmation(asset.Id);
+                node.WaitTransactionConfirmation(asset.Id);
             }
 
             var minimalFeeInAssets = 0.0001m;
             string response = node.SponsoredFeeForAsset(Accounts.Alice, asset, minimalFeeInAssets);
             Assert.IsNotNull(response);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.2m;
 
             response = node.Transfer(Accounts.Alice, Accounts.Bob.Address, asset, amount, 0.0001m, asset);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var transactionId = response.ParseJsonObject().GetString("id");
             var txInfo = node.GetObject("transactions/info/{0}", transactionId);
