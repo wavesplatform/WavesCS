@@ -38,17 +38,17 @@ namespace WavesCSTests
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
 
             var response = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var alias = GenerateRandomAlias();
             response = node.CreateAlias(account, alias, 'T');
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.0001m;
             var balanceBefore = node.GetBalance(account.Address);
 
             response = node.Transfer(Accounts.Alice, "alias:T:" + alias, Assets.WAVES, amount);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount, balanceAfter);
@@ -63,11 +63,11 @@ namespace WavesCSTests
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
 
             var response = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var alias = GenerateRandomAlias();
             response = node.CreateAlias(account, alias, 'T');
-            node.WaitForTransactionBroadcastResponseConfirmation(response);
+            node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.0001m;
             var balanceBefore = node.GetBalance(account.Address);
