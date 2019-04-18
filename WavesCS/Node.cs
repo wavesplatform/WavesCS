@@ -131,9 +131,9 @@ namespace WavesCS
 
         public Asset GetAsset(string assetId)
         {
-            if (assetId == Assets.WAVES.Id)
+            if (assetId == Assets.WAVES.Id || assetId == null)
                 return Assets.WAVES;
-            
+
             Asset asset = null;
 
             if (AssetsCache.ContainsKey(assetId))

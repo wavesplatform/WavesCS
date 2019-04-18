@@ -54,7 +54,6 @@ namespace WavesCS
 
         public Order[] GetOrders(PrivateKeyAccount account, Asset amountAsset, Asset priceAsset)
         {
-                    
             string path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/publicKey/{account.PublicKey.ToBase58()}";
 
             var headers = GetProtectionHeaders(account);

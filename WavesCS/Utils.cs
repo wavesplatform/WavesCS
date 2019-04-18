@@ -30,9 +30,9 @@ namespace WavesCS
 
         public static void WriteShort(this BinaryWriter writer, int n)
         {
-            byte[] shortN = BitConverter.GetBytes((short) n);
+            byte[] shortN = BitConverter.GetBytes((short)n);
             Array.Reverse(shortN);
-            writer.Write(shortN);          
+            writer.Write(shortN);
         }
 
         public static void WriteObject(this BinaryWriter writer, object o)
@@ -103,6 +103,6 @@ namespace WavesCS
                 var decoded = Base58.Decode(assetId);
                 stream.Write(decoded, 0, decoded.Length);
             }
-        }  
+        }
     }
 }

@@ -15,9 +15,8 @@ namespace WavesCSTests
         private static readonly decimal Fee = 0.001m;
 
         private static readonly JsonSerializer serializer = new JsonSerializer();
-        
+
         public TestContext TestContext { get; set; }
-        
 
         [TestMethod]
         public void TestSmoke()
@@ -58,4 +57,3 @@ namespace WavesCSTests
         }
     }
 }
-
