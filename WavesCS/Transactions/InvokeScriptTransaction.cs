@@ -32,8 +32,8 @@ namespace WavesCS
                                         .ToList();
 
             Payment = tx.GetObjects("payment")
-                        .ToDictionary(o => node.GetAsset(o.GetString("asset")),
-                                      o => node.GetAsset(o.GetString("asset")).LongToAmount(o.GetLong("amount")));
+                        .ToDictionary(o => node.GetAsset(o.GetString("assetId")),
+                                      o => node.GetAsset(o.GetString("assetId")).LongToAmount(o.GetLong("amount")));
 
             FeeAsset = tx.ContainsKey("feeAssetId") && tx.GetString("feeAssetId") != null ? node.GetAsset(tx.GetString("feeAssetId")) : Assets.WAVES;
             Fee = FeeAsset.LongToAmount(tx.GetLong("fee"));
@@ -76,11 +76,30 @@ namespace WavesCS
             }
 
             writer.WriteShort(Payment.Count);
-                
+
             foreach(var p in Payment)
             {
-                writer.Write(p.Key.AmountToLong(p.Value));
-                writer.WriteAsset(p.Key.Id);
+                var tmpStream = new MemoryStream();
+                var tmpWriter = new BinaryWriter(tmpStream);
+
+                tmpWriter.WriteLong(p.Key.AmountToLong(p.Value));
+
+                var id = p.Key.IdOrNull?.FromBase58();
+
+                if (id == null)
+                {
+                    tmpWriter.WriteByte(0);
+                }
+                else
+                {
+                    tmpWriter.WriteByte(1);
+                    tmpWriter.WriteShort(id.Length);
+                    tmpWriter.Write(id);
+                }
+
+                var array = tmpStream.ToArray();
+                writer.WriteShort(array.Count());
+                writer.Write(array);
             }
 
             writer.WriteLong(FeeAsset.AmountToLong(Fee));
@@ -117,7 +136,7 @@ namespace WavesCS
                 { "payment", Payment.Select(p => new DictionaryObject
                     {
                         {"amount", p.Key.AmountToLong(p.Value) },
-                        {"asset", p.Key.IdOrNull }
+                        {"assetId", p.Key.IdOrNull }
                     })
                 }
             };
