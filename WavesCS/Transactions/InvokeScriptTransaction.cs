@@ -24,7 +24,7 @@ namespace WavesCS
         {
             var node = new Node(tx.GetChar("chainId"));
 
-            DappAddress = tx.GetString("dappAddress");
+            DappAddress = tx.GetString("dApp");
             FunctionHeader = tx.GetString("call.function") != null ? tx.GetString("call.function") : null;
 
             FunctionCallArguments = FunctionHeader != null ? tx.GetObjects("call.args")
@@ -136,7 +136,7 @@ namespace WavesCS
                 {"feeAssetId", FeeAsset.IdOrNull},
                 {"timestamp", Timestamp.ToLong()},
                 {"version", Version},
-                {"dappAddress", DappAddress},
+                {"dApp", DappAddress},
                 {"call", FunctionHeader != null ? new DictionaryObject
                 {
                     {"function", FunctionHeader},
