@@ -25,11 +25,11 @@ namespace WavesCS
             var node = new Node(tx.GetChar("chainId"));
 
             DappAddress = tx.GetString("dappAddress");
-            FunctionHeader = tx.GetString("call.function");
+            FunctionHeader = tx.GetString("call.function") != null ? tx.GetString("call.function") : null;
 
-            FunctionCallArguments = tx.GetObjects("call.args")
+            FunctionCallArguments = FunctionHeader != null ? tx.GetObjects("call.args")
                                         .Select(Node.DataValue)
-                                        .ToList();
+                                        .ToList() : null;
 
             Payment = tx.GetObjects("payment")
                         .ToDictionary(o => node.GetAsset(o.GetString("assetId")),
@@ -51,6 +51,16 @@ namespace WavesCS
             FeeAsset = feeAsset ?? Assets.WAVES;
         }
 
+        public InvokeScriptTransaction(char chainId, byte[] senderPublicKey,
+            string dappAddress,
+             Dictionary<Asset, decimal> payment, decimal fee, Asset feeAsset) : base(chainId, senderPublicKey)
+        {
+            DappAddress = dappAddress;
+            Payment = payment ?? new Dictionary<Asset, decimal>();
+            Fee = fee;
+            FeeAsset = feeAsset ?? Assets.WAVES;
+        }
+
         public override byte[] GetBody()
         {
             var stream = new MemoryStream();
@@ -66,13 +76,16 @@ namespace WavesCS
             writer.WriteByte((byte)9);
             writer.WriteByte((byte)1);
 
-            writer.WriteInt(FunctionHeader.Length);
-            writer.Write(Encoding.UTF8.GetBytes(FunctionHeader));
-            writer.WriteInt(FunctionCallArguments.Count);
-
-            foreach (var argument in FunctionCallArguments)
+            if (FunctionHeader != null)
             {
-                writer.WriteObject(argument);
+                writer.WriteInt(FunctionHeader.Length);
+                writer.Write(Encoding.UTF8.GetBytes(FunctionHeader));
+                writer.WriteInt(FunctionCallArguments.Count);
+
+                foreach (var argument in FunctionCallArguments)
+                {
+                    writer.WriteObject(argument);
+                }
             }
 
             writer.WriteShort(Payment.Count);
@@ -124,7 +137,7 @@ namespace WavesCS
                 {"timestamp", Timestamp.ToLong()},
                 {"version", Version},
                 {"dappAddress", DappAddress},
-                {"call", new DictionaryObject
+                {"call", FunctionHeader != null ? new DictionaryObject
                 {
                     {"function", FunctionHeader},
                     {"args", FunctionCallArguments.Select(arg => new DictionaryObject
@@ -132,7 +145,7 @@ namespace WavesCS
                         {"type", arg is long ? "integer" : (arg is bool ? "boolean" : (arg is string ? "string"  : "binary"))},
                         {"value", arg is byte[] bytes ? bytes.ToBase64() : arg }
                     })}
-                }},
+                } : null},
                 { "payment", Payment.Select(p => new DictionaryObject
                     {
                         {"amount", p.Key.AmountToLong(p.Value) },
