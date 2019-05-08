@@ -93,7 +93,7 @@ func foo (a:ByteVector) = {
             response = node.InvokeScript(Bob, Alice.Address, null);
             node.WaitTransactionConfirmationByResponse(response);
 
-            Assert.AreEqual((long)node.GetAddressData(Alice.Address)["a"], "aaa");
+            Assert.AreEqual((string)node.GetAddressData(Alice.Address)["a"], "aaa");
             Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["sender"]).ToBase58(), Bob.Address);
 
             response = node.SetScript(Alice, null);
