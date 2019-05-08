@@ -33,7 +33,7 @@ func foo (a:ByteVector) = {
     WriteSet([DataEntry(""a"", a),
     DataEntry(""sender"", inv.caller.bytes)])
 }";
-            var compiledScript = node.CompileScript(script);
+            var compiledScript = node.CompileCode(script);
 
             var response = node.SetScript(Alice, compiledScript);
             node.WaitTransactionConfirmationByResponse(response);
@@ -90,7 +90,7 @@ func d (x1: Boolean, x2: Int, x3: String, x4: ByteVector) = {
     [DataEntry(""d4"", x4))
 }";
 
-            var compiledScript = node.CompileScript("script");
+            var compiledScript = node.CompileCode(script);
 
             var response = node.SetScript(Alice, compiledScript);
             node.WaitTransactionConfirmationByResponse(response);
@@ -137,7 +137,7 @@ func foo (a:ByteVector) = {
             WriteSet([DataEntry(""a"", ""aaa""),
             DataEntry(""sender"", inv.caller.bytes)])
           }";
-            var compiledScript = node.CompileScript(script);
+            var compiledScript = node.CompileCode(script);
 
             var response = node.SetScript(Alice, compiledScript);
             node.WaitTransactionConfirmationByResponse(response);
