@@ -59,6 +59,8 @@ namespace WavesCS
             Payment = payment ?? new Dictionary<Asset, decimal>();
             Fee = fee;
             FeeAsset = feeAsset ?? Assets.WAVES;
+            FunctionHeader = null;
+            FunctionCallArguments = null;
         }
 
         public override byte[] GetBody()
@@ -73,12 +75,10 @@ namespace WavesCS
             writer.Write(SenderPublicKey);
             writer.Write(DappAddress.FromBase58());
 
-            writer.WriteByte((byte)9);
-            writer.WriteByte((byte)1);
-
             if (FunctionHeader != null)
             {
-                // writer.WriteEvaluatedExpression(argument);
+                writer.WriteByte((byte)9);
+                writer.WriteByte((byte)1);
 
                 writer.WriteInt(FunctionHeader.Length);
                 writer.Write(Encoding.UTF8.GetBytes(FunctionHeader));
@@ -86,8 +86,12 @@ namespace WavesCS
 
                 foreach (var argument in FunctionCallArguments)
                 {
-                    writer.WriteObject(argument);
+                    writer.WriteEvaluatedExpression(argument);
                 }
+            }
+            else
+            {
+                writer.WriteByte(0);
             }
 
             writer.WriteShort(Payment.Count);
