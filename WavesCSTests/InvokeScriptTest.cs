@@ -71,13 +71,9 @@ func foo (a:ByteVector) = {
 {-# CONTENT_TYPE DAPP #-}
 {-# SCRIPT_TYPE ACCOUNT #-}
 
-@Callable(inv)
-func b () = {
-    WriteSet([DataEntry(""b"", ""b""))
-}
 
 @Callable(inv)
-func c (x: Long) = {
+func c (x: Int) = {
     WriteSet([DataEntry(""c"", x + 1)])
 }
 
@@ -85,9 +81,14 @@ func c (x: Long) = {
 func d (x1: Boolean, x2: Int, x3: String, x4: ByteVector) = {
     WriteSet(
     [DataEntry(""d1"", x1),
-    [DataEntry(""d2"", x2+x2),
-    [DataEntry(""d3"", x3+x3),
-    [DataEntry(""d4"", x4))
+    DataEntry(""d2"", x2+x2),
+    DataEntry(""d3"", x3+x3),
+    DataEntry(""d4"", x4)])
+}
+
+@Callable(inv)
+func e () = {
+    WriteSet([DataEntry(""e"", ""e"")])
 }";
 
             var compiledScript = node.CompileCode(script);
@@ -95,19 +96,19 @@ func d (x1: Boolean, x2: Int, x3: String, x4: ByteVector) = {
             var response = node.SetScript(Alice, compiledScript);
             node.WaitTransactionConfirmationByResponse(response);
 
-            response = node.InvokeScript(Bob, Alice.Address, "b", null, null);
+            response = node.InvokeScript(Bob, Alice.Address, "e", null, null);
             node.WaitTransactionConfirmationByResponse(response);
-            Assert.AreEqual(((string)node.GetAddressData(Alice.Address)["b"]), "b");
+            Assert.AreEqual((string)node.GetAddressData(Alice.Address)["e"], "e");
 
             response = node.InvokeScript(Bob, Alice.Address, "c", new List<object> { 150L }, null);
             node.WaitTransactionConfirmationByResponse(response);
-            Assert.AreEqual(((long)node.GetAddressData(Alice.Address)["c"]), 151L);
+            Assert.AreEqual((long)node.GetAddressData(Alice.Address)["c"], 151L);
 
             response = node.InvokeScript(Bob, Alice.Address, "d", new List<object> { true, 150L, "hello!", Bob.Address.FromBase58() }, null);
             node.WaitTransactionConfirmationByResponse(response);
-            Assert.AreEqual(((string)node.GetAddressData(Alice.Address)["d1"]), true);
-            Assert.AreEqual(((long)node.GetAddressData(Alice.Address)["d2"]), 300L);
-            Assert.AreEqual(((bool)node.GetAddressData(Alice.Address)["d3"]), "hello!hello!");
+            Assert.AreEqual((string)node.GetAddressData(Alice.Address)["d1"], true);
+            Assert.AreEqual((long)node.GetAddressData(Alice.Address)["d2"], 300L);
+            Assert.AreEqual((bool)node.GetAddressData(Alice.Address)["d3"], "hello!hello!");
             Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["d4"]).ToBase58(), Bob.Address);
 
             response = node.SetScript(Alice, null);
@@ -134,7 +135,7 @@ func foo (a:ByteVector) = {
 
 @Default(inv)
           func default() = {
-            WriteSet([DataEntry(""a"", ""aaa""),
+            WriteSet([DataEntry(""aa"", ""aa""),
             DataEntry(""sender"", inv.caller.bytes)])
           }";
             var compiledScript = node.CompileCode(script);
