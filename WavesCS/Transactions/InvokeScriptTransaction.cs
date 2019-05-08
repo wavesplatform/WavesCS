@@ -27,9 +27,9 @@ namespace WavesCS
             DappAddress = tx.GetString("dApp");
             FunctionHeader = tx.ContainsKey("call.function") ? tx.GetString("call.function") : null;
 
-            FunctionCallArguments = FunctionHeader != null ? tx.GetObjects("call.args")
+            FunctionCallArguments = tx.GetObjects("call.args")
                                         .Select(Node.DataValue)
-                                        .ToList() : null;
+                                        .ToList();
 
             Payment = tx.GetObjects("payment")
                         .ToDictionary(o => node.GetAsset(o.GetString("assetId")),
@@ -45,7 +45,7 @@ namespace WavesCS
         {
             DappAddress = dappAddress;
             FunctionHeader = functionHeader;
-            FunctionCallArguments = functionCallArguments;
+            FunctionCallArguments = functionCallArguments ?? new List<object>();
             Payment = payment ?? new Dictionary<Asset, decimal>();
             Fee = fee;
             FeeAsset = feeAsset ?? Assets.WAVES;
@@ -60,7 +60,7 @@ namespace WavesCS
             Fee = fee;
             FeeAsset = feeAsset ?? Assets.WAVES;
             FunctionHeader = null;
-            FunctionCallArguments = null;
+            FunctionCallArguments = new List<object>();
         }
 
         public override byte[] GetBody()
@@ -84,7 +84,6 @@ namespace WavesCS
                 writer.WriteInt(FunctionHeader.Length);
                 writer.Write(Encoding.UTF8.GetBytes(FunctionHeader));
                 writer.WriteInt(FunctionCallArguments.Count);
-
                 foreach (var argument in FunctionCallArguments)
                 {
                     writer.WriteEvaluatedExpression(argument);
@@ -147,11 +146,11 @@ namespace WavesCS
                 {"call", FunctionHeader != null ? new DictionaryObject
                 {
                     {"function", FunctionHeader},
-                    {"args", FunctionCallArguments.Select(arg => new DictionaryObject
+                    {"args", FunctionCallArguments != null ? FunctionCallArguments.Select(arg => new DictionaryObject
                     {
                         {"type", arg is long ? "integer" : (arg is bool ? "boolean" : (arg is string ? "string"  : "binary"))},
                         {"value", arg is byte[] bytes ? bytes.ToBase64() : arg }
-                    })}
+                    }) : new List<Dictionary<string, object>>()}
                 } : null},
                 { "payment", Payment.Select(p => new DictionaryObject
                     {
