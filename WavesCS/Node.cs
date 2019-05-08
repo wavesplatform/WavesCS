@@ -405,6 +405,15 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
+        public string InvokeScript(PrivateKeyAccount caller, string dappAddress,                
+                Dictionary<Asset, decimal> payment, decimal fee = 0.005m, Asset feeAsset = null)
+        {
+            var tx = new InvokeScriptTransaction(ChainId, caller.PublicKey, dappAddress,
+                payment, fee, feeAsset);
+            tx.Sign(caller);
+            return Broadcast(tx);
+        }
+
         public string PutData(PrivateKeyAccount account, DictionaryObject entries, decimal? fee = null)
         {
             var tx = new DataTransaction(ChainId, account.PublicKey, entries, fee);
