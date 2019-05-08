@@ -9,6 +9,10 @@ namespace WavesCSTests
     [TestClass]
     public class InvokeScriptTest
     {
+
+        PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", 'T');
+        PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", 'T');
+
         [TestInitialize]
         public void Init()
         {
@@ -18,11 +22,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestInvokeScript()
         {
-            Http.Tracing = true;
             var node = new Node(Node.TestNetChainId);
-
-            var Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", node.ChainId);
-            var Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", node.ChainId);
 
             var script = @"{-# STDLIB_VERSION 3 #-}
 {-# CONTENT_TYPE DAPP #-}
@@ -63,13 +63,65 @@ func foo (a:ByteVector) = {
         }
 
         [TestMethod]
-        public void TestInvokeScriptDefaultFunction()
+        public void TestInvokeScriptArguments()
         {
-            Http.Tracing = true;
             var node = new Node(Node.TestNetChainId);
 
-            var Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", node.ChainId);
-            var Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", node.ChainId);
+            var script = @"{-# STDLIB_VERSION 3 #-}
+{-# CONTENT_TYPE DAPP #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
+
+@Callable(inv)
+func b () = {
+    WriteSet([DataEntry(""b"", ""b""))
+}
+
+@Callable(inv)
+func c (x: Long) = {
+    WriteSet([DataEntry(""c"", x + 1)])
+}
+
+@Callable(inv)
+func d (x1: Boolean, x2: Int, x3: String, x4: ByteVector) = {
+    WriteSet(
+    [DataEntry(""d1"", x1),
+    [DataEntry(""d2"", x2+x2),
+    [DataEntry(""d3"", x3+x3),
+    [DataEntry(""d4"", x4))
+}";
+
+            var compiledScript = node.CompileScript("script");
+
+            var response = node.SetScript(Alice, compiledScript);
+            node.WaitTransactionConfirmationByResponse(response);
+
+            response = node.InvokeScript(Bob, Alice.Address, "b", null, null);
+            node.WaitTransactionConfirmationByResponse(response);
+            Assert.AreEqual(((string)node.GetAddressData(Alice.Address)["b"]), "b");
+
+            response = node.InvokeScript(Bob, Alice.Address, "c", new List<object> { 150L }, null);
+            node.WaitTransactionConfirmationByResponse(response);
+            Assert.AreEqual(((long)node.GetAddressData(Alice.Address)["c"]), 151L);
+
+            response = node.InvokeScript(Bob, Alice.Address, "d", new List<object> { true, 150L, "hello!", Bob.Address.FromBase58() }, null);
+            node.WaitTransactionConfirmationByResponse(response);
+            Assert.AreEqual(((string)node.GetAddressData(Alice.Address)["d1"]), true);
+            Assert.AreEqual(((long)node.GetAddressData(Alice.Address)["d2"]), 300L);
+            Assert.AreEqual(((bool)node.GetAddressData(Alice.Address)["d3"]), "hello!hello!");
+            Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["d4"]).ToBase58(), Bob.Address);
+
+            response = node.SetScript(Alice, null);
+            node.WaitTransactionConfirmationByResponse(response);
+
+            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
+            Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
+
+        }
+
+        [TestMethod]
+        public void TestInvokeScriptDefaultFunction()
+        {
+            var node = new Node(Node.TestNetChainId);
 
             var script = @"{-# STDLIB_VERSION 3 #-}
 {-# CONTENT_TYPE DAPP #-}

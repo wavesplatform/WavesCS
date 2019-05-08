@@ -77,6 +77,7 @@ namespace WavesCS
 
             if (FunctionHeader != null)
             {
+                writer.WriteByte((byte)1);
                 writer.WriteByte((byte)9);
                 writer.WriteByte((byte)1);
 
