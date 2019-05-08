@@ -396,7 +396,7 @@ namespace WavesCS
 
         public string InvokeScript(PrivateKeyAccount caller, string dappAddress,
                 string functionHeader, List<object> functionCallArguments,
-                Dictionary<Asset, decimal> payment, decimal fee = 0.005m, Asset feeAsset = null)
+                Dictionary<Asset, decimal> payment = null, decimal fee = 0.005m, Asset feeAsset = null)
         {
             var tx = new InvokeScriptTransaction(ChainId, caller.PublicKey, dappAddress,
             functionHeader, functionCallArguments,
@@ -415,6 +415,11 @@ namespace WavesCS
         public byte[] CompileScript(string script)
         {
             return Post("/utils/script/compile", script).ParseJsonObject().Get<string>("script").FromBase64();
+        }
+
+        public byte[] CompileCode(string script)
+        {
+            return Post("/utils/script/compileCode", script).ParseJsonObject().Get<string>("script").FromBase64();
         }
 
         public string DecompileScript(string script)

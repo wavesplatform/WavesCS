@@ -72,7 +72,7 @@ namespace WavesCS
 
             foreach (var argument in FunctionCallArguments)
             {
-                writer.WriteObject(argument);
+                writer.WriteEvaluatedExpression(argument);
             }
 
             writer.WriteShort(Payment.Count);

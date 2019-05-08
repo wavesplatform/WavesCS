@@ -68,6 +68,40 @@ namespace WavesCS
             }
         }
 
+        public static void WriteEvaluatedExpression(this BinaryWriter writer, object o)
+        {
+            const byte E_LONG = 0;
+            const byte E_BYTES = 1;
+            const byte E_STRING = 2;
+
+            const byte E_TRUE = 6;
+            const byte E_FALSE = 7;
+
+            switch (o)
+            {
+                case long value:
+                    writer.Write(E_LONG);
+                    writer.WriteLong(value);
+                    break;
+                case bool value:
+                    writer.Write(value ? E_TRUE : E_FALSE);
+                    break;
+                case byte[] value:
+                    writer.Write(E_BYTES);
+                    writer.WriteInt(value.Length);
+                    writer.Write(value);
+                    break;
+                case string value:
+                    writer.Write(E_STRING);
+                    var encoded = Encoding.UTF8.GetBytes(value);
+                    writer.WriteShort((short)encoded.Length);
+                    writer.Write(encoded);
+                    break;
+                default:
+                    throw new ArgumentException("Only long, bool and byte[] entry values supported");
+            }
+        }
+
         public static long CurrentTimestamp()
         {
             long epochTicks = new DateTime(1970, 1, 1).Ticks;
