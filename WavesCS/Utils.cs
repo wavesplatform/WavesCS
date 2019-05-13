@@ -84,7 +84,7 @@ namespace WavesCS
                     writer.WriteLong(value);
                     break;
                 case bool value:
-                    writer.Write(value ? E_TRUE : E_FALSE);
+                    writer.WriteByte(value ? E_TRUE : E_FALSE);
                     break;
                 case byte[] value:
                     writer.Write(E_BYTES);
@@ -94,7 +94,7 @@ namespace WavesCS
                 case string value:
                     writer.Write(E_STRING);
                     var encoded = Encoding.UTF8.GetBytes(value);
-                    writer.WriteShort((short)encoded.Length);
+                    writer.WriteInt(encoded.Length);
                     writer.Write(encoded);
                     break;
                 default:
