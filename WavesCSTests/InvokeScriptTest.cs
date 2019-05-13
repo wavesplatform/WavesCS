@@ -81,8 +81,8 @@ func c (x: Int) = {
 func d (x1: Boolean, x2: Int, x3: String, x4: ByteVector) = {
     WriteSet(
     [DataEntry(""d1"", x1),
-    DataEntry(""d2"", x2+x2),
-    DataEntry(""d3"", x3+x3),
+    DataEntry(""d2"", x2 + x2),
+    DataEntry(""d3"", x3 + x3),
     DataEntry(""d4"", x4)])
 }
 
@@ -106,9 +106,9 @@ func e () = {
 
             response = node.InvokeScript(Bob, Alice.Address, "d", new List<object> { true, 150L, "hello!", Bob.Address.FromBase58() }, null);
             node.WaitTransactionConfirmationByResponse(response);
-            Assert.AreEqual((string)node.GetAddressData(Alice.Address)["d1"], true);
+            Assert.AreEqual((bool)node.GetAddressData(Alice.Address)["d1"], true);
             Assert.AreEqual((long)node.GetAddressData(Alice.Address)["d2"], 300L);
-            Assert.AreEqual((bool)node.GetAddressData(Alice.Address)["d3"], "hello!hello!");
+            Assert.AreEqual((string)node.GetAddressData(Alice.Address)["d3"], "hello!hello!");
             Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["d4"]).ToBase58(), Bob.Address);
 
             response = node.SetScript(Alice, null);

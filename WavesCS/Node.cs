@@ -126,7 +126,8 @@ namespace WavesCS
         public DictionaryObject GetAddressData(string address)
         {
             return GetObjects("addresses/data/{0}", address)
-                .ToDictionary(o => o.GetString("key"), DataValue);
+                .ToLookup(o => o.GetString("key"), DataValue)
+                .ToDictionary(d => d.Key, d => d.First());
         }
 
         public Asset GetAsset(string assetId)
