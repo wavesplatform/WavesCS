@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>WavesPlatform.WavesCS</id>
-    <version>1.1.5</version>
+    <version>1.2.0</version>
     <title>WavesCS library</title>
     <authors>alexkof, abegicheva</authors>
     <owners>alexkof, abegicheva, wavesplatform</owners>

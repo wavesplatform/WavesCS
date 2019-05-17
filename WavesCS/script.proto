@@ -1,0 +1,8 @@
+// Transactions
+syntax = "proto3";
+option csharp_namespace = "Waves.Protobuf";
+option java_package = "com.wavesplatform.protobuf.transaction";
+
+message Script {
+    bytes bytes = 1;
+}
