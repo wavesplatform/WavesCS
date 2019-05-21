@@ -4,10 +4,30 @@
     <Product>WavesCS</Product>
     <Copyright>Copyright ©  2018</Copyright>
     <VersionPrefix>1.0.0.0</VersionPrefix>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFramework>net46</TargetFramework>
+	<Protobuf_NoWarnMissingExpected>true</Protobuf_NoWarnMissingExpected>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <None Remove="Resources\proto\accounts_api.proto" />
+    <None Remove="Resources\proto\assets_api.proto" />
+    <None Remove="Resources\proto\block.proto" />
+    <None Remove="Resources\proto\blockchain_api.proto" />
+    <None Remove="Resources\proto\blocks_api.proto" />
+    <None Remove="Resources\proto\empty.proto" />
+    <None Remove="Resources\proto\recipient.proto" />
+    <None Remove="Resources\proto\script.proto" />
+    <None Remove="Resources\proto\transaction.proto" />
+    <None Remove="Resources\proto\transactions_api.proto" />
+    <None Remove="Resources\proto\wrappers.proto" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.7.0" />
+    <PackageReference Include="Grpc" Version="1.20.1" />
+    <PackageReference Include="Grpc.Tools" Version="1.20.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="PCLCrypto" Version="2.0.147" />
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SeedWords.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="*.proto" Link="%(RelativePath)"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\proto\google\protobuf\" />
   </ItemGroup>
 </Project>
 
