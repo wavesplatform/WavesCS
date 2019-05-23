@@ -28,18 +28,18 @@ namespace WavesCS
 
         public override byte[] GetBody()
         {
-            using(var stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.DataTx);
                 writer.Write(Version);
                 writer.Write(SenderPublicKey);
-                writer.WriteShort((short) Entries.Count);
+                writer.WriteShort((short)Entries.Count);
 
                 foreach (var pair in Entries)
                 {
                     var key = Encoding.UTF8.GetBytes(pair.Key);
-                    writer.WriteShort((short) key.Length);
+                    writer.WriteShort((short)key.Length);
                     writer.Write(key);
                     writer.WriteObject(pair.Value);
                 }
