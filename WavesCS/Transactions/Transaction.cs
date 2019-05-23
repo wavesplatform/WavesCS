@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -17,9 +18,10 @@ namespace WavesCS
 
         public virtual byte Version { get; set; }
 
-        public abstract byte[] GetBody();
-        internal abstract byte[] GetIdBytes();
+        public abstract byte[] GetBytes();
         public abstract DictionaryObject GetJson();
+        public abstract byte[] GetBody();
+        protected abstract bool SupportsProofs();
 
         public byte[][] Proofs { get; }
 
@@ -54,8 +56,11 @@ namespace WavesCS
                     Proofs[0] = tx.GetString("signature").FromBase58();
             }
         }
-        
-        protected abstract bool SupportsProofs();
+
+        internal virtual byte[] GetBytesForId()
+        {
+            return GetBody();
+        }
 
         public DictionaryObject GetJsonWithSignature()
         {
@@ -107,6 +112,23 @@ namespace WavesCS
                 default: return new UnknownTransaction(tx);
             }
         }
+
+        public byte[] GetProofsBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.WriteByte(1);
+            writer.WriteShort(Proofs.Count());
+
+            foreach(var proof in Proofs)
+            {
+                writer.WriteShort(proof.Length);
+                writer.Write(proof);
+            }
+
+            return stream.ToArray();
+        }
     }
 
 
@@ -118,16 +140,15 @@ namespace WavesCS
             return transaction;
         }
 
-        public static string GenerateId<T>(this T transaction) where T : Transaction
-        {
-            var bodyBytes = transaction.GetIdBytes();
-            return AddressEncoding.FastHash(bodyBytes, 0, bodyBytes.Length).ToBase58();
-        }
-
         public static byte[] GenerateBinaryId<T>(this T transaction) where T : Transaction
         {
-            var bodyBytes = transaction.GetIdBytes();
-            return AddressEncoding.FastHash(bodyBytes, 0, bodyBytes.Length);
+            var txBytesForId = transaction.GetBytesForId();
+            return AddressEncoding.FastHash(txBytesForId, 0, txBytesForId.Length);
+        }
+
+        public static string GenerateId<T>(this T transaction) where T : Transaction
+        {
+            return transaction.GenerateBinaryId().ToBase58();
         }
     }
 }

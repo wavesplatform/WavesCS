@@ -25,10 +25,10 @@ namespace WavesCS
 
         public string PlaceOrder(PrivateKeyAccount sender, Order order)
         {
-            var bytes = order.GetBytes();
-            order.Signature = sender.Sign(bytes);
+            order.Sign(sender);
 
             var json = order.GetJson();
+            var t = json.ToJson();
             return Http.Post($"{_host}/matcher/orderbook", json);
         }
 

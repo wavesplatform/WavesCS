@@ -67,8 +67,8 @@ namespace WavesCS
             {
                 writer.Write(TransactionType.Exchange);
 
-                var buyOrderBytes = BuyOrder.GetBytes();
-                var sellOrderBytes = SellOrder.GetBytes();
+                var buyOrderBytes = BuyOrder.GetBody();
+                var sellOrderBytes = SellOrder.GetBody();
 
                 writer.WriteShort(0);
                 writer.WriteShort((short)buyOrderBytes.Length + BuyOrder.Signature.Length);
@@ -88,9 +88,20 @@ namespace WavesCS
             }
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
         {
-            return GetBody();
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+
+            writer.Write(GetBody());
+
+            if (Version == 1)
+                writer.Write(Proofs[0]);
+            else
+                writer.Write(GetProofsBytes());
+
+            return stream.ToArray();
         }
 
         public override DictionaryObject GetJson()
