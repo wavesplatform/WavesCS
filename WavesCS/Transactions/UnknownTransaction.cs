@@ -22,7 +22,12 @@ namespace WavesCS
             throw new Exception("Unknown transaction");
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
+        {
+            throw new Exception("Unknown transaction");
+        }
+
+        internal override byte[] GetBytesForId()
         {
             throw new Exception("Unknown transaction");
         }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -46,7 +47,7 @@ namespace WavesCS
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
         }
 
-        public void WriteBytes(BinaryWriter writer)
+        protected void WriteBytes(BinaryWriter writer)
         {
             var asset = new Asset("", "", Decimals);
 
@@ -91,9 +92,29 @@ namespace WavesCS
             return stream.ToArray();
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
         {
-            var asset = new Asset("", "", Decimals);
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            if (Version == 1)
+            {
+                writer.WriteByte((byte)TransactionType.Issue);
+                writer.Write(Proofs[0]);
+                writer.Write(GetBody());
+            }
+            else
+            {
+                writer.WriteByte(0);
+                writer.Write(GetBody());
+                writer.Write(GetProofsBytes());
+            }
+
+            return stream.ToArray();
+        }
+
+        internal override byte[] GetBytesForId()
+        {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
 
@@ -102,7 +123,6 @@ namespace WavesCS
 
             return stream.ToArray();
         }
-
 
         public override DictionaryObject GetJson()
         {

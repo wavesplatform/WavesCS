@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -32,14 +33,15 @@ namespace WavesCS
 
         public decimal MatcherFee { get; }
 
-        public byte[] Signature { get; set; }
+        public byte[][] Proofs { get; set; }
+        public byte[] Signature => Proofs[0];
 
         public string Sender { get; }
-        public byte Version { get; set; } = 1;
+        public byte Version { get; set; } = 2;
 
         public Order(OrderSide side, decimal amount, decimal price, DateTime timestamp,
             Asset amountAsset, Asset priceAsset, byte[] senderPublicKey, byte[] matcherPublicKey, DateTime expiration,
-            decimal matcherFee, string sender, byte version = 1)
+            decimal matcherFee, string sender, byte version = 2)
         {
             SenderPublicKey = senderPublicKey;
             MatcherPublicKey = matcherPublicKey;
@@ -53,6 +55,12 @@ namespace WavesCS
             MatcherFee = matcherFee;
             Sender = sender;
             Version = version;
+            Proofs = new byte[8][];
+        }
+
+        protected bool SupportsProofs()
+        {
+            return Version > 1;
         }
 
         public static Order CreateFromJson(DictionaryObject json, Asset amountAsset, Asset priceAsset)
@@ -70,11 +78,23 @@ namespace WavesCS
             var matcherFee = json.ContainsKey("matcherFee") ? Assets.WAVES.LongToAmount(json.GetLong("matcherFee")) : 1;
             string sender = json.ContainsKey("sender") ? json.GetString("sender") : null;
 
-            var signature = json.ContainsKey("signature") ? json.GetString("signature").FromBase58() : null;
+            var proofs = new byte[8][];
+            if (json.ContainsKey("proofs"))
+            {
+                proofs = json.Get<string[]>("proofs")
+                           .Select(item => item.FromBase58())
+                           .ToArray();
+            }
+            else
+            {
+                if (json.ContainsKey("signature"))
+                    proofs[0] = json.GetString("signature").FromBase58();
+            }
+
             var status = json.ContainsKey("status") ? (OrderStatus)Enum.Parse(typeof(OrderStatus), json.GetString("status")) : OrderStatus.Accepted;
             var id = json.ContainsKey("id") ? json.GetString("id") : null;
             var filled = json.ContainsKey("filled") ? amountAsset.LongToAmount(json.GetLong("filled")) : 1m;
-            var version = json.ContainsKey("version") ? json.GetByte("version") : (byte)1;
+            var version = json.ContainsKey("version") ? json.GetByte("version") : (byte)2;
 
             return new Order(
                 side,
@@ -89,13 +109,13 @@ namespace WavesCS
                 matcherFee,
                 sender, version)
             {
-                Signature = signature,
+                Proofs = proofs,
                 Status = status,
                 Id = id,
                 Filled = filled
             };
     }
-        public byte[] GetBytes()
+        public byte[] GetBody()
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
@@ -117,9 +137,42 @@ namespace WavesCS
             }
         }
 
+        public byte[] GetProofsBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.WriteByte(1);
+            writer.WriteShort(Proofs.Count());
+
+            foreach (var proof in Proofs)
+            {
+                writer.WriteShort(proof.Length);
+                writer.Write(proof);
+            }
+
+            return stream.ToArray();
+        }
+
+        public byte[] GetBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+
+            writer.Write(GetBody());
+            if (Version == 1)
+                writer.Write(Proofs[0]);
+            else
+                writer.Write(GetProofsBytes());
+
+            return stream.ToArray();
+        }
+
+
         public DictionaryObject GetJson()
         {
-            return new DictionaryObject
+            var json = new DictionaryObject
             {
                 {"amount", AmountAsset.AmountToLong(Amount)},
                 {"price", Asset.PriceToLong(AmountAsset, PriceAsset, Price)},
@@ -135,23 +188,42 @@ namespace WavesCS
                     }
                 },
                 {"orderType", Side.ToString().ToLower()},
-                {"signature", Signature.ToBase58()},
                 {"version", Version}
             };
+
+            var proofs = Proofs
+                .Take(Array.FindLastIndex(Proofs, p => p != null && p.Length > 0) + 1)
+                .Select(p => p == null ? "" : p.ToBase58())
+                .ToArray();
+
+            if (SupportsProofs())
+            {
+                json.Add("proofs", proofs);
+            }
+            else
+            {
+                if (proofs.Length == 0)
+                    throw new InvalidOperationException("Order is not signed");
+                if (proofs.Length > 1)
+                    throw new InvalidOperationException("Order version doesn't support multiple proofs");
+                json.Add("signature", proofs.Single());
+            }
+
+            return json;
         }
     }
 
     public static class OrderExtensons
     {
-        public static Order Sign(this Order order, PrivateKeyAccount account)
+        public static Order Sign(this Order order, PrivateKeyAccount account, int proofIndex = 0)
         {
-            order.Signature = account.Sign(order.GetBytes());
+            order.Proofs[proofIndex] = account.Sign(order.GetBody());
             return order;
         }
 
         public static string GenerateId(this Order order)
         {
-            var bytes = order.GetBytes();
+            var bytes = order.GetBody();
             return AddressEncoding.FastHash(bytes, 0, bytes.Length).ToBase58();
         }
     }
