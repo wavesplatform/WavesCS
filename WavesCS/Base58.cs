@@ -120,7 +120,7 @@ namespace WavesCS
                 }
             }
 
-            // Ignore extra leading zeroes that were added during the calculation.
+            // Ignore extra leading zeros that were added during the calculation.
             while (outputStart < decoded.Length && decoded[outputStart] == 0)
             {
                 ++outputStart;
