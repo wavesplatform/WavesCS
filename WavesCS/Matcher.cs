@@ -28,7 +28,6 @@ namespace WavesCS
             order.Sign(sender);
 
             var json = order.GetJson();
-            var t = json.ToJson();
             return Http.Post($"{_host}/matcher/orderbook", json);
         }
 
