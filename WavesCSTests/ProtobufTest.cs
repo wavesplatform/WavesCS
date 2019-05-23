@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Grpc.Core;
 using Waves.Protobuf;
 using WavesCS;
-using System.Threading.Tasks;
 
 namespace WavesCSTests.Protobuf
 {
@@ -21,7 +17,7 @@ namespace WavesCSTests.Protobuf
         }
 
         [TestMethod]
-        public async Task TestGrpc()
+        public void TestGrpc()
         {
             Channel channel = new Channel("mainnet-aws-fr-3.wavesnodes.com:6870", ChannelCredentials.Insecure);
             BlocksApi.BlocksApiClient client = new BlocksApi.BlocksApiClient(channel);
