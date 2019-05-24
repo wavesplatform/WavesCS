@@ -20,7 +20,7 @@ namespace WavesCS
         public bool Scripted { get; }
 
         public IssueTransaction(byte[] senderPublicKey,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null, bool scripted = false) : base(chainId, senderPublicKey)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, char chainId, decimal fee = 1m, byte[] script = null) : base(chainId, senderPublicKey)
         {
             Name = name ?? "";
             Description = description ?? "";
@@ -30,7 +30,7 @@ namespace WavesCS
             Fee = fee;
             Asset = new Asset("", Name, Decimals, script);
             Script = script;
-            Scripted = scripted;
+            Scripted = script != null;
         }
 
         public IssueTransaction(DictionaryObject tx): base(tx)

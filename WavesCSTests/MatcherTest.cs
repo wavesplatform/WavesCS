@@ -9,7 +9,7 @@ namespace WavesCSTests
     [TestClass]
     public class MatcherTest
     {
-        private static readonly Asset WBTC = new Asset("Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe", "BTC", 8);
+        private static readonly Asset WBTC = new Asset("9WRJGfKpKGGWijPb4z8MSfVJuERahPHHQn4wp9mzdNQs", "BTC", 8);
 
         [TestInitialize]
         public void Init()
@@ -21,10 +21,7 @@ namespace WavesCSTests
         public void TestKey()
         {
             var matcher = new Matcher("https://matcher.wavesnodes.com");
-
             Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
-
-            Console.WriteLine(new Node().GetBalance(Accounts.Carol.Address));
         }
 
         [TestMethod]

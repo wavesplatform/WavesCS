@@ -492,6 +492,74 @@ namespace WavesCSTests
 
             var tx = Transaction.FromJson(json.ParseJsonObject()).Sign(Accounts.Alice);
             Assert.IsNotNull(tx);
+        }
+
+        [TestMethod]
+        public void TestTransactionSerialize()
+        {
+            var node = new Node("http://localhost:16869", 'R');
+
+            var script = @"{-# STDLIB_VERSION 3 #-}
+{-# CONTENT_TYPE DAPP #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
+
+@Callable(i)
+func parseTxBytes(txBytes : ByteVector) = {
+
+    let key = match(transactionFromBytes(txBytes)) {
+        case t : IssueTransaction => ""3""
+        case t : TransferTransaction => ""4""
+        case t : ReissueTransaction => ""5""
+        case t : BurnTransaction => ""6""
+        case t : ExchangeTransaction => ""7""
+        case t : LeaseTransaction => ""8""
+        case t : LeaseCancelTransaction => ""9""
+        case t : CreateAliasTransaction => ""10""
+        case t : MassTransferTransaction => ""11""
+        case t : DataTransaction => ""12""
+        case t : SetScriptTransaction => ""13""
+        case t : SponsorFeeTransaction => ""14""
+        case t : SetAssetScriptTransaction => ""15""
+        case t : InvokeScriptTransaction => ""16""
+        case _ => throw(""incorrect tx"")
+    }
+    
+    WriteSet([
+        DataEntry(key, toBase58String(tx.id))
+    ])
+}";
+            var compiledScript = node.CompileCode(script);
+            var account = PrivateKeyAccount.CreateFromSeed("seedddd1234", node.ChainId);
+
+            node.SetScript(account, compiledScript);
+
+            var txList = new List<Transaction>
+            {
+                new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")),
+                new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o"),
+                new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m),
+                new BurnTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m),
+                new ExchangeTransaction(node.ChainId, account.PublicKey, 1m, 1m, 1m, Assets.WAVES,Assets.BTC,new Order(OrderSide.Buy,1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,123445455L.ToDate(),124m,account.Address),new Order(OrderSide.Sell, 1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,1234454L.ToDate(),124m,account.Address),100m,43m, 123456L.ToDate()),
+                new LeaseTransaction(node.ChainId, account.PublicKey, account.Address, 100m),
+                new CancelLeasingTransaction(node.ChainId, account.PublicKey, "FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti"),
+                new AliasTransaction(account.PublicKey, "buba", node.ChainId),
+                new MassTransferTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), new List<MassTransferItem>{ new MassTransferItem(account.Address, 1m)}, "hello"),
+                new DataTransaction(node.ChainId, account.PublicKey, new Dictionary<string, object>()),
+                new SetScriptTransaction(account.PublicKey, node.CompileCode("true"), node.ChainId),
+                new SponsoredFeeTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m),
+                new SetAssetScriptTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4),  node.CompileCode("true")),
+                new InvokeScriptTransaction(node.ChainId,account.PublicKey,account.Address,"wertyu",null,null, 0.005m, Assets.WAVES)
+            };
+
+            foreach (var tx in txList)
+            {
+                var bytes = tx.GetBytes();
+                var response = node.InvokeScript(account, account.Address, "parseTxBytes", new List<object> { bytes });
+
+                node.WaitTransactionConfirmation(response);
+                var type = tx.GetJson().GetByte("type").ToString();
+                Assert.AreEqual(node.GetAddressData(account.Address)[type], tx.GenerateId());
+            }
 
         }
     }
