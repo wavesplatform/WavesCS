@@ -47,22 +47,6 @@ namespace WavesCS
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
         }
 
-        protected void WriteBytes(BinaryWriter writer)
-        {
-            var asset = new Asset("", "", Decimals);
-
-            writer.Write(SenderPublicKey);
-            writer.WriteShort(Name.Length);
-            writer.Write(Encoding.ASCII.GetBytes(Name));
-            writer.WriteShort(Description.Length);
-            writer.Write(Encoding.ASCII.GetBytes(Description));
-            writer.WriteLong(asset.AmountToLong(Quantity));
-            writer.Write(Decimals);
-            writer.Write((byte)(Reissuable ? 1 : 0));
-            writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
-            writer.WriteLong(Timestamp.ToLong());
-        }
-
         public override byte[] GetBody()
         {
             var stream = new MemoryStream();
@@ -75,7 +59,16 @@ namespace WavesCS
                 writer.Write((byte)ChainId);
             }
 
-            WriteBytes(writer);
+            writer.Write(SenderPublicKey);
+            writer.WriteShort(Name.Length);
+            writer.Write(Encoding.ASCII.GetBytes(Name));
+            writer.WriteShort(Description.Length);
+            writer.Write(Encoding.ASCII.GetBytes(Description));
+            writer.WriteLong(new Asset("", "", Decimals).AmountToLong(Quantity));
+            writer.Write(Decimals);
+            writer.Write((byte)(Reissuable ? 1 : 0));
+            writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
+            writer.WriteLong(Timestamp.ToLong());
 
             if (Version > 1)
             {
@@ -109,17 +102,6 @@ namespace WavesCS
                 writer.Write(GetBody());
                 writer.Write(GetProofsBytes());
             }
-
-            return stream.ToArray();
-        }
-
-        internal override byte[] GetBytesForId()
-        {
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
-
-            writer.Write(TransactionType.Issue);
-            WriteBytes(writer);
 
             return stream.ToArray();
         }
