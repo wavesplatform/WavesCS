@@ -75,7 +75,7 @@ namespace WavesCSTests
         }
 
         [TestMethod]
-        public void TestIssueTransactionDeserialize()
+        public void TestIssueTransactionV1Deserialize()
         {
             var node = new Node(Node.MainNetChainId);
 
@@ -97,6 +97,32 @@ namespace WavesCSTests
             Assert.IsTrue(issueTx.Reissuable);
             Assert.AreEqual(issueTx.Decimals, 8);
             Assert.AreEqual(issueTx.Description, "MoX is a fork of the anonymous currency Monero. Visit our site http://getmox.org");
+        }
+
+        [TestMethod]
+        public void TestIssueTransactionV2Deserialize()
+        {
+            var node = new Node(Node.MainNetChainId);
+
+            var transactionId = "5b3UGNZXX5srkHUQWnEWEiaVtnNWmg5aLo5uZMdjWupH";
+            var tx = node.GetTransactionById(transactionId);
+
+            Assert.IsInstanceOfType(tx, typeof(IssueTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
+
+            var issueTx = (IssueTransaction)tx;
+            Assert.AreEqual(issueTx.Sender, "3PBLabMJwedfZMXmp4CxhmKLBH5LXRHQ91i");
+            Assert.AreEqual(issueTx.SenderPublicKey.ToBase58(), "ETZck8jSUHvcmPDhAeGJHVcD2mvzW4wsLCJdcXYd6x1t");
+            Assert.AreEqual(issueTx.Fee, Assets.WAVES.LongToAmount(100000000));
+            Assert.AreEqual(issueTx.Timestamp.ToLong(), 1548931510484);
+            Assert.AreEqual(issueTx.Proofs[0].ToBase58(), "24E84jHcgaXpRf9Ua1QYxK1wuG2ZvmGRgacyKydQ4KJA6bJefSJsgLMjdxcEcPjKVHFwAntDQ6fmNkW6rVZ9Uu11");
+            Assert.AreEqual(issueTx.Asset.Id, "5b3UGNZXX5srkHUQWnEWEiaVtnNWmg5aLo5uZMdjWupH");
+            Assert.AreEqual(issueTx.Name, "Surge");
+            Assert.AreEqual(issueTx.Quantity, issueTx.Asset.LongToAmount(1000000000000000));
+            Assert.IsFalse(issueTx.Reissuable);
+            Assert.AreEqual(issueTx.Decimals, 8);
+            Assert.AreEqual(issueTx.Script, node.CompileCode("base64:AQQAAAALc3RhcnRIZWlnaHQAAAAAAAAU/UUEAAAACnN0YXJ0UHJpY2UAAAAAAAABhqAEAAAACGludGVydmFsCQAAaAAAAAIAAAAAAAAAABgAAAAAAAAAADwEAAAAA2V4cAkAAGgAAAACCQAAaAAAAAIAAAAAAAAAAGQAAAAAAAAAADwAAAAAAAAAA+gEAAAAByRtYXRjaDAFAAAAAnR4AwkAAAEAAAACBQAAAAckbWF0Y2gwAgAAABNFeGNoYW5nZVRyYW5zYWN0aW9uBAAAAAFlBQAAAAckbWF0Y2gwBAAAAARkYXlzCQAAaQAAAAIJAABlAAAAAgUAAAAGaGVpZ2h0BQAAAAtzdGFydEhlaWdodAUAAAAIaW50ZXJ2YWwDAwMJAABnAAAAAggFAAAAAWUAAAAFcHJpY2UJAABoAAAAAgUAAAAKc3RhcnRQcmljZQkAAGQAAAACAAAAAAAAAAABCQAAaAAAAAIFAAAABGRheXMFAAAABGRheXMJAQAAAAEhAAAAAQkBAAAACWlzRGVmaW5lZAAAAAEICAgFAAAAAWUAAAAJc2VsbE9yZGVyAAAACWFzc2V0UGFpcgAAAApwcmljZUFzc2V0BwkAAGcAAAACBQAAAANleHAJAABlAAAAAggIBQAAAAFlAAAACXNlbGxPcmRlcgAAAApleHBpcmF0aW9uCAgFAAAAAWUAAAAJc2VsbE9yZGVyAAAACXRpbWVzdGFtcAcJAABnAAAAAgUAAAADZXhwCQAAZQAAAAIICAUAAAABZQAAAAhidXlPcmRlcgAAAApleHBpcmF0aW9uCAgFAAAAAWUAAAAIYnV5T3JkZXIAAAAJdGltZXN0YW1wBwMDCQAAAQAAAAIFAAAAByRtYXRjaDACAAAAGVNldEFzc2V0U2NyaXB0VHJhbnNhY3Rpb24GCQAAAQAAAAIFAAAAByRtYXRjaDACAAAAD0J1cm5UcmFuc2FjdGlvbgQAAAACdHgFAAAAByRtYXRjaDAGB9CrDWk="));
+            Assert.AreEqual(issueTx.Description, "Surge is a Smart Asset. Its price is increased every day: it is at least 0.001 * (1 + days * days) WAVES. DEX orders should have expiration less than 100 minutes.");
         }
 
         [TestMethod]
