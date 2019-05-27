@@ -34,6 +34,13 @@ namespace WavesCS
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Lease);
+
+                if (Version > 1)
+                {
+                    writer.WriteByte(Version);
+                    writer.WriteByte(0);
+                }
+
                 writer.Write(SenderPublicKey);
                 writer.Write(Recipient.FromBase58());
                 writer.WriteLong(Assets.WAVES.AmountToLong(Amount));

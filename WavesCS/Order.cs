@@ -142,10 +142,15 @@ namespace WavesCS
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
 
-            writer.WriteByte(1);
-            writer.WriteShort(Proofs.Count());
+            var proofs = Proofs
+                .Take(Array.FindLastIndex(Proofs, p => p != null && p.Length > 0) + 1)
+                .Select(p => p == null ? "" : p.ToBase58())
+                .ToArray();
 
-            foreach (var proof in Proofs)
+            writer.WriteByte(1);
+            writer.WriteShort(proofs.Count());
+
+            foreach (var proof in proofs)
             {
                 writer.WriteShort(proof.Length);
                 writer.Write(proof);

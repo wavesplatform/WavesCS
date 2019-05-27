@@ -31,6 +31,13 @@ namespace WavesCS
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Burn);
+
+                if (Version > 1)
+                {
+                    writer.WriteByte(Version);
+                    writer.WriteByte((byte)ChainId);
+                }
+
                 writer.Write(SenderPublicKey);
                 writer.Write(Asset.Id.FromBase58());
                 writer.WriteLong(Asset.AmountToLong(Quantity));
@@ -48,7 +55,7 @@ namespace WavesCS
             if (Version == 1)
             {
                 writer.Write(GetBody());
-                writer.Write(Proofs[0]);
+                writer.Write(GetProofsBytes());
             }
             else
             {
