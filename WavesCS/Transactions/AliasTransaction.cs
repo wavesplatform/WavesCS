@@ -30,6 +30,10 @@ namespace WavesCS
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Alias);
+
+                if (Version > 1)
+                    writer.WriteByte(Version);
+
                 writer.Write(SenderPublicKey);
                 writer.WriteShort(Alias.Length + 4);
                 writer.Write((byte) 0x02);

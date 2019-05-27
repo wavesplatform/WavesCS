@@ -390,7 +390,7 @@ namespace WavesCSTests
         }
 
         [TestMethod]
-        public void TestExchangeTransactionDeserialize()
+        public void TestExchangeTransactionV1Deserialize()
         {
             var node = new Node(Node.MainNetChainId);
 
@@ -470,54 +470,53 @@ namespace WavesCSTests
         {
             var node = new Node(Node.MainNetChainId);
 
-            var json = @"
-            {
-              'type': 7,
-              'senderPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
-              'sender': null,
-              'fee': 300000,
-              'timestamp': 1543830569955,
-              'order1': {
-                'amount': 1000000,
-                'price': 10000,
-                'timestamp': 1543830559950,
-                'expiration': 1543834159950,
-                'senderPublicKey': '9KAjBEaDxTtHebQ5G8te5t6QH6WroQEJohg2K5hVg86F',
-                'matcherPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
-                'matcherFee': 300000,
-                'assetPair': {
-                  'amountAsset': 'HKiMLDiHedS9riMoaGS99GL3txmd88RkcCfqZVyuoL6Y',
-                  'priceAsset': null
-                },
-                'orderType': 'buy',
-                'signature': '3PeY5yNKD3s5d6eoWEZiBdgQvHnqaV8Mgdg191P72vLfomNAbw769VN8g7QasUEL8BHPweWi9gne9ewb974k6Pch',
-                'version': 1
-              },
-              'order2': {
-                'amount': 1000000,
-                'price': 10000,
-                'timestamp': 1543830559942,
-                'expiration': 1543834159942,
-                'senderPublicKey': 'DCXccuJLBvY3Jj5FG98eEoAqU2Sf3uxgvZ3NVPHuBeRQ',
-                'matcherPublicKey': '5CF4hNLCMbaRhReh7wT1KYuxSa7x4D3ixWgzoH3p3Xs7',
-                'matcherFee': 300000,
-                'assetPair': {
-                  'amountAsset': 'HKiMLDiHedS9riMoaGS99GL3txmd88RkcCfqZVyuoL6Y',
-                  'priceAsset': null
-                },
-                'orderType': 'sell',
-                'signature': '3HdTei2ZnXNybguXoZQKcm5D6vWW7vahTbjwL5LAyssYKNXbjgK1XauvLsh1iuZR7pAcVVTLcZD2hCR2aZdsYi2H',
-                'version': 1
-              },
-              'price': 10000,
-              'amount': 1000000,
-              'buyMatcherFee': 300000,
-              'sellMatcherFee': 300000,
-              'chainId': 'W'
-            }";
+            var transactionId = "9VJCXTdLqtsfvk1d68G5MT237ezQ4g9nuQhWZXR47vi9";
+            var tx = node.GetTransactionById(transactionId);
 
-            var tx = Transaction.FromJson(json.ParseJsonObject()).Sign(Accounts.Alice);
-            Assert.IsNotNull(tx);
+            Assert.IsInstanceOfType(tx, typeof(ExchangeTransaction));
+            Assert.AreEqual(tx.GenerateId(), transactionId);
+
+            var exchangeTx = (ExchangeTransaction)tx;
+
+            Assert.AreEqual(exchangeTx.Sender, "3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3");
+            Assert.AreEqual(exchangeTx.SenderPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
+            Assert.AreEqual(exchangeTx.Fee, Assets.WAVES.LongToAmount(300000));
+            Assert.AreEqual(exchangeTx.Timestamp.ToLong(), 1548660872389);
+            Assert.AreEqual(exchangeTx.Proofs[0].ToBase58(), "3sKMGryDW1iEb94jdkzNNxHem59bW8NmUdCLKWWbyFC4qEZegKu8MVVrcvrewJkD4bjjg43SK1yhfQB1w9Vcka9p");
+
+            var priceAsset = exchangeTx.BuyOrder.PriceAsset;
+            var amountAsset = exchangeTx.BuyOrder.AmountAsset;
+
+            Assert.AreEqual(exchangeTx.BuyOrder.Id, "Ho6Y16AKDrySs5VTa983kjg3yCx32iDzDHpDJ5iabXka");
+            Assert.AreEqual(exchangeTx.BuyOrder.SenderPublicKey.ToBase58(), "FMc1iASTGwTC1tDwiKtrVHtdMkrVJ1S3rEBQifEdHnT2");
+            Assert.AreEqual(exchangeTx.BuyOrder.MatcherPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
+            Assert.AreEqual(exchangeTx.BuyOrder.AmountAsset.Id, "BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa");
+            Assert.AreEqual(exchangeTx.BuyOrder.PriceAsset, Assets.WAVES);
+            Assert.AreEqual(exchangeTx.BuyOrder.Side, OrderSide.Buy);
+            Assert.AreEqual(exchangeTx.BuyOrder.Price, Asset.LongToPrice(amountAsset, priceAsset, 1799925005));
+            Assert.AreEqual(exchangeTx.BuyOrder.Amount, exchangeTx.BuyOrder.AmountAsset.LongToAmount(150000000));
+            Assert.AreEqual(exchangeTx.BuyOrder.Timestamp.ToLong(), 1548660872383);
+            Assert.AreEqual(exchangeTx.BuyOrder.Expiration.ToLong(), 1551252872383);
+            Assert.AreEqual(exchangeTx.BuyOrder.MatcherFee, Assets.WAVES.LongToAmount(300000));
+            Assert.AreEqual(exchangeTx.BuyOrder.Proofs[0].ToBase58(), "YNPdPqEUGRW42bFyGqJ8VLHHBYnpukna3NSin26ERZargGEboAhjygenY67gKNgvP5nm5ZV8VGZW3bNtejSKGEa");
+
+            Assert.AreEqual(exchangeTx.SellOrder.Id, "46qfvEVp4xEs6nxitCQH48ufB8sLRv7tsPnXsN96eUP4");
+            Assert.AreEqual(exchangeTx.SellOrder.SenderPublicKey.ToBase58(), "75LAGRqae58sABeFza8fxSdq5o6zXJWRnCVbVCVjvPu5");
+            Assert.AreEqual(exchangeTx.SellOrder.MatcherPublicKey.ToBase58(), "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy");
+            Assert.AreEqual(exchangeTx.SellOrder.AmountAsset.Id, "BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa");
+            Assert.AreEqual(exchangeTx.SellOrder.PriceAsset, Assets.WAVES);
+            Assert.AreEqual(exchangeTx.SellOrder.Side, OrderSide.Sell);
+            Assert.AreEqual(exchangeTx.SellOrder.Price, Asset.LongToPrice(amountAsset, priceAsset, 1799925005));
+            Assert.AreEqual(exchangeTx.SellOrder.Amount, amountAsset.LongToAmount(724649261));
+            Assert.AreEqual(exchangeTx.SellOrder.Timestamp.ToLong(), 1548660849308);
+            Assert.AreEqual(exchangeTx.SellOrder.Expiration.ToLong(), 1548661449308);
+            Assert.AreEqual(exchangeTx.SellOrder.MatcherFee, Assets.WAVES.LongToAmount(300000));
+            Assert.AreEqual(exchangeTx.SellOrder.Proofs[0].ToBase58(), "42RxAFJXJs98GoJE11bdjwDPRrqKzsvqBmG6cYoVn5B8e314u3D3DJ54vN9527em8syqKUHbpHWwenHUdfEcBta5");
+
+            Assert.AreEqual(exchangeTx.Price, Asset.LongToPrice(amountAsset, priceAsset, 1799925005));
+            Assert.AreEqual(exchangeTx.Amount, amountAsset.LongToAmount(150000000));
+            Assert.AreEqual(exchangeTx.BuyMatcherFee, Assets.WAVES.LongToAmount(300000));
+            Assert.AreEqual(exchangeTx.SellMatcherFee, Assets.WAVES.LongToAmount(62099));
         }
 
         [TestMethod]
@@ -531,7 +530,7 @@ namespace WavesCSTests
 
 @Callable(i)
 func parseTxBytes(txBytes : ByteVector) = {
-    let tx = extract(transactionFromBytes(txBytes))
+    let tx = transactionFromBytes(txBytes)
 
     let key = match(tx) {
         case t : IssueTransaction => ""3""
@@ -547,11 +546,12 @@ func parseTxBytes(txBytes : ByteVector) = {
         case t : SetScriptTransaction => ""13""
         case t : SponsorFeeTransaction => ""14""
         case t : SetAssetScriptTransaction => ""15""
+        # case t : InvokeScriptTransaction => ""16""
         case _ => throw(""incorrect tx"")
     }
     
     WriteSet([
-        DataEntry(key, toBase58String(tx.id))
+        DataEntry(key + ""_V"" + toString(extract(tx).version), toBase58String(extract(tx).id))
     ])
 }";
             var compiledScript = node.CompileCode(script);
@@ -561,6 +561,15 @@ func parseTxBytes(txBytes : ByteVector) = {
 
             var txList = new List<Transaction>
             {
+                new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")){ Version = 1}.Sign(account),
+                new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o"){ Version = 1}.Sign(account),
+                new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m){ Version = 1}.Sign(account),
+                new BurnTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m){ Version = 1}.Sign(account),
+                new ExchangeTransaction(node.ChainId, account.PublicKey, 1m, 1m, 1m, Assets.WAVES,Assets.BTC,new Order(OrderSide.Buy,1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,123445455L.ToDate(),124m,account.Address),new Order(OrderSide.Sell, 1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,1234454L.ToDate(),124m,account.Address),100m,43m, 123456L.ToDate()){ Version = 1 }.Sign(account),
+                new LeaseTransaction(node.ChainId, account.PublicKey, account.Address, 100m){ Version = 1 }.Sign(account),
+                new CancelLeasingTransaction(node.ChainId, account.PublicKey, "FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti"){ Version = 1}.Sign(account),
+                new AliasTransaction(account.PublicKey, "buba", node.ChainId){ Version = 1}.Sign(account),
+
                 new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")),
                 new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o"),
                 new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m),
@@ -574,13 +583,13 @@ func parseTxBytes(txBytes : ByteVector) = {
                 new SetScriptTransaction(account.PublicKey, node.CompileCode("true"), node.ChainId),
                 new SponsoredFeeTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m),
                 new SetAssetScriptTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4),  node.CompileCode("true")),
-                new InvokeScriptTransaction(node.ChainId,account.PublicKey,account.Address,"wertyu",null,null, 0.005m, Assets.WAVES)
+                new InvokeScriptTransaction(node.ChainId,account.PublicKey,account.Address,"wertyu",new List<object>{ 42L},null, 0.005m, Assets.WAVES)
             };
 
             foreach (var tx in txList)
             {
                 var bytes = tx.GetBytes();
-                var response = node.InvokeScript(account, account.Address, "parseTxBytes", new List<object> { bytes });
+                var response = node.InvokeScript(account, account.Address, "parseTxBytes", new List<object> { bytes }, null, 0.009m, Assets.WAVES);
 
                 node.WaitTransactionConfirmation(response);
                 var type = tx.GetJson().GetByte("type").ToString();

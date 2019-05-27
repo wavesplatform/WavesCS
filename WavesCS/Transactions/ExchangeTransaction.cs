@@ -65,19 +65,53 @@ namespace WavesCS
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
+                if (Version > 1)
+                {
+                    writer.WriteByte(0);
+                }
+
                 writer.Write(TransactionType.Exchange);
 
-                var buyOrderBytes = BuyOrder.GetBody();
-                var sellOrderBytes = SellOrder.GetBody();
+                if (Version > 1)
+                {
+                    writer.WriteByte(Version);
+                }
 
-                writer.WriteShort(0);
-                writer.WriteShort((short)buyOrderBytes.Length + BuyOrder.Signature.Length);
-                writer.WriteShort(0);
-                writer.WriteShort((short)sellOrderBytes.Length + BuyOrder.Signature.Length);
-                writer.Write(buyOrderBytes);
-                writer.Write(BuyOrder.Signature);
-                writer.Write(sellOrderBytes);
-                writer.Write(SellOrder.Signature);
+                if (Version == 1)
+                {
+                    var buyOrderBytes = BuyOrder.GetBytes();
+                    var sellOrderBytes = SellOrder.GetBytes();
+
+                    writer.WriteShort(0);
+                    writer.WriteShort((short)buyOrderBytes.Length);
+                    writer.WriteShort(0);
+                    writer.WriteShort((short)sellOrderBytes.Length);
+                    writer.Write(buyOrderBytes);
+                    writer.Write(sellOrderBytes);
+                }
+                else
+                {
+                    var buyOrderBytes = BuyOrder.GetBytes();
+                    var sellOrderBytes = SellOrder.GetBytes();
+
+                    writer.WriteShort(0);
+                    writer.WriteShort((short)buyOrderBytes.Length);
+
+                    if (BuyOrder.Version == 1)
+                        writer.WriteByte(1);
+
+                    writer.Write(buyOrderBytes);
+
+                    writer.WriteShort(0);
+                    writer.WriteShort((short)sellOrderBytes.Length);
+
+                    if (SellOrder.Version == 1)
+                        writer.WriteByte(1);
+
+                    writer.Write(sellOrderBytes);
+                }
+
+
                 writer.WriteLong(Asset.PriceToLong(AmountAsset, PriceAsset, Price));
                 writer.WriteLong(AmountAsset.AmountToLong(Amount));
                 writer.WriteLong(Assets.WAVES.AmountToLong(BuyMatcherFee));
@@ -92,7 +126,6 @@ namespace WavesCS
         {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
-
 
             writer.Write(GetBody());
 
