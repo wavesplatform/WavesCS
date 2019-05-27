@@ -595,7 +595,6 @@ func parseTxBytes(txBytes : ByteVector) = {
                 var type = tx.GetJson().GetByte("type").ToString();
                 Assert.AreEqual(node.GetAddressData(account.Address)[type], tx.GenerateId());
             }
-
         }
     }
 }
