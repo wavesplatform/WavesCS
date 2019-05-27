@@ -50,9 +50,16 @@ namespace WavesCS
             }
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
         {
-            return GetBody();
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.WriteByte(0);
+            writer.Write(GetBody());
+            writer.Write(GetProofsBytes());
+
+            return stream.ToArray();
         }
 
         public override DictionaryObject GetJson()

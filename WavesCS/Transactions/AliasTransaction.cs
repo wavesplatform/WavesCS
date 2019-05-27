@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
@@ -29,6 +30,10 @@ namespace WavesCS
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Alias);
+
+                if (Version > 1)
+                    writer.WriteByte(Version);
+
                 writer.Write(SenderPublicKey);
                 writer.WriteShort(Alias.Length + 4);
                 writer.Write((byte) 0x02);
@@ -41,7 +46,27 @@ namespace WavesCS
             }
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            if (Version == 1)
+            {
+                writer.Write(GetBody());
+                writer.Write(Proofs[0]);
+            }
+            else
+            {
+                writer.WriteByte(0);
+                writer.Write(GetBody());
+                writer.Write(GetProofsBytes());
+            }
+
+            return stream.ToArray();
+        }
+
+        internal override byte[] GetBytesForId()
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))

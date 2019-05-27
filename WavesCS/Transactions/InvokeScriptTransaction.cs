@@ -128,7 +128,19 @@ namespace WavesCS
             return stream.ToArray();
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.WriteByte(0);
+            writer.Write(GetBody());
+            writer.Write(GetProofsBytes());
+
+            return stream.ToArray();
+        }
+
+        internal override byte[] GetBytesForId()
         {
             return GetBody();
         }

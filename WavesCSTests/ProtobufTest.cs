@@ -22,7 +22,7 @@ namespace WavesCSTests.Protobuf
             Channel channel = new Channel("mainnet-aws-fr-3.wavesnodes.com:6870", ChannelCredentials.Insecure);
             BlocksApi.BlocksApiClient client = new BlocksApi.BlocksApiClient(channel);
             BlockWithHeight block = client.GetBlock(new BlockRequest() { Height = -1 });
-            TestContext.WriteLine(block.ToString());           
+            TestContext.WriteLine(block.ToString());
         }
     }
 }

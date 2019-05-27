@@ -64,8 +64,16 @@ namespace WavesCS
                            : new byte[0];
         }
 
-        public void WriteBytes(BinaryWriter writer)
+        public override byte[] GetBody()
         {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(TransactionType.Transfer);
+
+            if (Version > 1)
+                writer.Write(Version);
+
             writer.Write(SenderPublicKey);
             writer.WriteAsset(Asset.Id);
             writer.WriteAsset(FeeAsset.Id);
@@ -88,23 +96,32 @@ namespace WavesCS
                 writer.Write(Recipient.FromBase58());
             writer.WriteShort(Attachment.Length);
             writer.Write(Attachment);
+
+            return stream.ToArray();
         }
 
-        public override byte[] GetBody()
+        public override byte[] GetBytes()
         {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
 
-            writer.Write(TransactionType.Transfer);
+            if (Version == 1)
+            {
+                writer.WriteByte((byte)TransactionType.Transfer);
+                writer.Write(Proofs[0]);
+                writer.Write(GetBody());
+            }
+            else
+            {
+                writer.WriteByte(0);
+                writer.Write(GetBody());
+                writer.Write(GetProofsBytes());
+            }
 
-            if (Version > 1)
-                writer.Write(Version);
-
-            WriteBytes(writer);
             return stream.ToArray();
         }
 
-        internal override byte[] GetIdBytes()
+        internal override byte[] GetBytesForId()
         {
             return GetBody();
         }

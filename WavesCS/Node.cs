@@ -344,9 +344,9 @@ namespace WavesCS
         }
 
         public Asset IssueAsset(PrivateKeyAccount account,
-            string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null, decimal fee = 1m, bool scripted = false)
+            string name, string description, decimal quantity, byte decimals, bool reissuable, byte[] script = null, decimal fee = 1m)
         {
-            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, fee, script, scripted);
+            var tx = new IssueTransaction(account.PublicKey, name, description, quantity, decimals, reissuable, ChainId, fee, script);
             tx.Sign(account);
             var response = Broadcast(tx);
             var assetId = response.ParseJsonObject().GetString("id");
