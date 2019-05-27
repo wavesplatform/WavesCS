@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -16,7 +17,7 @@ namespace WavesCS
             Asset = asset;
             Quantity = quantity;
             Reissuable = reissuable;
-            Fee = fee;            
+            Fee = fee;
         }
 
         public ReissueTransaction(DictionaryObject tx) : base(tx)
@@ -34,6 +35,11 @@ namespace WavesCS
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(TransactionType.Reissue);
+                if (Version > 1)
+                {
+                    writer.WriteByte(Version);
+                    writer.WriteByte((byte)ChainId);
+                }
                 writer.Write(SenderPublicKey);
                 writer.Write(Asset.Id.FromBase58());
                 writer.WriteLong(Asset.AmountToLong(Quantity));
@@ -41,12 +47,30 @@ namespace WavesCS
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
                 writer.WriteLong(Timestamp.ToLong());
                 return stream.ToArray();
-            }            
+            }
+
+
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
         {
-            return GetBody();
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            if (Version == 1)
+            {
+                writer.WriteByte((byte)TransactionType.Reissue);
+                writer.Write(Proofs[0]);
+                writer.Write(GetBody());
+            }
+            else
+            {
+                writer.WriteByte(0);
+                writer.Write(GetBody());
+                writer.Write(GetProofsBytes());
+            }
+
+            return stream.ToArray();
         }
 
         public override DictionaryObject GetJson()

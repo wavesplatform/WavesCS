@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -43,9 +44,18 @@ namespace WavesCS
             }
         }
 
-        internal override byte[] GetIdBytes()
+        public override byte[] GetBytes()
         {
-            return GetBody();
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.WriteByte(0);
+            writer.WriteByte((byte)TransactionType.SponsoredFee);
+            writer.WriteByte(Version);
+            writer.Write(GetBody());
+            writer.Write(GetProofsBytes());
+
+            return stream.ToArray();
         }
 
         protected override bool SupportsProofs()
