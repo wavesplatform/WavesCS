@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text;
+using Newtonsoft.Json;
 using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
@@ -112,7 +113,7 @@ namespace WavesCS
             catch (WebException e)
             {
                 Trace($"Exception: {e}");
-                Trace(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());                
+                Trace(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());
                 throw;
             }
         }

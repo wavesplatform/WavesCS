@@ -69,6 +69,7 @@ namespace WavesCS
                 .Take(Array.FindLastIndex(Proofs, p => p != null && p.Length > 0) + 1)
                 .Select(p => p == null ? "" : p.ToBase58())
                 .ToArray();
+
             if (SupportsProofs())
             {                
                 json.Add("proofs", proofs);
@@ -122,7 +123,7 @@ namespace WavesCS
 
             var proofs = Proofs
                 .Take(Array.FindLastIndex(Proofs, p => p != null && p.Length > 0) + 1)
-                .Select(p => p == null ? "" : p.ToBase58())
+                .Select(p => p ?? (new byte[0]))
                 .ToArray();
 
             writer.WriteShort(proofs.Count());
@@ -130,7 +131,8 @@ namespace WavesCS
             foreach(var proof in proofs)
             {
                 writer.WriteShort(proof.Length);
-                writer.Write(proof);
+                if (proof.Length > 0)
+                    writer.Write(proof);
             }
 
             return stream.ToArray();

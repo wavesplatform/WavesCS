@@ -202,6 +202,12 @@ namespace WavesCSTests
         [TestMethod]
         public void TestLeaseTransactionDeserialize()
         {
+            byte[] a = new byte[0]; 
+            byte[] b = null;
+
+            var aLength = a.Length;
+            var bLength = b.Length;
+
             var node = new Node(Node.MainNetChainId);
 
             var transactionId = "8feDmqySpSLJxfPYmnKCb99jf2g7oFGEY5Lu8DofqBCU";
