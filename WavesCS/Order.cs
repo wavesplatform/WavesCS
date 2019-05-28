@@ -144,7 +144,7 @@ namespace WavesCS
 
             var proofs = Proofs
                 .Take(Array.FindLastIndex(Proofs, p => p != null && p.Length > 0) + 1)
-                .Select(p => p == null ? "" : p.ToBase58())
+                .Select(p => p ?? (new byte[0]))
                 .ToArray();
 
             writer.WriteByte(1);
