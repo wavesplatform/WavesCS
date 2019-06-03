@@ -202,11 +202,8 @@ namespace WavesCSTests
         [TestMethod]
         public void TestLeaseTransactionDeserialize()
         {
-            byte[] a = new byte[0]; 
+            byte[] a = new byte[0];
             byte[] b = null;
-
-            var aLength = a.Length;
-            var bLength = b.Length;
 
             var node = new Node(Node.MainNetChainId);
 
@@ -567,16 +564,17 @@ func parseTxBytes(txBytes : ByteVector) = {
 
             var txList = new List<Transaction>
             {
-                new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")){ Version = 1}.Sign(account),
-                new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o"){ Version = 1}.Sign(account),
-                new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m){ Version = 1}.Sign(account),
-                new BurnTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m){ Version = 1}.Sign(account),
+                new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")){ Version = 1 }.Sign(account),
+                new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o"){ Version = 1 }.Sign(account),
+                new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m){ Version = 1 }.Sign(account),
+                new BurnTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m){ Version = 1 }.Sign(account),
                 new ExchangeTransaction(node.ChainId, account.PublicKey, 1m, 1m, 1m, Assets.WAVES,Assets.BTC,new Order(OrderSide.Buy,1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,123445455L.ToDate(),124m,account.Address),new Order(OrderSide.Sell, 1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,1234454L.ToDate(),124m,account.Address),100m,43m, 123456L.ToDate()){ Version = 1 }.Sign(account),
                 new LeaseTransaction(node.ChainId, account.PublicKey, account.Address, 100m){ Version = 1 }.Sign(account),
-                new CancelLeasingTransaction(node.ChainId, account.PublicKey, "FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti"){ Version = 1}.Sign(account),
-                new AliasTransaction(account.PublicKey, "buba", node.ChainId){ Version = 1}.Sign(account),
+                new CancelLeasingTransaction(node.ChainId, account.PublicKey, "FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti"){ Version = 1 }.Sign(account),
+                new AliasTransaction(account.PublicKey, "buba", node.ChainId){ Version = 1 }.Sign(account),
 
-                new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")),
+                // without proofs
+                new IssueTransaction(account.PublicKey,"1234", "dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")),
                 new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o"),
                 new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m),
                 new BurnTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m),
@@ -584,12 +582,28 @@ func parseTxBytes(txBytes : ByteVector) = {
                 new LeaseTransaction(node.ChainId, account.PublicKey, account.Address, 100m),
                 new CancelLeasingTransaction(node.ChainId, account.PublicKey, "FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti"),
                 new AliasTransaction(account.PublicKey, "buba", node.ChainId),
-                new MassTransferTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), new List<MassTransferItem>{ new MassTransferItem(account.Address, 1m)}, "hello"),
+                new MassTransferTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), new List<MassTransferItem>{ new MassTransferItem(account.Address, 1m) }, "hello"),
                 new DataTransaction(node.ChainId, account.PublicKey, new Dictionary<string, object>()),
                 new SetScriptTransaction(account.PublicKey, node.CompileCode("true"), node.ChainId),
                 new SponsoredFeeTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m),
                 new SetAssetScriptTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4),  node.CompileCode("true")),
-                new InvokeScriptTransaction(node.ChainId,account.PublicKey,account.Address,"wertyu",new List<object>{ 42L},null, 0.005m, Assets.WAVES)
+                new InvokeScriptTransaction(node.ChainId,account.PublicKey,account.Address,"wertyu",new List<object>{ 42L},null, 0.005m, Assets.WAVES),
+
+                // with proofs
+                new IssueTransaction(account.PublicKey,"1234","dcvbh54tre",123m,3,false,node.ChainId,2m,node.CompileCode("false")).Sign(account).Sign(account,1),
+                new TransferTransaction(node.ChainId, account.PublicKey,account.Address, new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m,"1234567o").Sign(account),
+                new ReissueTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1234m, true,2m).Sign(account),
+                new BurnTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m).Sign(account),
+                new ExchangeTransaction(node.ChainId, account.PublicKey, 1m, 1m, 1m, Assets.WAVES,Assets.BTC,new Order(OrderSide.Buy,1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,123445455L.ToDate(),124m,account.Address),new Order(OrderSide.Sell, 1m,100m,12345L.ToDate(),Assets.WAVES,Assets.BTC,account.PublicKey,account.PublicKey,1234454L.ToDate(),124m,account.Address),100m,43m, 123456L.ToDate()).Sign(account),
+                new LeaseTransaction(node.ChainId, account.PublicKey, account.Address, 100m).Sign(account),
+                new CancelLeasingTransaction(node.ChainId, account.PublicKey, "FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti").Sign(account),
+                new AliasTransaction(account.PublicKey, "buba", node.ChainId).Sign(account),
+                new MassTransferTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), new List<MassTransferItem>{ new MassTransferItem(account.Address, 1m)}, "hello").Sign(account),
+                new DataTransaction(node.ChainId, account.PublicKey, new Dictionary<string, object>()).Sign(account),
+                new SetScriptTransaction(account.PublicKey, node.CompileCode("true"), node.ChainId).Sign(account),
+                new SponsoredFeeTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4), 1m).Sign(account),
+                new SetAssetScriptTransaction(node.ChainId, account.PublicKey,new Asset("FTQvw9zdYirRksUFCKDvor3hiu2NiUjXEPTDEcircqti","",4),  node.CompileCode("true")).Sign(account),
+                new InvokeScriptTransaction(node.ChainId,account.PublicKey,account.Address,"wertyu",new List<object>{ 42L},null, 0.005m, Assets.WAVES).Sign(account)
             };
 
             foreach (var tx in txList)
@@ -601,7 +615,6 @@ func parseTxBytes(txBytes : ByteVector) = {
                 var type = tx.GetJson().GetByte("type").ToString();
                 Assert.AreEqual(node.GetAddressData(account.Address)[type], tx.GenerateId());
             }
-
         }
     }
 }
