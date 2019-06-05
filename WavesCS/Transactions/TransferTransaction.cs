@@ -72,7 +72,7 @@ namespace WavesCS
             writer.Write(TransactionType.Transfer);
 
             if (Version > 1)
-                writer.Write(Version);
+                writer.WriteByte(Version);
 
             writer.Write(SenderPublicKey);
             writer.WriteAsset(Asset.Id);
@@ -120,12 +120,6 @@ namespace WavesCS
 
             return stream.ToArray();
         }
-
-        internal override byte[] GetBytesForId()
-        {
-            return GetBody();
-        }
-
 
         public override DictionaryObject GetJson()
         {
