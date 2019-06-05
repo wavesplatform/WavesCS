@@ -67,7 +67,7 @@ namespace WavesCS
         {
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
-
+        
             writer.Write(TransactionType.InvokeScript);
             writer.Write(Version);
             writer.Write((byte)ChainId);
@@ -112,7 +112,7 @@ namespace WavesCS
                 else
                 {
                     tmpWriter.WriteByte(1);
-                    tmpWriter.WriteShort(id.Length);
+                    // tmpWriter.WriteShort(id.Length);
                     tmpWriter.Write(id);
                 }
 
@@ -138,11 +138,6 @@ namespace WavesCS
             writer.Write(GetProofsBytes());
 
             return stream.ToArray();
-        }
-
-        internal override byte[] GetBytesForId()
-        {
-            return GetBody();
         }
 
         public override DictionaryObject GetJson()
