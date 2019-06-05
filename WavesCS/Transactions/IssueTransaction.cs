@@ -42,7 +42,7 @@ namespace WavesCS
             Quantity = Assets.WAVES.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
-            Asset = node.GetAsset(tx.GetString("assetId"));
+            Asset = tx.ContainsKey("assetId") ? node.GetAsset(tx.GetString("assetId")) : null;
             Script = tx.ContainsKey("script") && tx.GetString("script") != null ? tx.GetString("script").FromBase64() : null;
             Scripted = tx.ContainsKey("scripted") ? tx.GetBool("scripted") : false;
         }
@@ -55,8 +55,8 @@ namespace WavesCS
             writer.Write(TransactionType.Issue);
 
             if (Version > 1) {
-                writer.Write(Version);
-                writer.Write((byte)ChainId);
+                writer.WriteByte(Version);
+                writer.WriteByte((byte)ChainId);
             }
 
             writer.Write(SenderPublicKey);
