@@ -58,7 +58,7 @@ namespace WavesCS
             var stream = new MemoryStream(seed.Length + 4);
             var writer = new BinaryWriter(stream);
             writer.Write(nonce);
-            writer.Write(seed);            
+            writer.Write(seed);
             var accountSeed = AddressEncoding.SecureHash(stream.ToArray(), 0, stream.ToArray().Length);
             var hashedSeed = SHA256.ComputeHash(accountSeed, 0, accountSeed.Length);             
             var privateKey = hashedSeed.ToArray();
