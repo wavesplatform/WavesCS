@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Grpc.Core;
-using Waves.Protobuf;
+using Waves.Grpc;
 using WavesCS;
 
 namespace WavesCSTests.Protobuf
@@ -19,7 +19,7 @@ namespace WavesCSTests.Protobuf
         [TestMethod]
         public void TestGrpc()
         {
-            Channel channel = new Channel("mainnet-aws-fr-3.wavesnodes.com:6870", ChannelCredentials.Insecure);
+            Channel channel = new Channel("localhost:6870", ChannelCredentials.Insecure);
             BlocksApi.BlocksApiClient client = new BlocksApi.BlocksApiClient(channel);
             BlockWithHeight block = client.GetBlock(new BlockRequest() { Height = -1 });
             TestContext.WriteLine(block.ToString());
