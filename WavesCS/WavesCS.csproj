@@ -4,7 +4,7 @@
     <Product>WavesCS</Product>
     <Copyright>Copyright ©  2018</Copyright>
     <VersionPrefix>1.0.0.0</VersionPrefix>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net451</TargetFramework>
 	<Protobuf_NoWarnMissingExpected>true</Protobuf_NoWarnMissingExpected>
   </PropertyGroup>
   <ItemGroup>
@@ -45,7 +45,7 @@
     <EmbeddedResource Include="Resources\SeedWords.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="*.proto" Link="%(RelativePath)"/>
+    <Protobuf Include="*.proto" Link="%(RelativePath)" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\proto\google\protobuf\" />

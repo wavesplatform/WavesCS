@@ -1,7 +1,8 @@
 // Transactions
 syntax = "proto3";
-option csharp_namespace = "Waves.Protobuf";
+package waves;
 option java_package = "com.wavesplatform.protobuf.transaction";
+option csharp_namespace = "Waves";
 
 message Recipient {
     oneof recipient {
