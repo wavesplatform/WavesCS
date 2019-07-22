@@ -26,7 +26,8 @@ namespace WavesCS
             Asset = node.GetAsset(tx.GetString("assetId"));
             Quantity = Asset.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
-            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee")); 
+            Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            Version = tx.GetByte("version");
         }
 
         public override byte[] GetBody()
@@ -77,6 +78,7 @@ namespace WavesCS
         {
             var result = new DictionaryObject
             {
+                {"version", Version },
                 {"type", (byte) TransactionType.Reissue},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"assetId", Asset.Id},
@@ -94,7 +96,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version > 1;
         }
     }
 }

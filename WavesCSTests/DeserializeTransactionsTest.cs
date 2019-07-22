@@ -364,9 +364,9 @@ namespace WavesCSTests
         [TestMethod]
         public void TestInvokeScriptTransactionDeserialize()
         {
-            var node = new Node();
+            var node = new Node(Node.MainNetChainId);
 
-            var transactionId = "86SVgeoQGwYdoQzzdePhBuFW7caNTrgQDLcua4yR9DsH";
+            var transactionId = "BCGQqfydM2PesQN2Wk5xbQqAqt2Vvoqzjdp2MjigEDYJ";
             var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(InvokeScriptTransaction));
@@ -374,19 +374,19 @@ namespace WavesCSTests
 
             var invokeScriptTx = (InvokeScriptTransaction)tx;
 
-            Assert.AreEqual(invokeScriptTx.Sender, "3MrDis17gyNSusZDg8Eo1PuFnm5SQMda3gu");
-            Assert.AreEqual(invokeScriptTx.SenderPublicKey.ToBase58(), "2AqMAWBPbTxYdHoE9vsELWTrCFjhEJdKAACt5UEjFGLu");
+            Assert.AreEqual(invokeScriptTx.Sender, "3PD1Wpo278Rut5jyd9wDfgzASB884HBbvSP");
+            Assert.AreEqual(invokeScriptTx.SenderPublicKey.ToBase58(), "CJMd6zAswMrh4m7DkFqoAELQGtuBUAKSqeswdB7sax5h");
             Assert.AreEqual(invokeScriptTx.FeeAsset, Assets.WAVES);
             Assert.AreEqual(invokeScriptTx.Fee, invokeScriptTx.FeeAsset.LongToAmount(500000));
-            Assert.AreEqual(invokeScriptTx.Timestamp.ToLong(), 1553874308840L);
+            Assert.AreEqual(invokeScriptTx.Timestamp.ToLong(), 1563792908168L);
             Assert.AreEqual(invokeScriptTx.Proofs.Length, 1);
-            Assert.AreEqual(invokeScriptTx.Proofs[0].ToBase58(), "4sXVeLLeeY38mHEkrbARG3SGJu5LijgS3YVysX7XggqPkEHWyDCDtzDsPhkdW6o5md9nyYBdsPc1CmecTfS6J6dU");
+            Assert.AreEqual(invokeScriptTx.Proofs[0].ToBase58(), "5pzcZH7fuYCVtdBLddLns3u1MPAH9ddgkRUt3UmGdDnWL1HTp2fUqPaEMQ2mwSHVLZi4xhgLyBmMaAG6FqCASkhG");
             Assert.AreEqual(invokeScriptTx.Version, 1);
-            Assert.AreEqual(invokeScriptTx.DappAddress, "3MqznbvHM2CqEVG6HKpWQmmXrWWHgBmFcAJ");
-            Assert.AreEqual(invokeScriptTx.FunctionHeader, "foo");
+            Assert.AreEqual(invokeScriptTx.DappAddress, "3P4DoFmdwJ4bA5qtviTSTVgY1uXsueuSgy9");
+            Assert.AreEqual(invokeScriptTx.FunctionHeader, "bet");
             Assert.AreEqual(invokeScriptTx.FunctionCallArguments.Count, 1);
-            Assert.AreEqual(invokeScriptTx.FunctionCallArguments[0], 42L);
-            Assert.AreEqual(invokeScriptTx.Payment.Count, 0);
+            Assert.AreEqual(invokeScriptTx.FunctionCallArguments[0], "92");
+            Assert.AreEqual(invokeScriptTx.Payment.Count, 1);
         }
 
         [TestMethod]

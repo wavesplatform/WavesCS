@@ -20,6 +20,7 @@ namespace WavesCS
         public AliasTransaction(DictionaryObject tx) : base(tx)
         {
             Alias = tx.GetString("alias");
+            Version = tx.GetByte("version");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             ChainId = tx.ContainsKey("chainId") ? tx.GetChar("chainId") : '\0';
         }
@@ -84,6 +85,7 @@ namespace WavesCS
         {
             var result = new DictionaryObject
                 {
+                    {"version", Version },
                     {"type", (byte) TransactionType.Alias},
                     {"senderPublicKey", SenderPublicKey.ToBase58()},
                     {"alias", Alias},
@@ -99,7 +101,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version > 1;
         }
     }
 }
