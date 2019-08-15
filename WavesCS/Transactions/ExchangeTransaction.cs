@@ -58,6 +58,7 @@ namespace WavesCS
 
             Amount = AmountAsset.LongToAmount(tx.GetLong("amount"));
             Price = Asset.LongToPrice(AmountAsset, PriceAsset, tx.GetLong("price"));
+            Version = tx.GetByte("version");
         }
 
         public override byte[] GetBody()
@@ -141,6 +142,7 @@ namespace WavesCS
         {
             var result = new DictionaryObject
             {
+                {"version", Version },
                 {"type", (byte) TransactionType.Exchange},
                 {"senderPublicKey", SenderPublicKey.ToBase58() },
                 {"fee", Assets.WAVES.AmountToLong(Fee)},
@@ -161,7 +163,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version > 1;
         }
     }
 }

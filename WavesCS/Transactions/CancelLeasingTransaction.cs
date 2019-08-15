@@ -18,8 +18,10 @@ namespace WavesCS
 
         public CancelLeasingTransaction(DictionaryObject tx) : base (tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             LeaseId = tx.GetString("leaseId");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            Version = tx.GetByte("version");
         }
 
         public override byte[] GetBody()
@@ -34,6 +36,7 @@ namespace WavesCS
                     writer.WriteByte(Version);
                     writer.WriteByte((byte)ChainId);
                 }
+                
 
                 writer.Write(SenderPublicKey);
                 writer.WriteLong(Assets.WAVES.AmountToLong(Fee));
@@ -66,6 +69,8 @@ namespace WavesCS
         {
             var result = new DictionaryObject
             {
+                {"chainId", (byte)ChainId},
+                {"version", Version },
                 {"type", (byte) TransactionType.LeaseCancel},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},
                 {"leaseId", LeaseId},
@@ -81,7 +86,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version > 1;
         }
     }
 }

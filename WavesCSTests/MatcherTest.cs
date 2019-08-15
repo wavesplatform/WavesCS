@@ -9,7 +9,7 @@ namespace WavesCSTests
     [TestClass]
     public class MatcherTest
     {
-        private static readonly Asset WBTC = new Asset("9WRJGfKpKGGWijPb4z8MSfVJuERahPHHQn4wp9mzdNQs", "BTC", 8);
+        private static readonly Asset WBTC = new Asset("DWgwcZTMhSvnyYCoWLRUXXSH1RSkzThXLJhww9gwkqdn", "BTC", 8);
 
         [TestInitialize]
         public void Init()
@@ -67,15 +67,15 @@ namespace WavesCSTests
         {
             var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
 
-            var priceAsset = Assets.WAVES;
-            var amountAsset = WBTC;
+            var amountAsset = Assets.WAVES;
+            var priceAsset = WBTC;
 
             var orderBook = matcher.GetOrderBook(amountAsset, priceAsset);
             var myPrice = orderBook.Asks.FirstOrDefault()?.Price ?? 0 + 0.0001m;
 
             Order order1 = new Order(OrderSide.Sell, 0.5m, myPrice, DateTime.UtcNow,
-                                     amountAsset, priceAsset, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
-                                     DateTime.UtcNow.AddHours(1), 0.007m, Accounts.Carol.Address, 2);
+                                 amountAsset, priceAsset, Accounts.Carol.PublicKey, matcher.MatcherKey.FromBase58(),
+                                 DateTime.UtcNow.AddHours(1), 0.007m, Accounts.Carol.Address, 2);
 
             matcher.PlaceOrder(Accounts.Carol, order1);
             Thread.Sleep(3000);

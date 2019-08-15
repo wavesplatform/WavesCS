@@ -30,8 +30,7 @@ namespace WavesCSTests
             Assert.AreEqual(0.003m, tx.Fee);
 
             tx.Sign(Accounts.Alice);
-            node.BroadcastAndWait(tx.GetJsonWithSignature());
-            node.MassTransfer(Accounts.Alice, Assets.WAVES, "masstransfer.txt", "Shut up & take my money");
+            node.BroadcastAndWait(tx.GetJsonWithSignature());           
         }
     }
 }

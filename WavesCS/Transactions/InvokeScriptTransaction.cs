@@ -25,7 +25,7 @@ namespace WavesCS
             var node = new Node(tx.GetChar("chainId"));
 
             DappAddress = tx.GetString("dApp");
-            FunctionHeader = tx.ContainsKey("call.function") ? tx.GetString("call.function") : null;
+            FunctionHeader = tx.ContainsKey("call") ? tx.GetString("call.function") : null;
 
             FunctionCallArguments = tx.GetObjects("call.args")
                                         .Select(Node.DataValue)

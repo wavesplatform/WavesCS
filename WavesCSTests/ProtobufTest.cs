@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Grpc.Core;
-using Waves.Grpc;
+using Waves;
 using WavesCS;
 
 namespace WavesCSTests.Protobuf
@@ -26,3 +26,4 @@ namespace WavesCSTests.Protobuf
         }
     }
 }
+*/
