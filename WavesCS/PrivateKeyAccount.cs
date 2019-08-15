@@ -69,6 +69,11 @@ namespace WavesCS
             return privateKey;
         }
 
+        public static bool VerifySignature(byte[] publicKey, byte[] bytes, byte[] signature)
+        {
+            return Curve25519.getInstance(Curve25519.BEST).verifySignature(publicKey.ToArray(), bytes.ToArray(), signature.ToArray());
+        }
+
         public override string ToString()
         {
             return $"Address: {Address}, Type: {typeof(PrivateKeyAccount)}";
