@@ -366,15 +366,9 @@ namespace WavesCSTests
         [TestMethod]
         public void TestInvokeScriptTransactionDeserialize()
         {
-<<<<<<< HEAD
-            var node = new Node();
-            
-            var transactionId = "86SVgeoQGwYdoQzzdePhBuFW7caNTrgQDLcua4yR9DsH";
-=======
             var node = new Node(Node.MainNetChainId);
 
             var transactionId = "BCGQqfydM2PesQN2Wk5xbQqAqt2Vvoqzjdp2MjigEDYJ";
->>>>>>> 91e5a1dcec2aa6fce887d3e016bd14450b3371a0
             var tx = node.GetTransactionById(transactionId);
 
             Assert.IsInstanceOfType(tx, typeof(InvokeScriptTransaction));
