@@ -23,7 +23,7 @@ namespace WavesCS
         public abstract byte[] GetBody();
         protected abstract bool SupportsProofs();
 
-        public byte[][] Proofs { get; }
+        public byte[][] Proofs { get; set; }
 
         public static bool checkId = false;
 

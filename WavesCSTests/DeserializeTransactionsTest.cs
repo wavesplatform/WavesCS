@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
+
 using System;
 using System.Collections.Generic;
+
+
 
 namespace WavesCSTests
 {
@@ -365,7 +367,7 @@ namespace WavesCSTests
         public void TestInvokeScriptTransactionDeserialize()
         {
             var node = new Node();
-
+            
             var transactionId = "86SVgeoQGwYdoQzzdePhBuFW7caNTrgQDLcua4yR9DsH";
             var tx = node.GetTransactionById(transactionId);
 

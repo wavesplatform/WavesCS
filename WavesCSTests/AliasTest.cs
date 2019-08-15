@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
@@ -25,15 +24,14 @@ namespace WavesCSTests
             string aliasAlphabet = "-.0123456789@_abcdefghijklmnopqrstuvwxyz";
 
             return new string(Enumerable.Repeat(aliasAlphabet, length)
-                                   .Select(s => s[random.Next(s.Length)]).ToArray());
-
+                                            .Select(s => s[random.Next(s.Length)])
+                                            .ToArray());
         }
 
         [TestMethod]
         public void TestTransferToAlias()
         {
             var node = new Node(Node.TestNetChainId);
-
             var seed = PrivateKeyAccount.GenerateSeed();
             var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
 
