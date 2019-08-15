@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCS", "WavesCS\WavesCS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesCSTests", "WavesCSTests\WavesCSTests.csproj", "{BA391F59-6B2D-4F95-B314-E50CF445E1B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-lib-crypto", "csharp-lib-crypto\csharp-lib-crypto.csproj", "{16BB12BD-574D-4A38-8915-50F19937E334}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtobufSchemas", "ProtobufSchemas\ProtobufSchemas.csproj", "{012DE238-219C-4677-99D7-5B2FFC4238BF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
