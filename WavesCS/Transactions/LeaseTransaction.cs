@@ -21,9 +21,11 @@ namespace WavesCS
 
         public LeaseTransaction(DictionaryObject tx) : base(tx)
         {
+            var node = new Node(tx.GetChar("chainId"));
             Recipient = tx.GetString("recipient");
             Amount = Assets.WAVES.LongToAmount(tx.GetLong("amount"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
+            Version = tx.GetByte("version");
             IsActive = tx.ContainsKey("status") ? tx.GetString("status") == "active" : true;
         }
 
@@ -38,7 +40,7 @@ namespace WavesCS
                 if (Version > 1)
                 {
                     writer.WriteByte(Version);
-                    writer.WriteByte(0);
+                    writer.WriteByte((byte)0);
                 }
 
                 writer.Write(SenderPublicKey);
@@ -73,6 +75,7 @@ namespace WavesCS
         public override DictionaryObject GetJson()
         {
             var result = new DictionaryObject {
+                {"version", (byte) Version },
                 {"type", (byte) TransactionType.Lease},
                 {"senderPublicKey", SenderPublicKey.ToBase58()},                
                 {"recipient", Recipient},
@@ -89,7 +92,7 @@ namespace WavesCS
 
         protected override bool SupportsProofs()
         {
-            return false;
+            return Version > 1;
         }
     }
 }
