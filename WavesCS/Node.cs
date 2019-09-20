@@ -219,6 +219,12 @@ namespace WavesCS
             return Http.GetObject($"{_host}/blocks/headers/at/{height}").GetLong("timestamp");
         }
 
+        public long GetBlockTotalFee(long height)
+        {
+            var t = Http.GetObject($"{_host}/blocks/headers/at/{height}");
+            return t.GetLong("totalFee");
+        }
+
         public TransactionType TransactionTypeId(Type transactionType)
         {
             switch (transactionType.Name)
