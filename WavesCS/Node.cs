@@ -37,13 +37,13 @@ namespace WavesCS
 
         public static string NodeHostByChainID(char chainId)
         {
-            return chainId switch
+            switch (chainId)
             {
-                StageNetChainId => StageNetHost,
-                TestNetChainId => TestNetHost,
-                MainNetChainId => MainNetHost,
-                _ => throw new ArgumentException("Unknown chainId: " + chainId)
-            };
+                case StageNetChainId: return StageNetHost;
+                case TestNetChainId: return TestNetHost;
+                case MainNetChainId: return MainNetHost;
+                default: throw new ArgumentException("Unknown chainId: " + chainId);
+            }
         }
 
         public Node(char nodeChainId = StageNetChainId) : this(NodeHostByChainID(nodeChainId), nodeChainId) { }
