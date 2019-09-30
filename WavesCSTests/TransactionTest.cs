@@ -22,7 +22,7 @@ namespace WavesCSTests
         public void TestSmoke()
         {
             // doesn't validate transactions, just checks that all methods run to completion, no buffer overflows occur etc
-            var account = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", AddressEncoding.TestNet);
+            var account = PrivateKeyAccount.CreateFromPrivateKey("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", Node.TestNetChainId);
             var recipient = "3N9gDFq8tKFhBDBTQxR3zqvtpXjw5wW3syA";
             var asset = Assets.MONERO;
             var transactionId = "TransactionTransactionTransactio";
@@ -33,14 +33,14 @@ namespace WavesCSTests
                 new MassTransferItem(recipient, Amount)
             };
 
-            Dump("alias", new AliasTransaction(account.PublicKey, "daphnie", AddressEncoding.TestNet, Fee));
-            Dump("burn", new BurnTransaction(AddressEncoding.TestNet, account.PublicKey, asset, Amount, Fee));
+            Dump("alias", new AliasTransaction(account.PublicKey, "daphnie", Node.TestNetChainId, Fee));
+            Dump("burn", new BurnTransaction(Node.TestNetChainId, account.PublicKey, asset, Amount, Fee));
             Dump("issue", new IssueTransaction(account.PublicKey, "Pure Gold", "Gold backed asset", Amount, 8, true, 'T', Fee));
-            Dump("reissue", new ReissueTransaction(AddressEncoding.TestNet, account.PublicKey, asset, Amount, false, Fee));
-            Dump("lease", new LeaseTransaction(AddressEncoding.TestNet, account.PublicKey, recipient, Amount, Fee));
-            Dump("lease cancel", new CancelLeasingTransaction(AddressEncoding.TestNet, account.PublicKey, transactionId, Fee));
-            Dump("xfer", new TransferTransaction(AddressEncoding.TestNet, account.PublicKey, recipient, asset, Amount, "Shut up & take my money"));
-            Dump("massxfer", new MassTransferTransaction(AddressEncoding.TestNet, account.PublicKey, asset, recipients, "Shut up & take my money", Fee));
+            Dump("reissue", new ReissueTransaction(Node.TestNetChainId, account.PublicKey, asset, Amount, false, Fee));
+            Dump("lease", new LeaseTransaction(Node.TestNetChainId, account.PublicKey, recipient, Amount, Fee));
+            Dump("lease cancel", new CancelLeasingTransaction(Node.TestNetChainId, account.PublicKey, transactionId, Fee));
+            Dump("xfer", new TransferTransaction(Node.TestNetChainId, account.PublicKey, recipient, asset, Amount, "Shut up & take my money"));
+            Dump("massxfer", new MassTransferTransaction(Node.TestNetChainId, account.PublicKey, asset, recipients, "Shut up & take my money", Fee));
         }
 
         private void Dump(String header, Transaction transaction)
