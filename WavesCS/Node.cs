@@ -10,9 +10,11 @@ namespace WavesCS
 {
     public class Node
     {
+        public const string StageNetHost = "https://nodes.wavesnodes.com";
         public const string TestNetHost = "https://testnodes.wavesnodes.com";
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
+        public const char StageNetChainId = 'S';
         public const char TestNetChainId = 'T';
         public const char MainNetChainId = 'W';
 
@@ -33,22 +35,18 @@ namespace WavesCS
             AssetsCache = new Dictionary<string, Asset>();
         }
 
-        public Node(char nodeChainId = TestNetChainId)
+        public static string NodeHostByChainID(char chainId)
         {
-            string nodeHost = "";
-            if (nodeChainId == TestNetChainId)
-                nodeHost = TestNetHost;
-            else
-                nodeHost = MainNetHost;
-            if (nodeHost.EndsWith("/", StringComparison.InvariantCulture))
-                nodeHost = nodeHost.Substring(0, nodeHost.Length - 1);
-
-            _host = nodeHost;
-
-            ChainId = nodeChainId;
-
-            AssetsCache = new Dictionary<string, Asset>();
+            return chainId switch
+            {
+                StageNetChainId => StageNetHost,
+                TestNetChainId => TestNetHost,
+                MainNetChainId => MainNetHost,
+                _ => throw new ArgumentException("Unknown chainId: " + chainId)
+            };
         }
+
+        public Node(char nodeChainId = StageNetChainId) : this(NodeHostByChainID(nodeChainId), nodeChainId) { }
 
         public DictionaryObject GetObject(string url, params object[] args)
         {
