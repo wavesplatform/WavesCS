@@ -9,9 +9,8 @@ namespace WavesCSTests
     [TestClass]
     public class InvokeScriptTest
     {
-
-        PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", 'T');
-        PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", 'T');
+        PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seedAlice123", Node.TestNetChainId);
+        PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seedBob123", Node.TestNetChainId);
 
         [TestInitialize]
         public void Init()
@@ -122,8 +121,9 @@ func e () = {
         [TestMethod]
         public void TestInvokeScriptDefaultFunction()
         {
+            
             var node = new Node(Node.TestNetChainId);
-
+            node.SetScript(Alice, null); return;
             var script = @"{-# STDLIB_VERSION 3 #-}
 {-# CONTENT_TYPE DAPP #-}
 
@@ -133,7 +133,7 @@ func foo (a:ByteVector) = {
     DataEntry(""sender"", inv.caller.bytes)])
 }
 
-@Default(inv)
+@Callable(inv)
           func default() = {
             WriteSet([DataEntry(""aa"", ""aa""),
             DataEntry(""sender"", inv.caller.bytes)])
