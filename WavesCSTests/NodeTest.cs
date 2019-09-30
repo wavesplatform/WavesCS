@@ -9,7 +9,7 @@ namespace WavesCSTests
 {
     [TestClass]
     public class NodeTest
-    {        
+    {
         private static readonly Asset WBTC = new Asset("Fmg13HEHJHuZYbtJq8Da8wifJENq8uBxDuWoP9pVe2Qe", "WBTC", 8);
 
         [TestInitialize]
@@ -26,7 +26,7 @@ namespace WavesCSTests
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address) >= 0);
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address, 100) >= 0);
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address, WBTC) >= 0);
-            Assert.IsTrue(node.GetUnconfirmedPoolSize() >= 0);            
+            Assert.IsTrue(node.GetUnconfirmedPoolSize() >= 0);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace WavesCSTests
             Assert.AreEqual(assetId, asset.Id);
             Assert.AreEqual("EFYT", asset.Name);
             Assert.AreEqual(8, asset.Decimals);
-            
+
             Assert.AreEqual(200000, asset.AmountToLong(0.002m));
             Assert.AreEqual(0.03m, asset.LongToAmount(3000000));
         }
@@ -57,11 +57,11 @@ namespace WavesCSTests
         public void TestAssetBalances()
         {
             Http.Tracing = false;
-            
+
             var node = new Node(Node.MainNetChainId);
- 
+
             var portfolio = node.GetAssetBalances("3PPF1JfQLJLVd6v4ewmuDbjDLcxBCUe5GSu");
-            
+
             Assert.IsTrue(portfolio.Count > 0);
 
             foreach (var pair in portfolio)
@@ -69,14 +69,14 @@ namespace WavesCSTests
                 Console.WriteLine("Asset: {0}, balance: {1}", pair.Key.Name, pair.Value);
             }
         }
-        
+
         [TestMethod]
         public void TestBalance()
         {
             var node = new Node(Node.MainNetChainId);
- 
-            var balance = node.GetBalance("3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3", Assets.WAVES);            
-            
+
+            var balance = node.GetBalance("3PJaDyprvekvPXPuAtxrapacuDJopgJRaU3", Assets.WAVES);
+
             Assert.IsTrue(balance > 1000);
         }
 
@@ -85,7 +85,7 @@ namespace WavesCSTests
         {
             var node = new Node();
             var transactions = node.GetTransactionsByAddress(Accounts.Alice.Address, 10);
-            
+
             Assert.IsTrue(transactions.Count() == 10);
             Assert.IsTrue(transactions.All(t => t.GetByte("type") < 20));
             Assert.IsTrue(transactions.All(t => t.GetString("sender").Length > 30));
@@ -95,7 +95,7 @@ namespace WavesCSTests
         public void TestTransfer()
         {
             var node = new Node();
-            
+
             var transferResponse = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
             Assert.IsNotNull(transferResponse);
 
@@ -104,9 +104,9 @@ namespace WavesCSTests
             node.WaitTransactionConfirmation(transferTxId);
 
             var fee = node.CalculateFee(node.GetTransactionById(transferTxId));
-            Assert.IsNotNull(fee);            
+            Assert.IsNotNull(fee);
         }
-        
+
         [TestMethod]
         public void TestHash()
         {
@@ -139,7 +139,7 @@ namespace WavesCSTests
                 new TransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
                 new TransferTransaction(node.ChainId, Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
             };
-            
+
             var result = node.BatchBroadcast(transactons);
             Assert.IsNotNull(result);
         }
@@ -172,7 +172,7 @@ namespace WavesCSTests
             var address = "3NAqFmMtm2msHcnFDCLFJRn3MbfFwGM3ZHo";
             var txId = "13v6hDYxkGgR3NWwTzC75UhK3kEdT4KHuH51qnBMz88Z";
             var count = 10;
-            
+
             var result = node.GetTransactionsByAddressAfterId(address, txId, count);
             Assert.IsTrue(result.Length == count);
             Assert.IsNotNull(result.Select(tx => tx.GenerateId() == txId));
