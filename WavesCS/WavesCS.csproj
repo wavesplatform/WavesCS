@@ -8,6 +8,9 @@
 	<Protobuf_NoWarnMissingExpected>true</Protobuf_NoWarnMissingExpected>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="amount.proto" />
+    <None Remove="events.proto" />
+    <None Remove="order.proto" />
     <None Remove="Resources\proto\accounts_api.proto" />
     <None Remove="Resources\proto\assets_api.proto" />
     <None Remove="Resources\proto\block.proto" />
