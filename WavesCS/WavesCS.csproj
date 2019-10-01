@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>WavesCS</AssemblyTitle>
     <Product>WavesCS</Product>
@@ -8,8 +8,6 @@
 	<Protobuf_NoWarnMissingExpected>true</Protobuf_NoWarnMissingExpected>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="accounts_api - Копировать.proto" />
-    <None Remove="blockchain_api - Копировать.proto" />
     <None Remove="Resources\proto\accounts_api.proto" />
     <None Remove="Resources\proto\assets_api.proto" />
     <None Remove="Resources\proto\block.proto" />
@@ -51,14 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\proto\google\protobuf\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Protobuf Update="accounts_api - Копировать.proto">
-      <Link>%(RelativePath)</Link>
-    </Protobuf>
-    <Protobuf Update="blockchain_api - Копировать.proto">
-      <Link>%(RelativePath)</Link>
-    </Protobuf>
   </ItemGroup>
 </Project>
 
