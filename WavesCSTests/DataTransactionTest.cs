@@ -17,7 +17,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestDataTransaction()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var data = new DictionaryObject
             {

@@ -15,7 +15,7 @@ namespace WavesCSTests
             var privateKey = "CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t";
             var address = "3MzZCGFyuxgC4ZmtKRS7vpJTs75ZXdkbp1K";
 
-            var account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressEncoding.TestNet);            
+            var account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, Node.TestNetChainId);            
             Assert.AreEqual(privateKey, account.PrivateKey.ToBase58());
             Assert.AreEqual(publicKey, account.PublicKey.ToBase58());
             Assert.AreEqual(address, account.Address);
@@ -27,7 +27,7 @@ namespace WavesCSTests
             var publicKey = "8LbAU5BSrGkpk5wbjLMNjrbc9VzN9KBBYv9X8wGpmAJT";
             var privateKey = "CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t";
              
-            var account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, AddressEncoding.TestNet);
+            var account = PrivateKeyAccount.CreateFromPrivateKey(privateKey, Node.TestNetChainId);
             Assert.AreEqual(privateKey, account.PrivateKey.ToBase58());
             Assert.AreEqual(publicKey, account.PublicKey.ToBase58());
         }        
@@ -36,10 +36,10 @@ namespace WavesCSTests
         public void TestAccountCreation()
         {
             var seed = "health lazy lens fix dwarf salad breeze myself silly december endless rent faculty report beyond";
-            var account = PrivateKeyAccount.CreateFromSeed(seed, AddressEncoding.TestNet);
+            var account = PrivateKeyAccount.CreateFromSeed(seed, Node.TestNetChainId);
 
             byte[] seed2 = Encoding.UTF8.GetBytes(seed);
-            var account2 = PrivateKeyAccount.CreateFromSeed(seed2, AddressEncoding.TestNet);
+            var account2 = PrivateKeyAccount.CreateFromSeed(seed2, Node.TestNetChainId);
 
             Assert.AreEqual("CMLwxbMZJMztyTJ6Zkos66cgU7DybfFJfyJtTVpme54t", account.PrivateKey.ToBase58());
             Assert.AreEqual("8LbAU5BSrGkpk5wbjLMNjrbc9VzN9KBBYv9X8wGpmAJT", account.PublicKey.ToBase58());

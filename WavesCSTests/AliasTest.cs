@@ -3,6 +3,7 @@ using WavesCS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace WavesCSTests
 {
@@ -33,13 +34,13 @@ namespace WavesCSTests
         {
             var node = new Node(Node.TestNetChainId);
             var seed = PrivateKeyAccount.GenerateSeed();
-            var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
+            var account = PrivateKeyAccount.CreateFromSeed(seed, node.ChainId);
 
             var response = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
             node.WaitTransactionConfirmationByResponse(response);
 
             var alias = GenerateRandomAlias();
-            response = node.CreateAlias(account, alias, 'T');
+            response = node.CreateAlias(account, alias, node.ChainId);
             node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.0001m;
@@ -47,6 +48,8 @@ namespace WavesCSTests
 
             response = node.Transfer(Accounts.Alice, "alias:T:" + alias, Assets.WAVES, amount);
             node.WaitTransactionConfirmationByResponse(response);
+
+            Thread.Sleep(10000);
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount, balanceAfter);
@@ -58,13 +61,13 @@ namespace WavesCSTests
             var node = new Node(Node.TestNetChainId);
 
             var seed = PrivateKeyAccount.GenerateSeed();
-            var account = PrivateKeyAccount.CreateFromSeed(seed, 'T');
+            var account = PrivateKeyAccount.CreateFromSeed(seed, node.ChainId);
 
             var response = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.001m);
             node.WaitTransactionConfirmationByResponse(response);
 
             var alias = GenerateRandomAlias();
-            response = node.CreateAlias(account, alias, 'T');
+            response = node.CreateAlias(account, alias, node.ChainId);
             node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.0001m;
@@ -82,6 +85,8 @@ namespace WavesCSTests
             var tx = new MassTransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Assets.WAVES, recipients);
             tx.Sign(Accounts.Alice);
             node.BroadcastAndWait(tx.GetJsonWithSignature());
+
+            Thread.Sleep(10000);
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount * recipients.Count, balanceAfter);

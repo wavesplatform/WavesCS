@@ -16,7 +16,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestMassTransferTransaction()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var recipients = new List<MassTransferItem>
             {

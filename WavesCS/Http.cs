@@ -113,8 +113,14 @@ namespace WavesCS
             catch (WebException e)
             {
                 Trace($"Exception: {e}");
-                Trace(new StreamReader(e.Response.GetResponseStream()).ReadToEnd());
-                throw;
+
+                var response = new StreamReader(e.Response.GetResponseStream())
+                                    .ReadToEnd();
+
+                Trace(response);
+
+                var message = response.ParseJsonObject()["message"].ToString();
+                throw new Exception(message);
             }
         }
     }

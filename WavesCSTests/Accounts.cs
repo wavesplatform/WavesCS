@@ -7,9 +7,9 @@ namespace WavesCSTests
     [TestClass]
     public class Accounts
     {
-        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seed4Alice", AddressEncoding.TestNet);
-        public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seed4Bob", AddressEncoding.TestNet);
-        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("seed4Carol4", AddressEncoding.TestNet);
+        public static readonly PrivateKeyAccount Alice = PrivateKeyAccount.CreateFromSeed("seed4Alice", Node.TestNetChainId);
+        public static readonly PrivateKeyAccount Bob = PrivateKeyAccount.CreateFromSeed("seed4Bob", Node.TestNetChainId);
+        public static readonly PrivateKeyAccount Carol = PrivateKeyAccount.CreateFromSeed("seed4Carol4", Node.TestNetChainId);
 
         [TestInitialize]
         public void Init()
@@ -21,7 +21,7 @@ namespace WavesCSTests
         public void TestBalance()
         {
             // Use faucet to fill accounts https://testnet.wavesexplorer.com/faucet
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var aliceBalanceWaves = node.GetBalance(Alice.Address);
             var bobBalanceWaves = node.GetBalance(Bob.Address);
@@ -40,7 +40,7 @@ namespace WavesCSTests
         public void TestScript()
         {
             Http.Tracing = false;
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
