@@ -17,7 +17,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestLeasing()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var leaseTx = new LeaseTransaction(node.ChainId, Accounts.Bob.PublicKey, Accounts.Alice.Address, 0.5m);            
             Assert.AreEqual(0.001m, leaseTx.Fee);
