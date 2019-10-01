@@ -10,7 +10,7 @@ namespace WavesCS
 {
     public class Node
     {
-        public const string StageNetHost = "https://nodes.wavesnodes.com";
+        public const string StageNetHost = "https://nodes-stagenet.wavesnodes.com";
         public const string TestNetHost = "https://testnodes.wavesnodes.com";
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
@@ -39,9 +39,9 @@ namespace WavesCS
         {
             switch (chainId)
             {
-                case StageNetChainId: return StageNetHost;
-                case TestNetChainId: return TestNetHost;
-                case MainNetChainId: return MainNetHost;
+                case StageNetChainId : return StageNetHost;
+                case TestNetChainId  : return TestNetHost;
+                case MainNetChainId  : return MainNetHost;
                 default: throw new ArgumentException("Unknown chainId: " + chainId);
             }
         }
