@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WavesCS;
@@ -85,15 +87,17 @@ namespace WavesCSTests
         [TestMethod]
         public void TestErrorMessage()
         {
-            var node = new Node(Node.StageNetChainId);
-
+            var node = new Node(Node.TestNetChainId);
             var account = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), node.ChainId);
 
             var transferTxResponse = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.02m);
             node.WaitTransactionConfirmationByResponse(transferTxResponse);
 
-            var script = @"
-            @Verifier(tx)
+            var script = @"{-# STDLIB_VERSION 3 #-}
+{-# CONTENT_TYPE DAPP #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
+
+@Verifier(tx)
 func verify() = {
     match tx {
         case d: SetScriptTransaction | DataTransaction => true
@@ -110,13 +114,10 @@ func verify() = {
             {
                 node.Transfer(account, account.Address, Assets.WAVES, 0.00000001m, 0.005m);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine("========START========");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("=========END=========");
+                Assert.AreEqual(e.Message, "Transaction is not allowed by account-script");
             }
-
         }
     }
 }
