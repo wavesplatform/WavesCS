@@ -70,10 +70,7 @@ namespace WavesCS
                 {
                     result = client.DownloadString(url);
                 }
-                catch (Exception)
-                {
-
-                }
+                catch (Exception) { }
             }
             while (remainingTries > 0 && result == "");
             if(result == "")

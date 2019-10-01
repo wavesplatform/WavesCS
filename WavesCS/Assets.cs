@@ -1,6 +1,5 @@
 ﻿namespace WavesCS
 {
-
     public class Asset
     {
         public string Id { get; }

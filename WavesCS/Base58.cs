@@ -13,7 +13,6 @@ namespace WavesCS
 
         static Base58()
         {
-
             for (int i = 0; i < INDEXES.Length; i++)
             {
                 INDEXES[i] = -1;

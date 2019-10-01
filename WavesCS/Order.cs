@@ -6,7 +6,6 @@ using DictionaryObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace WavesCS
 {
-
     public enum OrderStatus
     {
         Accepted,

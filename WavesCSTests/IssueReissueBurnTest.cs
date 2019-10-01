@@ -27,8 +27,6 @@ namespace WavesCSTests
             Assert.IsNotNull(response);
             node.WaitTransactionConfirmationByResponse(response);
 
-            Thread.Sleep(15000);
-
             var quantityReissue = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreNotEqual(quantityIssue, quantityReissue);
             Assert.AreEqual(quantityReissue, 3);
@@ -36,8 +34,6 @@ namespace WavesCSTests
             response = node.BurnAsset(Accounts.Alice, asset, 3);
             Assert.IsNotNull(response);
             node.WaitTransactionConfirmationByResponse(response);
-
-            Thread.Sleep(10000);
 
             var quantityBurn = node.GetBalance(Accounts.Alice.Address, asset);
             Assert.AreEqual(quantityBurn, 0);
