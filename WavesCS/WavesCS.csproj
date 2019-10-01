@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>WavesCS</AssemblyTitle>
     <Product>WavesCS</Product>
@@ -9,7 +9,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="accounts_api - Копировать.proto" />
+    <None Remove="amount.proto" />
     <None Remove="blockchain_api - Копировать.proto" />
+    <None Remove="events.proto" />
+    <None Remove="order.proto" />
     <None Remove="Resources\proto\accounts_api.proto" />
     <None Remove="Resources\proto\assets_api.proto" />
     <None Remove="Resources\proto\block.proto" />
@@ -23,9 +26,10 @@
     <None Remove="Resources\proto\wrappers.proto" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.9.1" />
-    <PackageReference Include="Grpc" Version="2.23.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.23.0">
+    <PackageReference Include="Google.Protobuf" Version="3.7.0" />
+    <PackageReference Include="Grpc" Version="1.20.1" />
+    <PackageReference Include="Grpc.Core" Version="2.23.0" />
+    <PackageReference Include="Grpc.Tools" Version="1.22.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
