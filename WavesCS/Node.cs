@@ -46,7 +46,7 @@ namespace WavesCS
             }
         }
 
-        public Node(char nodeChainId = StageNetChainId) : this(NodeHostByChainID(nodeChainId), nodeChainId) { }
+        public Node(char nodeChainId = TestNetChainId) : this(NodeHostByChainID(nodeChainId), nodeChainId) { }
 
         public DictionaryObject GetObject(string url, params object[] args)
         {
