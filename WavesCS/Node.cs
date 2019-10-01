@@ -371,9 +371,9 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string CreateAlias(PrivateKeyAccount account, string alias, char chainId, decimal fee = 0.001m)
+        public string CreateAlias(PrivateKeyAccount account, string alias, decimal fee = 0.001m)
         {
-            var tx = new AliasTransaction(account.PublicKey, alias, chainId, fee);
+            var tx = new AliasTransaction(account.PublicKey, alias, ChainId, fee);
             tx.Sign(account);
             return Broadcast(tx);
         }
@@ -385,7 +385,7 @@ namespace WavesCS
             return Broadcast(tx);
         }
 
-        public string SetAssetScript(PrivateKeyAccount account, Asset asset, byte[] script, char chainId, decimal fee = 1m)
+        public string SetAssetScript(PrivateKeyAccount account, Asset asset, byte[] script, decimal fee = 1m)
         {
             var tx = new SetAssetScriptTransaction(ChainId, account.PublicKey, asset, script, fee = 1m);
             tx.Sign(account);
