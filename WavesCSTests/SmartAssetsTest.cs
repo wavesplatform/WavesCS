@@ -53,7 +53,7 @@ namespace WavesCSTests
 
             var compiledScript = node.CompileScript(script);
 
-            var response = node.SetAssetScript(Accounts.Alice, smartAsset, compiledScript, Node.TestNetChainId, 1);
+            var response = node.SetAssetScript(Accounts.Alice, smartAsset, compiledScript);
             node.WaitTransactionConfirmationByResponse(response);
 
             var aliceBalanceBefore = node.GetBalance(Accounts.Alice.Address, smartAsset);
@@ -78,7 +78,7 @@ namespace WavesCSTests
             Assert.AreEqual(aliceBalanceBefore - aliceBalanceAfter, 0.01m + 0.11m + 0.21m);
             Assert.AreEqual(bobBalanceAfter - bobBalanceBefore, 0.01m + 0.11m + 0.21m);
 
-            response = node.SetAssetScript(Accounts.Alice, smartAsset, node.CompileScript("false"), Node.TestNetChainId, 1);
+            response = node.SetAssetScript(Accounts.Alice, smartAsset, node.CompileScript("false"));
             node.WaitTransactionConfirmationByResponse(response);
 
             Assert.AreEqual(node.GetAsset(smartAsset.Id).Script.ToBase64(), node.CompileScript("false").ToBase64());

@@ -116,6 +116,7 @@ func verify() = {
             }
             catch (Exception e)
             {
+                Console.WriteLine($"Error: {e.Message}");
                 Assert.AreEqual(e.Message, "Transaction is not allowed by account-script");
             }
         }
