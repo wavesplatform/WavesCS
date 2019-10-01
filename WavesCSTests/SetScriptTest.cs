@@ -17,7 +17,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestSetScript()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var script = "true";
             var compiledScript = node.CompileScript(script);
@@ -28,7 +28,7 @@ namespace WavesCSTests
             node.WaitTransactionConfirmationByResponse(response);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Accounts.Carol.Address);
-            Assert.AreEqual("TRUE", scriptInfo["scriptText"]);
+            Assert.AreEqual("true", scriptInfo["scriptText"]);
             Assert.AreEqual(compiledScript.ToBase64(), scriptInfo["script"]);
             Assert.IsTrue(scriptInfo.GetInt("complexity") > 0);
             Assert.IsTrue(scriptInfo.GetInt("extraFee") > 0);
@@ -47,7 +47,7 @@ namespace WavesCSTests
         public void TestMultisig()
         {
             // This test works with transfer transactions of version 2 only
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var script = $@"                
                 let aliceSigned = sigVerify(tx.bodyBytes, tx.proofs[0], base58'{Accounts.Alice.PublicKey.ToBase58()}')
@@ -58,11 +58,13 @@ namespace WavesCSTests
 
             var compiledScript = node.CompileScript(script);
 
-            var multiAccount = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), AddressEncoding.TestNet);
+            var multiAccount = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), Node.TestNetChainId);
             Console.WriteLine("Account generated: {0}", multiAccount.Address);
 
             var response = node.Transfer(Accounts.Alice, multiAccount.Address, Assets.WAVES, 0.1m);
             node.WaitTransactionConfirmationByResponse(response);
+
+            Thread.Sleep(5000);
 
             Assert.IsTrue(node.GetBalance(multiAccount.Address) == 0.1m);
 
@@ -75,7 +77,46 @@ namespace WavesCSTests
 
             node.BroadcastAndWait(tx);
 
+            Thread.Sleep(10000);
+
             Assert.IsTrue(node.GetBalance(multiAccount.Address) < 0.02m);
+        }
+
+        [TestMethod]
+        public void TestErrorMessage()
+        {
+            var node = new Node(Node.StageNetChainId);
+
+            var account = PrivateKeyAccount.CreateFromSeed(PrivateKeyAccount.GenerateSeed(), node.ChainId);
+
+            var transferTxResponse = node.Transfer(Accounts.Alice, account.Address, Assets.WAVES, 0.02m);
+            node.WaitTransactionConfirmationByResponse(transferTxResponse);
+
+            var script = @"
+            @Verifier(tx)
+func verify() = {
+    match tx {
+        case d: SetScriptTransaction | DataTransaction => true
+        case _ => false
+    }
+}";
+
+            var compiledScript = node.CompileCode(script);
+
+            var setScriptTxResponse = node.SetScript(account,compiledScript);
+            node.WaitTransactionConfirmationByResponse(setScriptTxResponse);
+
+            try
+            {
+                node.Transfer(account, account.Address, Assets.WAVES, 0.00000001m, 0.005m);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("========START========");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("=========END=========");
+            }
+
         }
     }
 }

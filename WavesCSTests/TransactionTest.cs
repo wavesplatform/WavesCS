@@ -35,7 +35,7 @@ namespace WavesCSTests
 
             Dump("alias", new AliasTransaction(account.PublicKey, "daphnie", Node.TestNetChainId, Fee));
             Dump("burn", new BurnTransaction(Node.TestNetChainId, account.PublicKey, asset, Amount, Fee));
-            Dump("issue", new IssueTransaction(account.PublicKey, "Pure Gold", "Gold backed asset", Amount, 8, true, 'T', Fee));
+            Dump("issue", new IssueTransaction(account.PublicKey, "Pure Gold", "Gold backed asset", Amount, 8, true, Node.TestNetChainId, Fee));
             Dump("reissue", new ReissueTransaction(Node.TestNetChainId, account.PublicKey, asset, Amount, false, Fee));
             Dump("lease", new LeaseTransaction(Node.TestNetChainId, account.PublicKey, recipient, Amount, Fee));
             Dump("lease cancel", new CancelLeasingTransaction(Node.TestNetChainId, account.PublicKey, transactionId, Fee));

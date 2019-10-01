@@ -21,7 +21,7 @@ namespace WavesCSTests
         public void TestBalance()
         {
             // Use faucet to fill accounts https://testnet.wavesexplorer.com/faucet
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var aliceBalanceWaves = node.GetBalance(Alice.Address);
             var bobBalanceWaves = node.GetBalance(Bob.Address);
@@ -40,7 +40,7 @@ namespace WavesCSTests
         public void TestScript()
         {
             Http.Tracing = false;
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
