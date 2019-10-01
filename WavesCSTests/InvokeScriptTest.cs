@@ -123,7 +123,7 @@ func e () = {
         {
             
             var node = new Node(Node.TestNetChainId);
-            node.SetScript(Alice, null); return;
+
             var script = @"{-# STDLIB_VERSION 3 #-}
 {-# CONTENT_TYPE DAPP #-}
 
