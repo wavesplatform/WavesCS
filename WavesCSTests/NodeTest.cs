@@ -21,7 +21,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetters()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
             Assert.IsTrue(node.GetHeight() > 0);
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address) >= 0);
             Assert.IsTrue(node.GetBalance(Accounts.Bob.Address, 100) >= 0);
@@ -83,7 +83,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetTransactionsByAddress()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
             var transactions = node.GetTransactionsByAddress(Accounts.Alice.Address, 10);
 
             Assert.IsTrue(transactions.Count() == 10);
@@ -94,7 +94,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestTransfer()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
 
             var transferResponse = node.Transfer(Accounts.Alice, Accounts.Bob.Address, Assets.WAVES, 0.2m, "Hi Bob!");
             Assert.IsNotNull(transferResponse);
@@ -110,7 +110,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestHash()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
             var message = "lalala";
             var messageBytes = Encoding.UTF8.GetBytes(message);
 
@@ -125,29 +125,14 @@ namespace WavesCSTests
         [TestMethod]
         public void TestUnconfirmed()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
             node.GetUnconfirmedTransactions();
-        }
-
-        [TestMethod]
-        public void TestBatchBroadcast()
-        {
-            var node = new Node();
-
-            var transactons = new[]
-            {
-                new TransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Accounts.Bob.Address, Assets.WAVES, 0.3m).Sign(Accounts.Alice),
-                new TransferTransaction(node.ChainId, Accounts.Bob.PublicKey, Accounts.Alice.Address, Assets.WAVES, 0.3m).Sign(Accounts.Bob),
-            };
-
-            var result = node.BatchBroadcast(transactons);
-            Assert.IsNotNull(result);
         }
 
         [TestMethod]
         public void TestGetTransactionsFromTimestamp()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
             var address = "3NAqFmMtm2msHcnFDCLFJRn3MbfFwGM3ZHo";
             var timestamp = node.GetBlockTransactionsAtHeight(node.GetHeight() - 5).Last().Timestamp.ToLong();
             var packageSize = 2;
@@ -168,7 +153,7 @@ namespace WavesCSTests
         [TestMethod]
         public void TestGetTransactionsByAddressAfterId()
         {
-            var node = new Node();
+            var node = new Node(Node.TestNetChainId);
             var address = "3NAqFmMtm2msHcnFDCLFJRn3MbfFwGM3ZHo";
             var txId = "13v6hDYxkGgR3NWwTzC75UhK3kEdT4KHuH51qnBMz88Z";
             var count = 10;

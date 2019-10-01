@@ -487,12 +487,6 @@ namespace WavesCS
             return response;
         }
 
-        public string BatchBroadcast(IEnumerable<Transaction> transactions)
-        {
-            var data = transactions.Select(t => t.GetJsonWithSignature()).ToArray();
-            return Http.Post($"{_host}/assets/broadcast/batch-transfer", data);
-        }
-
         public void WaitTransactionConfirmation(string transactionId)
         {
             while (GetTransactionByIdOrNull(transactionId) == null)
