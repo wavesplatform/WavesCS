@@ -66,8 +66,6 @@ namespace WavesCSTests
             var response = node.Transfer(Accounts.Alice, multiAccount.Address, Assets.WAVES, 0.1m);
             node.WaitTransactionConfirmationByResponse(response);
 
-            Thread.Sleep(5000);
-
             Assert.IsTrue(node.GetBalance(multiAccount.Address) == 0.1m);
 
             response = node.SetScript(multiAccount, compiledScript, node.ChainId);
@@ -78,8 +76,6 @@ namespace WavesCSTests
             tx.Sign(Accounts.Bob, 1);
 
             node.BroadcastAndWait(tx);
-
-            Thread.Sleep(10000);
 
             Assert.IsTrue(node.GetBalance(multiAccount.Address) < 0.02m);
         }

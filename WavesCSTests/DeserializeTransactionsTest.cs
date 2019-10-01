@@ -12,7 +12,6 @@ namespace WavesCSTests
     [TestClass]
     public class DeserializeTransactionsTest
     {
-
         [TestInitialize]
         public void Init()
         {

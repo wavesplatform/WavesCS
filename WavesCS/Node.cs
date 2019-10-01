@@ -267,9 +267,7 @@ namespace WavesCS
         {
             try
             {
-                var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
-                             .ParseJsonObject();
-                return Transaction.FromJson(ChainId, tx);
+                return GetTransactionById(transactionId);
             }
             catch (Exception)
             {
@@ -491,8 +489,9 @@ namespace WavesCS
         {
             while (GetTransactionByIdOrNull(transactionId) == null)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
             }
+            Thread.Sleep(10000);
         }
 
         public void WaitTransactionConfirmationByResponse(string broadcastResponse)

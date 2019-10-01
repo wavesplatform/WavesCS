@@ -10,7 +10,6 @@ namespace WavesCSTests
     [TestClass]
     public class AliasTest
     {
-
         [TestInitialize]
         public void Init()
         {
@@ -49,8 +48,6 @@ namespace WavesCSTests
             response = node.Transfer(Accounts.Alice, "alias:T:" + alias, Assets.WAVES, amount);
             node.WaitTransactionConfirmationByResponse(response);
 
-            Thread.Sleep(10000);
-
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount, balanceAfter);
         }
@@ -85,8 +82,6 @@ namespace WavesCSTests
             var tx = new MassTransferTransaction(node.ChainId, Accounts.Alice.PublicKey, Assets.WAVES, recipients);
             tx.Sign(Accounts.Alice);
             node.BroadcastAndWait(tx.GetJsonWithSignature());
-
-            Thread.Sleep(10000);
 
             var balanceAfter = node.GetBalance(account.Address);
             Assert.AreEqual(balanceBefore + amount * recipients.Count, balanceAfter);
