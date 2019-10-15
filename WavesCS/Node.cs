@@ -157,7 +157,7 @@ namespace WavesCS
         public Transaction[] GetTransactions(string address, int limit = 100)
         {
             return GetTransactionsByAddress(address, limit)
-                .Select(tx => Transaction.FromJson(ChainId, tx))
+                .Select(tx => Transaction.FromJson(ChainId, tx, this))
                 .ToArray();
         }
 
@@ -167,7 +167,7 @@ namespace WavesCS
 
             var header = new NameValueCollection{ {"after", afterId } };
             return Http.GetFlatObjectsWithHeaders(path, header)
-                .Select(tx => Transaction.FromJson(ChainId, tx))
+                .Select(tx => Transaction.FromJson(ChainId, tx, this))
                 .ToArray();
         }
 
@@ -249,7 +249,7 @@ namespace WavesCS
 
             return GetTransactionsByAddress(address, limit)
                 .Where(tx => (TransactionType)tx.GetByte("type") == typeId)
-                .Select(tx => Transaction.FromJson(ChainId, tx))
+                .Select(tx => Transaction.FromJson(ChainId, tx, this))
                 .Cast<T>()
                 .ToArray();
         }
@@ -260,7 +260,7 @@ namespace WavesCS
             var tx = Http.GetJson($"{_host}/transactions/info/{transactionId}")
                          .ParseJsonObject();
 
-            return Transaction.FromJson(ChainId, tx);
+            return Transaction.FromJson(ChainId, tx, this);
         }
 
         public Transaction GetTransactionByIdOrNull(string transactionId)
@@ -280,7 +280,7 @@ namespace WavesCS
             var block = GetObject($"blocks/at/{height}");
             var transactions = block.ContainsKey("transactions") ? block
                 .GetObjects("transactions").Select(tx => {
-                    return Transaction.FromJson(ChainId, tx);
+                    return Transaction.FromJson(ChainId, tx, this);
                     }).ToArray() : null;
             return transactions;
         }
@@ -452,7 +452,7 @@ namespace WavesCS
         public Transaction[] GetUnconfirmedTransactions()
         {
             return Http.GetObjects($"{_host}/transactions/unconfirmed").Select(tx => {
-                return Transaction.FromJson(ChainId, tx);
+                return Transaction.FromJson(ChainId, tx, this);
             }).ToArray();
         }
 

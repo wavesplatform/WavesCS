@@ -20,10 +20,8 @@ namespace WavesCS
 
         public override byte Version { get; set; } = 1;
 
-        public InvokeScriptTransaction(DictionaryObject tx) : base(tx)
+        public InvokeScriptTransaction(DictionaryObject tx, Node node) : base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
-
             DappAddress = tx.GetString("dApp");
             FunctionHeader = tx.ContainsKey("call") ? tx.GetString("call.function") : null;
 

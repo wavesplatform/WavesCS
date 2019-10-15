@@ -18,7 +18,6 @@ namespace WavesCS
 
         public CancelLeasingTransaction(DictionaryObject tx) : base (tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             LeaseId = tx.GetString("leaseId");
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
             Version = tx.GetByte("version");

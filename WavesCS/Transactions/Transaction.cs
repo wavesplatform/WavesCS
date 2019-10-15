@@ -85,30 +85,30 @@ namespace WavesCS
             return json;
         }
 
-        public static Transaction FromJson(char chainId, DictionaryObject tx)
+        public static Transaction FromJson(char chainId, DictionaryObject tx, Node node)
         {
             tx["chainId"] = chainId;
-            return FromJson(tx);
+            return FromJson(tx, node);
         }
 
-        public static Transaction FromJson(DictionaryObject tx)
+        public static Transaction FromJson(DictionaryObject tx, Node node)
         {
             switch ((TransactionType)tx.GetByte("type"))
             {
                 case TransactionType.Alias: return new AliasTransaction(tx);
-                case TransactionType.Burn: return new BurnTransaction(tx);
+                case TransactionType.Burn: return new BurnTransaction(tx, node);
                 case TransactionType.DataTx: return new DataTransaction(tx);
                 case TransactionType.Lease: return new LeaseTransaction(tx);
-                case TransactionType.Issue: return new IssueTransaction(tx);
+                case TransactionType.Issue: return new IssueTransaction(tx, node);
                 case TransactionType.LeaseCancel: return new CancelLeasingTransaction(tx);
-                case TransactionType.MassTransfer: return new MassTransferTransaction(tx);
-                case TransactionType.Reissue: return new ReissueTransaction(tx);
+                case TransactionType.MassTransfer: return new MassTransferTransaction(tx, node);
+                case TransactionType.Reissue: return new ReissueTransaction(tx, node);
                 case TransactionType.SetScript: return new SetScriptTransaction(tx);
-                case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx);
-                case TransactionType.Transfer: return new TransferTransaction(tx);
-                case TransactionType.Exchange: return new ExchangeTransaction(tx);
-                case TransactionType.SetAssetScript: return new SetAssetScriptTransaction(tx);
-                case TransactionType.InvokeScript: return new InvokeScriptTransaction(tx);
+                case TransactionType.SponsoredFee: return new SponsoredFeeTransaction(tx, node);
+                case TransactionType.Transfer: return new TransferTransaction(tx, node);
+                case TransactionType.Exchange: return new ExchangeTransaction(tx, node);
+                case TransactionType.SetAssetScript: return new SetAssetScriptTransaction(tx, node);
+                case TransactionType.InvokeScript: return new InvokeScriptTransaction(tx, node);
 
                 default: return new UnknownTransaction(tx);
             }

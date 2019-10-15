@@ -39,9 +39,8 @@ namespace WavesCS
             Attachment = attachment ?? new byte[0];
         }
 
-        public TransferTransaction(DictionaryObject tx): base(tx)
+        public TransferTransaction(DictionaryObject tx, Node node): base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             Asset = Assets.WAVES;
             if (tx.ContainsKey("assetId") && tx.GetString("assetId") != null)
                 Asset = node.GetAsset(tx.GetString("assetId"));

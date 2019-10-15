@@ -20,9 +20,8 @@ namespace WavesCS
             Fee = fee;
         }
 
-        public ReissueTransaction(DictionaryObject tx) : base(tx)
+        public ReissueTransaction(DictionaryObject tx, Node node) : base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             Asset = node.GetAsset(tx.GetString("assetId"));
             Quantity = Asset.LongToAmount(tx.GetLong("quantity"));
             Reissuable = tx.GetBool("reissuable");
