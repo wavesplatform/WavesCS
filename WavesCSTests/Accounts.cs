@@ -42,13 +42,13 @@ namespace WavesCSTests
             Http.Tracing = false;
             var node = new Node(Node.TestNetChainId);
 
-            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Alice.Address);
+            var scriptInfo = node.GetObject("addresses/scriptInfo/{0}/meta", Alice.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
 
-            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Bob.Address);
+            scriptInfo = node.GetObject("addresses/scriptInfo/{0}/meta", Bob.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
 
-            scriptInfo = node.GetObject("addresses/scriptInfo/{0}", Carol.Address);
+            scriptInfo = node.GetObject("addresses/scriptInfo/{0}/meta", Carol.Address);
             Assert.IsFalse(scriptInfo.ContainsKey("scriptText"));
         }
     }

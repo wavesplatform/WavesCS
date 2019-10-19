@@ -162,5 +162,26 @@ namespace WavesCSTests
             Assert.IsTrue(result.Length == count);
             Assert.IsNotNull(result.Select(tx => tx.GenerateId() == txId));
         }
+
+        [TestMethod]
+        public void TestGetScriptByAddress()
+        {
+            var node = new Node(Node.TestNetChainId);
+            var address = "3Msm63wyWi9T28zzzGjoUfJHJbPKyqQvQoo"; //seed: "Alice1234"
+
+            var script = node.GetScript(address);
+            var meta = node.GetScriptMeta(address);
+            Assert.IsTrue(script.Length > 0);
+            Assert.IsNotNull(meta);
+        }
+
+        [TestMethod]
+        public void TestGetBlockchainRewards()
+        {
+            var node = new Node(Node.TestNetChainId);
+            var rewards = node.GetBlockchainRewards(node.GetHeight()); //seed: "Alice1234"
+
+            Assert.IsNotNull(rewards);
+        }
     }
 }
