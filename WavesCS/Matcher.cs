@@ -17,7 +17,7 @@ namespace WavesCS
             return Http.GetString(_host + "/matcher");            
         }
 
-        public Matcher(string host = "https://matcher.wavesnodes.com", string matcherKey = null)
+        public Matcher(string host = "https://matcher.waves.exchange", string matcherKey = null)
         {
             _host = host;
             MatcherKey = matcherKey ?? GetMatcherKey();
