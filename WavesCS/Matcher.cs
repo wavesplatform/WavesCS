@@ -84,6 +84,27 @@ namespace WavesCS
             return Http.Post(url, request);
         }
 
+        public long GetLastPrice(Asset amountAsset, Asset priceAsset)
+        {
+            var path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/status";
+            var json = Http.GetObject(path);
+            return (long)json["lastPrice"];
+        }
+
+        public long GetBidPrice(Asset amountAsset, Asset priceAsset)
+        {
+            var path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/status";
+            var json = Http.GetObject(path);
+            return (long)json["bid"];
+        }
+
+        public long GetAskPrice(Asset amountAsset, Asset priceAsset)
+        {
+            var path = $"{_host}/matcher/orderbook/{amountAsset.Id}/{priceAsset.Id}/status";
+            var json = Http.GetObject(path);
+            return (long)json["ask"];
+        }
+
         private static NameValueCollection GetProtectionHeaders(PrivateKeyAccount account)
         {
             long timestamp = Utils.CurrentTimestamp();
