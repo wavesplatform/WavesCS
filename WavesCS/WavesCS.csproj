@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>WavesCS</AssemblyTitle>
     <Product>WavesCS</Product>
@@ -11,17 +11,6 @@
     <None Remove="amount.proto" />
     <None Remove="events.proto" />
     <None Remove="order.proto" />
-    <None Remove="Resources\proto\accounts_api.proto" />
-    <None Remove="Resources\proto\assets_api.proto" />
-    <None Remove="Resources\proto\block.proto" />
-    <None Remove="Resources\proto\blockchain_api.proto" />
-    <None Remove="Resources\proto\blocks_api.proto" />
-    <None Remove="Resources\proto\empty.proto" />
-    <None Remove="Resources\proto\recipient.proto" />
-    <None Remove="Resources\proto\script.proto" />
-    <None Remove="Resources\proto\transaction.proto" />
-    <None Remove="Resources\proto\transactions_api.proto" />
-    <None Remove="Resources\proto\wrappers.proto" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.7.0" />
@@ -36,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Blake2Sharp">
-      <HintPath>..\libs\Blake2Sharp.dll</HintPath>
+      <HintPath>lib\Blake2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="curve25519">
       <HintPath>..\libs\curve25519.dll</HintPath>
@@ -52,7 +41,10 @@
     <Protobuf Include="*.proto" Link="%(RelativePath)" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\proto\google\protobuf\" />
+    <Compile Remove="Resources\proto\**" />
+    <EmbeddedResource Remove="Resources\proto\**" />
+    <None Remove="Resources\proto\**" />
+    <Protobuf Remove="Resources\proto\**" />
   </ItemGroup>
 </Project>
 

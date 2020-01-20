@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>WavesPlatform.WavesCS</id>
-    <version>1.2.3</version>
+    <version>1.2.5</version>
     <title>WavesCS library</title>
     <authors>alexkof, abegicheva</authors>
     <owners>alexkof, abegicheva, wavesplatform</owners>
@@ -20,7 +20,6 @@
       <reference file="Blake2Sharp.dll" />
       <reference file="curve25519.dll" />
       <reference file="HashLib.dll" />
-      <reference file="WavesCS.dll" />
     </references>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System"  />
