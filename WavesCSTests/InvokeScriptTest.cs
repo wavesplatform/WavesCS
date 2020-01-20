@@ -38,7 +38,7 @@ func foo (a:ByteVector) = {
             node.WaitTransactionConfirmationByResponse(response);
 
             response = node.InvokeScript(Bob, Alice.Address, "foo", new List<object> { 42L }, null);
-            node.WaitTransactionConfirmationByResponse(response); 
+            node.WaitTransactionConfirmationByResponse(response);
 
             Assert.AreEqual((long)node.GetAddressData(Alice.Address)["a"], 42L);
             Assert.AreEqual(((byte[])node.GetAddressData(Alice.Address)["sender"]).ToBase58(), Bob.Address);

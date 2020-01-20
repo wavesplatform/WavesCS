@@ -100,5 +100,21 @@ namespace WavesCSTests
 
             Assert.IsTrue(orders.All(o => o.Status == OrderStatus.Cancelled));
         }
+
+        [TestMethod]
+        public void TestAskBidPrice()
+        {
+            Http.Tracing = false;
+            var node = new Node('T');
+            var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
+
+            var assetA = Assets.WAVES;
+            var assetB = node.GetAsset("DWgwcZTMhSvnyYCoWLRUXXSH1RSkzThXLJhww9gwkqdn");
+
+            double ask = matcher.GetAskPrice(assetA, assetB);
+            double bid = matcher.GetBidPrice(assetA, assetB);
+
+            Assert.IsTrue(ask <= bid);
+        }
     }
 }
