@@ -20,14 +20,14 @@ namespace WavesCSTests
         [TestMethod]
         public void TestKey()
         {
-            var matcher = new Matcher("https://matcher.wavesnodes.com");
-            Assert.AreEqual("7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy", matcher.MatcherKey);
+            var matcher = new Matcher("https://matcher.waves.exchange");
+            Assert.AreEqual("9cpfKN9suPNvfeUNphzxXMjcnn974eme8ZhWUjaktzU5", matcher.MatcherKey);
         }
 
         [TestMethod]
         public void TestOrderBook()
         {
-            var matcher = new Matcher("https://matcher.wavesnodes.com");
+            var matcher = new Matcher("https://matcher.waves.exchange");
 
             var orderBook = matcher.GetOrderBook(Assets.WAVES, Assets.BTC);
 

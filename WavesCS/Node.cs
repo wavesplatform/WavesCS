@@ -515,5 +515,20 @@ namespace WavesCS
         {
             return Http.Post($"{_host}/transactions/calculateFee", transaction);
         }
+
+        public string GetScriptMeta(string address)
+        {
+            return GetObject("addresses/scriptInfo/{0}/meta", address).GetObject("meta").ToJson();
+        }
+
+        public string GetScript(string address)
+        {
+            return GetObject("addresses/scriptInfo/{0}", address).GetString("scriptText");
+        }
+
+        public Dictionary<string, object> GetBlockchainRewards(int height)
+        {
+            return GetObject("blockchain/rewards/{0}", height);
+        }
     }
 }
