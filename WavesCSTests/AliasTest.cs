@@ -39,7 +39,7 @@ namespace WavesCSTests
             node.WaitTransactionConfirmationByResponse(response);
 
             var alias = GenerateRandomAlias();
-            response = node.CreateAlias(account, alias, node.ChainId);
+            response = node.CreateAlias(account, alias);
             node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.0001m;
@@ -64,7 +64,7 @@ namespace WavesCSTests
             node.WaitTransactionConfirmationByResponse(response);
 
             var alias = GenerateRandomAlias();
-            response = node.CreateAlias(account, alias, node.ChainId);
+            response = node.CreateAlias(account, alias);
             node.WaitTransactionConfirmationByResponse(response);
 
             var amount = 0.0001m;

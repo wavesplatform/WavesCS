@@ -105,16 +105,16 @@ namespace WavesCSTests
         public void TestAskBidPrice()
         {
             Http.Tracing = false;
-            var node = new Node('T');
-            var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
-
+            var node = new Node(Node.MainNetChainId);
+            var matcher = new Matcher();
+            
             var assetA = Assets.WAVES;
-            var assetB = node.GetAsset("DWgwcZTMhSvnyYCoWLRUXXSH1RSkzThXLJhww9gwkqdn");
-
+            var assetB = Assets.BTC;
+            
             double ask = matcher.GetAskPrice(assetA, assetB);
             double bid = matcher.GetBidPrice(assetA, assetB);
-
-            Assert.IsTrue(ask <= bid);
+            
+            Assert.IsTrue(ask >= bid);
         }
     }
 }
