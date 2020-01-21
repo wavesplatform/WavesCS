@@ -22,12 +22,12 @@
         }
 
         public long AmountToLong(decimal amount)
-        {            
+        {
             return decimal.ToInt64(amount / _scale);
         }
         
         public decimal LongToAmount(long value)
-        {            
+        {
             return value * _scale;
         }
 
