@@ -2,24 +2,28 @@
 <package >
   <metadata>
     <id>WavesPlatform.WavesCS</id>
-    <version>1.2.5</version>
+    <version>1.2.7</version>
     <title>WavesCS library</title>
     <authors>alexkof, abegicheva</authors>
     <owners>alexkof, abegicheva, wavesplatform</owners>
-    <licenseUrl>https://github.com/wavesplatform/WavesCS/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/wavesplatform/WavesCS</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       A library for interacting with the Waves blockchain. Supports node interaction, offline transaction signing, Matcher orders, and creating addresses and keys.
     </description>
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="11.0.2" />
-      <dependency id="PCLCrypto" version="2.0.147"/>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="Newtonsoft.Json" version="11.0.2" />
+        <dependency id="PCLCrypto" version="2.0.147"/>
+      </group>
       </dependencies>
     <references>
-      <reference file="Blake2Sharp.dll" />
-      <reference file="curve25519.dll" />
-      <reference file="HashLib.dll" />
+      <group targetFramework=".NETFramework4.5.1">
+        <reference file="Blake2Sharp.dll" />
+        <reference file="curve25519.dll" />
+        <reference file="HashLib.dll" />
+        <reference file="WavesCS.dll" />
+      </group>
     </references>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System"  />
