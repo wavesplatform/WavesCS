@@ -288,8 +288,8 @@ namespace WavesCS
         public string Transfer(PrivateKeyAccount sender, string recipient, Asset asset, decimal amount,
             string message = "")
         {
-            var fee = 0.001m + (asset.Script != null ?  0.004m : 0);
             var tx = new TransferTransaction(ChainId, sender.PublicKey, recipient, asset, amount, message);
+            tx.Fee = CalculateFee(tx);
             tx.Sign(sender);
             return Broadcast(tx);
         }
