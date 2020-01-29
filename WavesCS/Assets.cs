@@ -1,24 +1,44 @@
-﻿namespace WavesCS
+﻿using System;
+
+namespace WavesCS
 {
     public class Asset
     {
         public string Id { get; }
         public string Name { get; }
         public byte Decimals { get; }
+        public byte[] Script { get; set; }
+        public long IssueHeight { get; }
+        public DateTime IssueTimestamp { get; }
+        public string Issuer { get; }
+        public string Description { get; }
+        public bool Reissuable { get; }
+        public decimal Quantity { get; }
+        public decimal MinSponsoredAssetFee { get; }
 
         public string IdOrNull => Id == "WAVES" ? null : Id;
 
-        public byte[] Script { get; set; }
-
         private readonly decimal _scale;
 
-        public Asset(string id, string name, byte decimals, byte[] script = null)
+        public Asset(string id, string name, byte decimals, byte[] script = null,
+            long issueHeight = 0, long issueTimestamp = 0, string issuer = null,
+            string description = null, bool reissuable = false, long quantity = 0,
+            long minSponsoredAssetFee = 0)
         {
             Id = id;
             Name = name;
             Decimals = decimals;
             Script = script;
+
             _scale = new decimal(1, 0, 0, false, decimals);
+
+            IssueHeight = issueHeight;
+            IssueTimestamp = issueTimestamp.ToDate();
+            Issuer = issuer;
+            Description = description;
+            Quantity = LongToAmount(quantity);
+            Reissuable = reissuable;
+            MinSponsoredAssetFee = LongToAmount(minSponsoredAssetFee);
         }
 
         public long AmountToLong(decimal amount)
