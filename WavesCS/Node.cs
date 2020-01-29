@@ -508,7 +508,7 @@ namespace WavesCS
         public decimal CalculateFee(Transaction transaction)
         {
             var response =  Http.Post($"{_host}/transactions/calculateFee", transaction.GetJsonWithSignature()).ParseJsonObject().GetInt("feeAmount");
-            return response;
+            return Assets.WAVES.LongToAmount(response);
         }
 
         public string CalculateFee(DictionaryObject transaction)
