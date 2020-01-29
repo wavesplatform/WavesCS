@@ -147,7 +147,17 @@ namespace WavesCS
                 var scripted = assetDetails.ContainsKey("scripted") && assetDetails.GetBool("scripted");
 
                 var script = scripted ? assetDetails.GetString("scriptDetails.script").FromBase64() : null;
-                asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"), script);
+
+                var issueHeight = assetDetails.GetLong("issueHeight");
+                var issueTimestamp = assetDetails.GetLong("issueTimestamp");
+                var issuer = assetDetails.GetString("issuer");
+                var description = assetDetails["description"] == null ? "" : assetDetails.GetString("description");
+                var reissuable = assetDetails.GetBool("reissuable");
+                var quantity = assetDetails.GetLong("quantity");
+                var minSponsoredAssetFee = assetDetails["minSponsoredAssetFee"] == null ? 0 : assetDetails.GetLong("minSponsoredAssetFee");
+
+                asset = new Asset(assetId, tx.GetString("name"), tx.GetByte("decimals"), script,
+                    issueHeight, issueTimestamp, issuer, description, reissuable, quantity, minSponsoredAssetFee);
                 AssetsCache[assetId] = asset;
             }
 
