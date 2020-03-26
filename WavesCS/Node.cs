@@ -11,7 +11,7 @@ namespace WavesCS
     public class Node
     {
         public const string StageNetHost = "https://nodes-stagenet.wavesnodes.com";
-        public const string TestNetHost = "https://testnodes.wavesnodes.com";
+        public const string TestNetHost = "https://nodes-testnet.wavesnodes.com";
         public const string MainNetHost = "https://nodes.wavesnodes.com";
 
         public const char StageNetChainId = 'S';
