@@ -67,7 +67,7 @@ namespace WavesCSTests
                                                      DateTime.UtcNow.AddSeconds(10));
 
             Http.Tracing = true;
-            var matcher = new Matcher("https://matcher.testnet.wavesnodes.com");
+            var matcher = new Matcher("https://matcher-testnet.wavesnodes.com");
             var aliceBalanceBefore = matcher.GetTradableBalance(Accounts.Alice.Address, amountAsset, priceAsset)[amountAsset];
             var bobBalanceBefore = matcher.GetTradableBalance(Accounts.Bob.Address, amountAsset, priceAsset)[amountAsset];
 
