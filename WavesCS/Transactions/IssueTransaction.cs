@@ -33,9 +33,8 @@ namespace WavesCS
             Scripted = script != null;
         }
 
-        public IssueTransaction(DictionaryObject tx): base(tx)
+        public IssueTransaction(DictionaryObject tx, Node node) : base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             Name = tx.GetString("name");
             Description = tx.GetString("description");
             Decimals = (byte)tx.GetInt("decimals");

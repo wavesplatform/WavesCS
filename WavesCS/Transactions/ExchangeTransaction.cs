@@ -42,9 +42,8 @@ namespace WavesCS
             Timestamp = timestamp;
         }
 
-        public ExchangeTransaction(DictionaryObject tx) : base(tx)
+        public ExchangeTransaction(DictionaryObject tx, Node node) : base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
 
             BuyMatcherFee = Assets.WAVES.LongToAmount(tx.GetLong("buyMatcherFee"));

@@ -42,9 +42,8 @@ namespace WavesCS
             Fee = fee ?? Math.Round(0.001m + Transfers.Length * 0.0005m, 3, MidpointRounding.AwayFromZero);
         }
 
-        public MassTransferTransaction(DictionaryObject tx) : base(tx)
+        public MassTransferTransaction(DictionaryObject tx, Node node) : base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             Asset = node.GetAsset(tx.GetString("assetId") ?? Assets.WAVES.Id);
             Attachment = tx.GetString("attachment").FromBase58();
 

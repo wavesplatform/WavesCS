@@ -21,7 +21,6 @@ namespace WavesCS
 
         public LeaseTransaction(DictionaryObject tx) : base(tx)
         {
-            var node = new Node(tx.GetChar("chainId"));
             Recipient = tx.GetString("recipient");
             Amount = Assets.WAVES.LongToAmount(tx.GetLong("amount"));
             Fee = Assets.WAVES.LongToAmount(tx.GetLong("fee"));
