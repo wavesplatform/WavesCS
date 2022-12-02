@@ -1,3 +1,7 @@
+# DEPRICATED
+This is an old/depricated library, use [waves-csharp](https://github.com/wavesplatform/waves-csharp). 
+[NuGet package](https://www.nuget.org/packages/WavesLabs.Node.Client)
+
 # WavesCS
 A C# library for interacting with the Waves blockchain
 
